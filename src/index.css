@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-variant: var(--primary-variant);
+  --color-secondary: var(--secondary);
+  --color-secondary-variant: var(--secondary-variant);
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-variant: var(--surface-variant);
+  --color-overlay: var(--overlay);
+
+  --color-on-primary: var(--on-primary);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-background: var(--on-background);
+  --color-on-surface: var(--on-surface);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+  --color-disabled: var(--disabled);
+  --color-placeholder: var(--placeholder);
+
+  --font-sans: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --shadow-sm: 0 1px 3px var(--shadow-color-sm), 0 1px 2px var(--shadow-color-sm-inner);
+  --shadow-md: 0 4px 6px var(--shadow-color-md), 0 2px 4px var(--shadow-color-md-inner);
+  --shadow-lg: 0 10px 15px var(--shadow-color-lg), 0 4px 6px var(--shadow-color-lg-inner);
+  --shadow-inner: inset 0 2px 4px var(--shadow-color-inner);
+
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --animate-spin-fast: spin 0.7s linear infinite;
+  --animate-spin-slow: spin 0.8s linear infinite;
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-slide-up: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-up-mobile: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in-up: fadeInUp 0.3s ease both;
+}
+
+/* ─── Light Theme ─────────────────────────────────────────────────────────────── */
+:root {
+  --primary: hsl(258, 90%, 60%);
+  --primary-variant: hsl(258, 90%, 45%);
+  --secondary: hsl(180, 70%, 45%);
+  --secondary-variant: hsl(180, 70%, 35%);
+
+  --background: hsl(220, 20%, 97%);
+  --surface: hsl(0, 0%, 100%);
+  --surface-variant: hsl(220, 20%, 94%);
+  --overlay: hsla(220, 20%, 10%, 0.5);
+
+  --on-primary: hsl(0, 0%, 100%);
+  --on-secondary: hsl(0, 0%, 100%);
+  --on-background: hsl(220, 20%, 10%);
+  --on-surface: hsl(220, 15%, 20%);
+
+  --success: hsl(145, 65%, 42%);
+  --warning: hsl(38, 95%, 54%);
+  --error: hsl(0, 85%, 55%);
+  --info: hsl(210, 90%, 55%);
+
+  --border: hsl(220, 15%, 88%);
+  --divider: hsl(220, 15%, 92%);
+  --disabled: hsl(220, 10%, 70%);
+  --placeholder: hsl(220, 10%, 60%);
+
+  --shadow-color-sm: hsla(220, 20%, 10%, 0.08);
+  --shadow-color-sm-inner: hsla(220, 20%, 10%, 0.06);
+  --shadow-color-md: hsla(220, 20%, 10%, 0.07);
+  --shadow-color-md-inner: hsla(220, 20%, 10%, 0.06);
+  --shadow-color-lg: hsla(220, 20%, 10%, 0.10);
+  --shadow-color-lg-inner: hsla(220, 20%, 10%, 0.07);
+  --shadow-color-inner: hsla(220, 20%, 10%, 0.06);
+}
+
+/* ─── Dark Theme ──────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --primary: hsl(258, 90%, 70%);
+  --primary-variant: hsl(258, 90%, 80%);
+  --secondary: hsl(180, 70%, 55%);
+  --secondary-variant: hsl(180, 70%, 65%);
+
+  --background: hsl(222, 25%, 8%);
+  --surface: hsl(222, 22%, 12%);
+  --surface-variant: hsl(222, 20%, 16%);
+  --overlay: hsla(222, 25%, 5%, 0.7);
+
+  --on-primary: hsl(0, 0%, 100%);
+  --on-secondary: hsl(0, 0%, 100%);
+  --on-background: hsl(220, 20%, 95%);
+  --on-surface: hsl(220, 15%, 85%);
+
+  --success: hsl(145, 65%, 55%);
+  --warning: hsl(38, 95%, 65%);
+  --error: hsl(0, 85%, 65%);
+  --info: hsl(210, 90%, 65%);
+
+  --border: hsl(222, 15%, 22%);
+  --divider: hsl(222, 15%, 18%);
+  --disabled: hsl(222, 10%, 35%);
+  --placeholder: hsl(222, 10%, 45%);
+
+  --shadow-color-sm: hsla(0, 0%, 0%, 0.3);
+  --shadow-color-sm-inner: hsla(0, 0%, 0%, 0.25);
+  --shadow-color-md: hsla(0, 0%, 0%, 0.25);
+  --shadow-color-md-inner: hsla(0, 0%, 0%, 0.2);
+  --shadow-color-lg: hsla(0, 0%, 0%, 0.35);
+  --shadow-color-lg-inner: hsla(0, 0%, 0%, 0.25);
+  --shadow-color-inner: hsla(0, 0%, 0%, 0.3);
+}
+
+/* ─── Keyframe Animations ─────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%) translateX(-50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpMobile {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Global Reset & Base Layer ───────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+  height: -webkit-fill-available;
+  overscroll-behavior-y: contain;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--on-background);
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+button {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ─── Webkit Scrollbar ────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
