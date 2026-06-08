@@ -8,3 +8,6 @@ export type { InputProps } from './ui/input';
 export { default as PWAInstallPrompt } from './common/PWAInstallPrompt';
 export { default as NavigationMenu } from './common/NavigationMenu';
 export type { NavigationMenuProps } from './common/NavigationMenu';
+
+export { default as Header } from './common/Header';
+export type { HeaderProps } from './common/Header';
