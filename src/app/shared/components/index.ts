@@ -6,3 +6,5 @@ export { default as Input } from './ui/input';
 export type { InputProps } from './ui/input';
 
 export { default as PWAInstallPrompt } from './common/PWAInstallPrompt';
+export { default as NavigationMenu } from './common/NavigationMenu';
+export type { NavigationMenuProps } from './common/NavigationMenu';

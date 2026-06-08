@@ -29,12 +29,22 @@ export function useThemeStore() {
   // Apply theme class to <html> for non-styled-components targets (e.g. scrollbar)
   useEffect(() => {
     document.documentElement.dataset.theme = _theme;
+    if (_theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem(THEME_KEY, _theme);
   }, []);
 
   const toggleTheme = useCallback(() => {
     _theme = _theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = _theme;
+    if (_theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem(THEME_KEY, _theme);
     notifySubscribers();
   }, []);
@@ -42,6 +52,11 @@ export function useThemeStore() {
   const setTheme = useCallback((newTheme: Theme) => {
     _theme = newTheme;
     document.documentElement.dataset.theme = _theme;
+    if (_theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem(THEME_KEY, _theme);
     notifySubscribers();
   }, []);

@@ -16,6 +16,15 @@
   --color-on-secondary: var(--on-secondary);
   --color-on-background: var(--on-background);
   --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-outline-variant: var(--outline-variant);
 
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -77,6 +86,15 @@
   --disabled: hsl(220, 10%, 70%);
   --placeholder: hsl(220, 10%, 60%);
 
+  --surface-container-lowest: hsl(0, 0%, 100%);
+  --surface-container-low: hsl(220, 100%, 97%);
+  --surface-container: hsl(228, 100%, 94%);
+  --surface-container-high: hsl(228, 100%, 91%);
+  --surface-container-highest: hsl(230, 100%, 88%);
+  --on-surface-variant: hsl(218, 8%, 29%);
+  --inverse-surface: hsl(215, 35%, 20%);
+  --outline-variant: hsl(218, 11%, 79%);
+
   --shadow-color-sm: hsla(220, 20%, 10%, 0.08);
   --shadow-color-sm-inner: hsla(220, 20%, 10%, 0.06);
   --shadow-color-md: hsla(220, 20%, 10%, 0.07);
@@ -112,6 +130,15 @@
   --divider: hsl(222, 15%, 18%);
   --disabled: hsl(222, 10%, 35%);
   --placeholder: hsl(222, 10%, 45%);
+
+  --surface-container-lowest: hsl(223, 23%, 6%);
+  --surface-container-low: hsl(210, 13%, 11%);
+  --surface-container: hsl(215, 11%, 13%);
+  --surface-container-high: hsl(220, 8%, 17%);
+  --surface-container-highest: hsl(220, 7%, 21%);
+  --on-surface-variant: hsl(218, 11%, 79%);
+  --inverse-surface: hsl(218, 8%, 29%);
+  --outline-variant: hsl(218, 8%, 29%);
 
   --shadow-color-sm: hsla(0, 0%, 0%, 0.3);
   --shadow-color-sm-inner: hsla(0, 0%, 0%, 0.25);

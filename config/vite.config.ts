@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'splash-screen.png'],
         devOptions: {
           enabled: true,
+          suppressWarnings: true,
         },
         workbox: {
           // Cache-first strategy for static assets
