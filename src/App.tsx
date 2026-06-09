@@ -1,6 +1,7 @@
-import { Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { UserListView } from '@features/user';
-import { Layout } from '@shared/components';
+import { ProfileView } from '@features/profile';
+import { Layout, PageHeader } from '@shared/components';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -12,17 +13,31 @@ function LoadingScreen() {
   );
 }
 
-// ── App ────────────────────────────────────────────────────────────────────────
+// ── App ──────────────────────────────────────────────────────────────────────── v2
 
 function App() {
+  const [activeTab, setActiveTab] = useState('scales');
+
+  const handleBack = () => {
+    setActiveTab('scales');
+  };
+
   return (
     <Suspense fallback={<LoadingScreen />}>
       {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
       <Layout
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        showHeader={activeTab !== 'profile'}
+        pageHeader={
+          activeTab === 'profile' ? (
+            <PageHeader title="Perfil" onBack={handleBack} />
+          ) : undefined
+        }
         onSearchClick={() => console.info('[Header] Search clicked')}
         onNotificationClick={() => console.info('[Header] Notifications clicked')}
       >
-        <UserListView />
+        {activeTab === 'profile' ? <ProfileView /> : <UserListView />}
       </Layout>
     </Suspense>
   );

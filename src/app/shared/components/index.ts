@@ -12,6 +12,10 @@ export type { NavigationMenuProps } from './common/NavigationMenu';
 export { default as Header } from './common/Header';
 export type { HeaderProps } from './common/Header';
 
+export { default as PageHeader } from './common/PageHeader';
+export type { PageHeaderProps } from './common/PageHeader';
+
 export { default as Layout } from './common/Layout';
 export type { LayoutProps } from './common/Layout';
+
 
