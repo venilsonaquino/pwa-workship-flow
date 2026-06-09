@@ -261,3 +261,12 @@ ul, ol {
   background: var(--border);
   border-radius: 9999px;
 }
+
+/* ─── Native Scroll Utility ─────────────────────────────────────────────────── */
+.scroll-container-native {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+}
+

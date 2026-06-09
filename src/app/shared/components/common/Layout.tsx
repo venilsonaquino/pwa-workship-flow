@@ -38,7 +38,7 @@ export const Layout: React.FC<LayoutProps> = ({
         />
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-24">
+      <div className="flex-1 scroll-container-native p-4 flex flex-col gap-4 pb-24">
         {children}
       </div>
 

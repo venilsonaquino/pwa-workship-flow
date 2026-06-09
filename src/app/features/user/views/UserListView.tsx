@@ -114,7 +114,7 @@ export const UserListView: React.FC = () => {
           <div
             key={user.id}
             className="animate-fade-in-up"
-            style={{ animationDelay: `${index * 0.05}s` }}
+            style={index < 8 ? { animationDelay: `${index * 0.05}s` } : undefined}
           >
             <UserTableRow user={user} onClick={handleUserClick} />
           </div>
