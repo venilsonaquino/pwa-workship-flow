@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { UserListView } from '@features/user';
-import { PWAInstallPrompt, NavigationMenu } from '@shared/components';
+import { Layout } from '@shared/components';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -18,11 +18,15 @@ function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
-      <UserListView />
-      <NavigationMenu />
-      <PWAInstallPrompt />
+      <Layout
+        onSearchClick={() => console.info('[Header] Search clicked')}
+        onNotificationClick={() => console.info('[Header] Notifications clicked')}
+      >
+        <UserListView />
+      </Layout>
     </Suspense>
   );
 }
 
 export default App;
+

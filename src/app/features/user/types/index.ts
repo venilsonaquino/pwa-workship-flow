@@ -1,5 +1,3 @@
-// ── User Domain Types ─────────────────────────────────────────────────────────
-
 export type UserRole = 'admin' | 'editor' | 'viewer';
 export type UserStatus = 'active' | 'inactive' | 'pending';
 
