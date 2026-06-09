@@ -109,7 +109,7 @@ export const ProfileSettings: React.FC = () => {
       </section>
 
       {/* ── Configurações do App ── */}
-      <section style={{ marginBottom: 24 }}>
+      <section style={{ marginBottom: 56 }}>
         <h3
           className="text-label-sm font-semibold text-primary uppercase tracking-wider"
           style={{ paddingLeft: 4, paddingRight: 4, marginBottom: 12 }}
@@ -127,14 +127,12 @@ export const ProfileSettings: React.FC = () => {
             </div>
             <button
               onClick={toggleTheme}
-              className={`w-12 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${
-                isDarkMode ? 'bg-primary' : 'bg-outline-variant'
-              }`}
+              className={`w-12 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${isDarkMode ? 'bg-primary' : 'bg-outline-variant'
+                }`}
             >
               <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow transition-transform duration-200 ${
-                  isDarkMode ? 'left-[26px]' : 'left-0.5'
-                }`}
+                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow transition-transform duration-200 ${isDarkMode ? 'left-[26px]' : 'left-0.5'
+                  }`}
               />
             </button>
           </div>
