@@ -106,7 +106,7 @@ export const SongDistribution: React.FC = () => {
 
               {/* Volunteers list */}
               <div 
-                className="flex -space-x-2" 
+                className="flex" 
                 style={{ paddingTop: '4px' }}
               >
                 {card.avatars.map((url, idx) => (
@@ -115,6 +115,7 @@ export const SongDistribution: React.FC = () => {
                     className={`w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high ${
                       isPrimary ? 'border-primary' : 'border-surface-container-lowest'
                     }`}
+                    style={idx > 0 ? { marginLeft: '-12px' } : undefined}
                   >
                     <img 
                       alt={`Voluntário ${idx + 1}`} 
@@ -130,6 +131,7 @@ export const SongDistribution: React.FC = () => {
                         ? 'border-primary bg-surface-container-lowest text-primary' 
                         : 'border-surface-container-lowest bg-surface-container-lowest text-primary'
                     }`}
+                    style={{ marginLeft: '-12px' }}
                   >
                     +{card.extraAvatarsCount}
                   </div>
