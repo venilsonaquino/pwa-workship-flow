@@ -1,5 +1,6 @@
 import React from 'react';
 import ProfileHeader from '../components/ProfileHeader';
+import ProfileSettings from '../components/ProfileSettings';
 
 interface ProfileViewProps {
   userName?: string;
@@ -24,6 +25,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         userRole={userRole}
         avatarUrl={avatarUrl}
       />
+      <ProfileSettings />
     </>
   );
 };
