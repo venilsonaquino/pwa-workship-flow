@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MonthSelector from '../components/MonthSelector';
+import SongDistribution from '../components/SongDistribution';
 
 export const ScalesPreviewView: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState('2023-10');
@@ -10,6 +11,7 @@ export const ScalesPreviewView: React.FC = () => {
         selectedMonth={selectedMonth} 
         onMonthSelect={setSelectedMonth} 
       />
+      <SongDistribution />
     </div>
   );
 };
