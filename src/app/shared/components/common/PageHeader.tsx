@@ -23,7 +23,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <span className="material-symbols-outlined text-on-surface">arrow_back</span>
           </button>
         )}
-        <h1 className="mx-auto text-headline-md font-headline-md text-on-surface">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-headline-md font-headline-md text-on-surface whitespace-nowrap">
           {title}
         </h1>
       </div>

@@ -16,6 +16,7 @@ export interface LayoutProps {
   hasUnreadNotifications?: boolean;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  contentClassName?: string;
 }
 
 export const Layout: React.FC<LayoutProps> = ({
@@ -31,6 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({
   hasUnreadNotifications,
   activeTab,
   onTabChange,
+  contentClassName,
 }) => {
   return (
     <main className="flex flex-col min-h-screen bg-background" style={{ padding: '10px' }}>
@@ -46,7 +48,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {pageHeader}
 
-      <div className="flex-1 scroll-container-native p-4 flex flex-col gap-4 pb-24">
+      <div className={contentClassName ?? 'flex-1 scroll-container-native p-4 flex flex-col gap-4 pb-24'}>
         {children}
       </div>
 

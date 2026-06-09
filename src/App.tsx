@@ -13,7 +13,7 @@ function LoadingScreen() {
   );
 }
 
-// ── App ──────────────────────────────────────────────────────────────────────── v2
+// ── App ────────────────────────────────────────────────────────────────────────
 
 function App() {
   const [activeTab, setActiveTab] = useState('scales');
@@ -33,6 +33,11 @@ function App() {
           activeTab === 'profile' ? (
             <PageHeader title="Perfil" onBack={handleBack} />
           ) : undefined
+        }
+        contentClassName={
+          activeTab === 'profile'
+            ? 'flex-1 scroll-container-native pb-24'
+            : undefined
         }
         onSearchClick={() => console.info('[Header] Search clicked')}
         onNotificationClick={() => console.info('[Header] Notifications clicked')}

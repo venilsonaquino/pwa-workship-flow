@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* ── Design system colors (mapped from CSS vars in :root) ───────────────── */
   --color-primary: var(--primary);
   --color-primary-variant: var(--primary-variant);
   --color-secondary: var(--secondary);
@@ -27,6 +28,7 @@
   --color-surface-container-highest: var(--surface-container-highest);
   --color-inverse-surface: var(--inverse-surface);
   --color-outline-variant: var(--outline-variant);
+  --color-outline: var(--outline);
 
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -38,8 +40,42 @@
   --color-disabled: var(--disabled);
   --color-placeholder: var(--placeholder);
 
-  --font-sans: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  /* ── Stitch extra tokens ────────────────────────────────────────────────── */
+  --color-error-container: var(--error-container);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-primary-container: var(--primary-container);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-inverse-primary: var(--inverse-primary);
+  --color-surface-tint: var(--surface-tint);
+
+  /* ── Fonts ──────────────────────────────────────────────────────────────── */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-headline-md: 'Plus Jakarta Sans';
+  --font-body-md: 'Plus Jakarta Sans';
+  --font-label-sm: 'Plus Jakarta Sans';
+  --font-label-lg: 'Plus Jakarta Sans';
+
+  /* ── Typography scale (matches Stitch fontSize config exactly) ──────────── */
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--font-weight: 600;
+
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--letter-spacing: 0.02em;
+  --text-label-sm--font-weight: 500;
+
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 20px;
+  --text-label-lg--font-weight: 600;
 
   --shadow-sm: 0 1px 3px var(--shadow-color-sm), 0 1px 2px var(--shadow-color-sm-inner);
   --shadow-md: 0 4px 6px var(--shadow-color-md), 0 2px 4px var(--shadow-color-md-inner);
@@ -63,20 +99,24 @@
 
 /* ─── Light Theme ─────────────────────────────────────────────────────────────── */
 :root {
-  --primary: hsl(258, 90%, 60%);
-  --primary-variant: hsl(258, 90%, 45%);
-  --secondary: hsl(180, 70%, 45%);
-  --secondary-variant: hsl(180, 70%, 35%);
+  /* Exact Stitch hex values so from-primary to-secondary matches the design */
+  --primary: #630ed4;
+  --primary-variant: #7c3aed;
+  --secondary: #0058be;
+  --secondary-variant: #004395;
 
-  --background: hsl(220, 20%, 97%);
-  --surface: hsl(0, 0%, 100%);
-  --surface-variant: hsl(220, 20%, 94%);
-  --overlay: hsla(220, 20%, 10%, 0.5);
+  /* Stitch surface tokens */
+  --background: #f8f9ff;
+  --surface: #f8f9ff;
+  --surface-variant: #d3e4fe;
+  --surface-dim: #cbdbf5;
+  --surface-bright: #f8f9ff;
+  --overlay: hsla(213, 45%, 12%, 0.5);
 
-  --on-primary: hsl(0, 0%, 100%);
-  --on-secondary: hsl(0, 0%, 100%);
-  --on-background: hsl(220, 20%, 10%);
-  --on-surface: hsl(220, 15%, 20%);
+  --on-primary: #ffffff;
+  --on-secondary: #ffffff;
+  --on-background: #0b1c30;
+  --on-surface: #0b1c30;
 
   --success: hsl(145, 65%, 42%);
   --warning: hsl(38, 95%, 54%);
@@ -88,14 +128,25 @@
   --disabled: hsl(220, 10%, 70%);
   --placeholder: hsl(220, 10%, 60%);
 
-  --surface-container-lowest: hsl(0, 0%, 100%);
-  --surface-container-low: hsl(220, 100%, 97%);
-  --surface-container: hsl(228, 100%, 94%);
-  --surface-container-high: hsl(228, 100%, 91%);
-  --surface-container-highest: hsl(230, 100%, 88%);
-  --on-surface-variant: hsl(218, 8%, 29%);
-  --inverse-surface: hsl(215, 35%, 20%);
-  --outline-variant: hsl(218, 11%, 79%);
+  /* Stitch surface container tokens */
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container: #e5eeff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d6e4ff;
+  --on-surface-variant: #4a4455;
+  --inverse-surface: #213145;
+  --outline-variant: #ccc3d8;
+  --outline: #7b7487;
+
+  /* Stitch extra tokens */
+  --error-container: #ffdad6;
+  --primary-container: #7c3aed;
+  --tertiary: #8f1e62;
+  --tertiary-container: #ae397b;
+  --on-tertiary: #ffffff;
+  --inverse-primary: #d2bbff;
+  --surface-tint: #732ee4;
 
   --shadow-color-sm: hsla(220, 20%, 10%, 0.08);
   --shadow-color-sm-inner: hsla(220, 20%, 10%, 0.06);
@@ -271,6 +322,7 @@ ul, ol {
 }
 
 /* ─── Stitch MCP Design System Compatibility ─────────────────────────────────── */
+
 .text-headline-md {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 20px;
@@ -278,14 +330,21 @@ ul, ol {
   font-weight: 600;
 }
 .font-headline-md {
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
 }
+
 .text-body-md {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
 }
+.font-body-md {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+}
+
 .text-label-sm {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 12px;
@@ -294,8 +353,21 @@ ul, ol {
   letter-spacing: 0.02em;
 }
 .font-label-sm {
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 500;
 }
+
+.text-label-lg {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.font-label-lg {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+}
+
 .icon-fill {
   font-variation-settings: 'FILL' 1 !important;
 }
