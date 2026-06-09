@@ -1,6 +1,7 @@
 import { useState, Suspense } from 'react';
 import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
+import { ScalesPreviewView } from '@features/scales';
 import { Layout, PageHeader } from '@shared/components';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
@@ -42,7 +43,13 @@ function App() {
         onSearchClick={() => console.info('[Header] Search clicked')}
         onNotificationClick={() => console.info('[Header] Notifications clicked')}
       >
-        {activeTab === 'profile' ? <ProfileView /> : <UserListView />}
+        {activeTab === 'profile' ? (
+          <ProfileView />
+        ) : activeTab === 'scales' ? (
+          <ScalesPreviewView />
+        ) : (
+          <UserListView />
+        )}
       </Layout>
     </Suspense>
   );
