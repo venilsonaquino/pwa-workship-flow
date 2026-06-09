@@ -88,7 +88,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
           <button
             onClick={handleFabClick}
             aria-label="Adicionar"
-            className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-surface-container-lowest -translate-y-6 transition-all duration-200 active:scale-90 hover:scale-105 hover:-translate-y-7 hover:shadow-xl cursor-pointer"
+            className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_-3px_rgba(99,14,212,0.5),_0_4px_12px_-2px_rgba(33,112,228,0.3)] border-4 border-surface-container-lowest -translate-y-6 transition-all duration-200 active:scale-90 hover:scale-105 hover:-translate-y-7 hover:shadow-[0_14px_32px_-3px_rgba(99,14,212,0.65),_0_6px_16px_-2px_rgba(33,112,228,0.45)] cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #630ed4 0%, #2170e4 100%)'
             }}
