@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@shared/components';
 
 export interface MonthSelectorProps {
   selectedMonth: string;
@@ -22,7 +28,6 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
   selectedMonth,
   onMonthSelect,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const currentObj = MONTHS.find((m) => m.value === selectedMonth) || MONTHS[1];
 
   return (
@@ -32,46 +37,35 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
           {currentObj.displayTitle}
         </h2>
 
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container rounded-full border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none active:scale-95 cursor-pointer"
-          style={{ padding: '8px 16px' }}
-        >
-          <span className="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
-          <span>{currentObj.label}</span>
-          <span className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-            expand_more
-          </span>
-        </button>
-      </section>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="group flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container rounded-full border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none active:scale-95 cursor-pointer"
+            style={{ padding: '8px 16px' }}
+          >
+            <span className="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
+            <span>{currentObj.label}</span>
+            <span className="material-symbols-outlined text-[18px] transition-transform duration-200 group-data-[state=open]:rotate-180">
+              expand_more
+            </span>
+          </DropdownMenuTrigger>
 
-      {isOpen && (
-        <>
-          {/* Backdrop to close the selector dropdown */}
-          <div
-            className="fixed inset-0 z-40 bg-transparent"
-            onClick={() => setIsOpen(false)}
-          />
-          {/* Dropdown Menu */}
-          <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-lg z-50 py-2 animate-fade-in-up">
+          <DropdownMenuContent align="end" className="w-48">
             {MONTHS.map((month) => (
-              <button
+              <DropdownMenuItem
                 key={month.value}
-                type="button"
-                onClick={() => {
-                  onMonthSelect(month.value);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2.5 text-body-md hover:bg-surface-container-low transition-colors ${selectedMonth === month.value ? 'text-primary font-semibold' : 'text-on-surface'
-                  }`}
+                onClick={() => onMonthSelect(month.value)}
+                className={
+                  selectedMonth === month.value
+                    ? 'bg-primary/10 text-primary font-semibold text-center hover:bg-primary/15'
+                    : 'text-on-surface/80 hover:text-on-surface text-center'
+                }
               >
                 {month.label}
-              </button>
+              </DropdownMenuItem>
             ))}
-          </div>
-        </>
-      )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </section>
     </div>
   );
 };
