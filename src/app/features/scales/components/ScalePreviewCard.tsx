@@ -1,5 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardFooter, Button } from '@shared/components';
+import scaleBg from '@assets/ceia.png';
+
 
 export interface BandMember {
   role: string;
@@ -119,7 +121,6 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export const ScalePreviewCard: React.FC = () => {
-  const scaleBg = 'https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=600&auto=format&fit=crop';
 
   const handleShare = () => {
     const text = `📅 *Escala: Culto de Celebração (08/10)*\n\n` +
@@ -169,7 +170,7 @@ export const ScalePreviewCard: React.FC = () => {
       </div>
 
       <Card>
-        <div className="relative h-36" style={{ position: 'relative', height: '144px' }}>
+        <div className="relative h-36" style={{ position: 'relative', height: '144px', marginBottom: '-1px', backgroundColor: 'var(--surface-container-lowest)' }}>
           <img
             alt="Scale Background"
             className="w-full h-full object-cover"
