@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useThemeStore } from '@shared/hooks/useThemeStore';
 
 export interface HeaderProps {
   userName?: string;
@@ -18,7 +17,6 @@ export const Header: React.FC<HeaderProps> = ({
   onNotificationClick,
   hasUnreadNotifications = true, // Defaulting to true for visual polish, matching mock indicators
 }) => {
-  const { theme, toggleTheme } = useThemeStore();
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12) return 'Bom dia';
@@ -97,18 +95,6 @@ export const Header: React.FC<HeaderProps> = ({
           {hasUnreadNotifications && (
             <span className="absolute top-[6px] right-[6px] w-[9px] h-[9px] rounded-full bg-error border border-background animate-pulse" />
           )}
-        </button>
-
-        {/* Theme Switcher Button */}
-        <button
-          onClick={toggleTheme}
-          className="w-9 h-9 flex items-center justify-center rounded-full text-on-surface-variant dark:text-on-surface-variant/90 hover:bg-surface-variant/60 dark:hover:bg-surface-container-high/60 active:scale-95 transition-all cursor-pointer"
-          aria-label="Alternar tema"
-          title={`Alternar para tema ${theme === 'dark' ? 'claro' : 'escuro'}`}
-        >
-          <span className="material-symbols-outlined text-[22px] select-none">
-            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-          </span>
         </button>
       </div>
     </header>

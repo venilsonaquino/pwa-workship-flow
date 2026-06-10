@@ -1,16 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useThemeStore } from '@shared/hooks';
 
 export const ProfileSettings: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
+  const { theme, toggleTheme } = useThemeStore();
+  const isDarkMode = theme === 'dark';
 
   return (
     <div className="w-full" style={{ paddingLeft: 16, paddingRight: 16, marginTop: 24 }}>

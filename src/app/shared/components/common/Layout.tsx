@@ -27,7 +27,6 @@ export const Layout: React.FC<LayoutProps> = ({
   showInstallPrompt = true,
   userName,
   avatarUrl,
-  onSearchClick,
   onNotificationClick,
   hasUnreadNotifications,
   activeTab,
@@ -40,7 +39,6 @@ export const Layout: React.FC<LayoutProps> = ({
         <Header
           userName={userName}
           avatarUrl={avatarUrl}
-          onSearchClick={onSearchClick}
           onNotificationClick={onNotificationClick}
           hasUnreadNotifications={hasUnreadNotifications}
         />

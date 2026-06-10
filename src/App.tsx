@@ -40,7 +40,6 @@ function App() {
             ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
             : undefined
         }
-        onSearchClick={() => console.info('[Header] Search clicked')}
         onNotificationClick={() => console.info('[Header] Notifications clicked')}
       >
         {activeTab === 'profile' ? (
