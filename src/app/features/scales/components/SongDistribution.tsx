@@ -59,17 +59,17 @@ export const SongDistribution: React.FC = () => {
         <h3 className="font-headline-md text-headline-md text-on-surface">
           Distribuição de Músicas
         </h3>
-        <button 
+        <button
           type="button"
           className="text-primary font-label-lg text-label-lg flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
         >
-          Ver tudo 
+          Ver tudo
           <span className="material-symbols-outlined text-[18px]">chevron_right</span>
         </button>
       </div>
 
       {/* Horizontal Carousel */}
-      <div 
+      <div
         className="flex overflow-x-auto scrollbar-hide snap-x"
         style={{ paddingBottom: '16px', gap: '16px' }}
       >
@@ -78,15 +78,14 @@ export const SongDistribution: React.FC = () => {
           return (
             <div
               key={card.id}
-              className={`snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border ${
-                isPrimary 
-                  ? 'bg-primary text-on-primary border-primary shadow-lg' 
+              className={`snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border ${isPrimary
+                  ? 'bg-primary text-on-primary border-primary shadow-lg'
                   : 'bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow'
-              }`}
+                }`}
               style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}
             >
               {/* Day & Date info */}
-              <p 
+              <p
                 className="text-label-sm font-label-sm uppercase tracking-wider"
                 style={{ opacity: isPrimary ? 0.8 : 1, color: isPrimary ? 'inherit' : 'var(--color-on-surface-variant)' }}
               >
@@ -96,7 +95,7 @@ export const SongDistribution: React.FC = () => {
               {/* Title and Song Count */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <p className="font-bold text-lg leading-tight">{card.title}</p>
-                <p 
+                <p
                   className="text-label-sm"
                   style={{ opacity: isPrimary ? 0.9 : 1, color: isPrimary ? 'inherit' : 'var(--color-on-surface-variant)' }}
                 >
@@ -105,32 +104,30 @@ export const SongDistribution: React.FC = () => {
               </div>
 
               {/* Volunteers list */}
-              <div 
-                className="flex" 
+              <div
+                className="flex"
                 style={{ paddingTop: '4px' }}
               >
                 {card.avatars.map((url, idx) => (
-                  <div 
+                  <div
                     key={idx}
-                    className={`w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high ${
-                      isPrimary ? 'border-primary' : 'border-surface-container-lowest'
-                    }`}
+                    className={`w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high ${isPrimary ? 'border-primary' : 'border-surface-container-lowest'
+                      }`}
                     style={idx > 0 ? { marginLeft: '-12px' } : undefined}
                   >
-                    <img 
-                      alt={`Voluntário ${idx + 1}`} 
-                      className="w-full h-full object-cover" 
-                      src={url} 
+                    <img
+                      alt={`Voluntário ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                      src={url}
                     />
                   </div>
                 ))}
                 {card.extraAvatarsCount !== undefined && card.extraAvatarsCount > 0 && (
-                  <div 
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${
-                      isPrimary 
-                        ? 'border-primary bg-surface-container-lowest text-primary' 
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${isPrimary
+                        ? 'border-primary bg-surface-container-lowest text-primary'
                         : 'border-surface-container-lowest bg-surface-container-lowest text-primary'
-                    }`}
+                      }`}
                     style={{ marginLeft: '-12px' }}
                   >
                     +{card.extraAvatarsCount}
