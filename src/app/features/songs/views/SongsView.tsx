@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import SongsHeader from '../components/SongsHeader';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SuggestSongModal from '../components/SuggestSongModal';
 import Button from '@shared/components/ui/button';
+import { PageHeader, Input } from '@shared/components';
 import type { Song } from '../types';
 
 const INITIAL_SONGS: Song[] = [
@@ -148,20 +148,70 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
     return song.category === activeCategoryTab;
   });
 
+  const searchBar = (
+    <div className="flex items-center w-full gap-2">
+      <Button
+        onClick={handleSearchClose}
+        variant="ghost"
+        size="sm"
+        className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200"
+        style={{ padding: 0 }}
+        aria-label="Voltar"
+      >
+        <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+      </Button>
+      <div className="flex-1">
+        <Input
+          autoFocus
+          placeholder="Buscar em todas as abas..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          leftAdornment={<span className="material-symbols-outlined text-outline text-[20px]">search</span>}
+          rightAdornment={
+            searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            )
+          }
+        />
+      </div>
+    </div>
+  );
+
+  const searchButton = (
+    <Button
+      onClick={handleSearchToggle}
+      variant="ghost"
+      size="sm"
+      className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200"
+      style={{ padding: 0 }}
+      aria-label="Buscar música"
+    >
+      <span className="material-symbols-outlined text-[24px]">search</span>
+    </Button>
+  );
+
   return (
     <div
       className="flex flex-col w-full bg-background text-on-background"
       style={{ paddingBottom: '128px' }}
     >
       {/* Top AppBar */}
-      <SongsHeader
-        isSearchExpanded={isSearchExpanded}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-        onSearchToggle={handleSearchToggle}
-        onSearchClose={handleSearchClose}
-        onBack={onBack}
-      />
+      {isSearchExpanded ? (
+        <PageHeader title="Buscar">
+          {searchBar}
+        </PageHeader>
+      ) : (
+        <PageHeader
+          title="Musicas"
+          onBack={onBack}
+          rightAction={searchButton}
+        />
+      )}
 
       {/* Main Body */}
       <main className="flex flex-col gap-6">
