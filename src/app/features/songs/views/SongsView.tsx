@@ -1,0 +1,246 @@
+import { useState } from 'react';
+import SongsHeader from '../components/SongsHeader';
+import SongsFilterTabs from '../components/SongsFilterTabs';
+import SongCard from '../components/SongCard';
+import SuggestSongModal from '../components/SuggestSongModal';
+import Button from '@shared/components/ui/button';
+import type { Song } from '../types';
+
+const INITIAL_SONGS: Song[] = [
+  {
+    id: '1',
+    title: 'Elevando a Alma',
+    artist: 'Ministério de Louvor Central',
+    category: 'sugestao',
+    duration: '3:55',
+    progress: '1:42',
+    progressPct: 45,
+    engagement: 85,
+    isHeard: false,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+  },
+  {
+    id: '2',
+    title: 'Caminho da Fé',
+    artist: 'Banda Aliança Divina',
+    category: 'ensaiando',
+    duration: '4:20',
+    progress: '0:00',
+    progressPct: 0,
+    engagement: 32,
+    isHeard: false,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE'
+  },
+  {
+    id: '3',
+    title: 'Novo Horizonte',
+    artist: 'Lucas Silva & Coral',
+    category: 'repertorio',
+    duration: '5:10',
+    progress: '0:45',
+    progressPct: 15,
+    engagement: 60,
+    isHeard: true,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q'
+  },
+  {
+    id: '4',
+    title: 'Oceanos',
+    artist: 'Ana Nóbrega',
+    category: 'ensaiando',
+    duration: '8:30',
+    progress: '3:15',
+    progressPct: 38,
+    engagement: 75,
+    isHeard: false,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+  },
+  {
+    id: '5',
+    title: 'Ruínas',
+    artist: 'Alessandro Vilas Boas',
+    category: 'sugestao',
+    duration: '6:10',
+    progress: '0:00',
+    progressPct: 0,
+    engagement: 18,
+    isHeard: false,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE'
+  },
+  {
+    id: '6',
+    title: 'Promessas',
+    artist: 'Ministério Zoe',
+    category: 'repertorio',
+    duration: '5:50',
+    progress: '5:50',
+    progressPct: 100,
+    engagement: 95,
+    isHeard: true,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q'
+  }
+];
+
+export interface SongsViewProps {
+  onBack: () => void;
+}
+
+export const SongsView = ({ onBack }: SongsViewProps) => {
+  const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [songsList, setSongsList] = useState<Song[]>(INITIAL_SONGS);
+  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+  const [playingSongId, setPlayingSongId] = useState<string | null>(null);
+
+  const handleSearchToggle = () => {
+    setIsSearchExpanded(!isSearchExpanded);
+    if (isSearchExpanded) {
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchExpanded(false);
+    setSearchQuery('');
+  };
+
+  const togglePlaySong = (songId: string) => {
+    setPlayingSongId(prev => prev === songId ? null : songId);
+  };
+
+  const toggleHeardStatus = (songId: string) => {
+    setSongsList(prev =>
+      prev.map(song =>
+        song.id === songId ? { ...song, isHeard: !song.isHeard } : song
+      )
+    );
+  };
+
+  const handleSuggestSubmit = (title: string, artist: string) => {
+    const newSong: Song = {
+      id: Math.random().toString(36).slice(2, 9),
+      title,
+      artist,
+      category: activeCategoryTab,
+      duration: '4:15',
+      progress: '0:00',
+      progressPct: 0,
+      engagement: 0,
+      isHeard: false,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+    };
+
+    setSongsList(prev => [newSong, ...prev]);
+    setIsSuggestModalOpen(false);
+  };
+
+  // Filter songs based on search and active tab
+  const filteredSongs = songsList.filter((song) => {
+    const matchesSearch =
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (searchQuery) {
+      return matchesSearch;
+    }
+
+    return song.category === activeCategoryTab;
+  });
+
+  return (
+    <div
+      className="flex flex-col w-full bg-background text-on-background"
+      style={{ paddingBottom: '128px' }}
+    >
+      {/* Top AppBar */}
+      <SongsHeader
+        isSearchExpanded={isSearchExpanded}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearchToggle={handleSearchToggle}
+        onSearchClose={handleSearchClose}
+        onBack={onBack}
+      />
+
+      {/* Main Body */}
+      <main className="flex flex-col gap-6">
+        {/* Quick Filters / Segmented Tabs Row */}
+        {!searchQuery && (
+          <SongsFilterTabs
+            activeTab={activeCategoryTab}
+            onTabChange={setActiveCategoryTab}
+          />
+        )}
+
+        {/* Suggest Song Button Container */}
+        {!searchQuery && (
+          <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+            <Button
+              onClick={() => setIsSuggestModalOpen(true)}
+              size="lg"
+              className="w-full text-white rounded-xl font-headline-md flex items-center justify-center shadow-lg active:scale-95 cursor-pointer"
+              style={{ paddingTop: '16px', paddingBottom: '16px', background: 'linear-gradient(135deg, #7c3aed 0%, #630ed4 100%)' }}
+              leftIcon={<span className="material-symbols-outlined">add</span>}
+            >
+              Sugerir música
+            </Button>
+          </div>
+        )}
+
+        {/* Music List Section */}
+        <section
+          className="flex flex-col gap-4"
+        >
+          {searchQuery && (
+            <div
+              className="flex justify-between items-center"
+              style={{ marginBottom: '8px' }}
+            >
+              <h2 className="text-label-lg font-semibold text-on-surface-variant">
+                Resultados da busca ({filteredSongs.length})
+              </h2>
+              <button
+                onClick={handleSearchClose}
+                className="text-label-sm font-bold text-primary hover:underline cursor-pointer"
+              >
+                Limpar busca
+              </button>
+            </div>
+          )}
+
+          {filteredSongs.length > 0 ? (
+            filteredSongs.map((song) => (
+              <SongCard
+                key={song.id}
+                song={song}
+                isPlaying={playingSongId === song.id}
+                onPlayToggle={() => togglePlaySong(song.id)}
+                onHeardToggle={() => toggleHeardStatus(song.id)}
+                showCategoryBadge={!!searchQuery}
+              />
+            ))
+          ) : (
+            <div
+              className="flex flex-col items-center justify-center text-center opacity-60"
+              style={{ paddingTop: '48px', paddingBottom: '48px', gap: '8px' }}
+            >
+              <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
+              <p className="text-body-lg font-medium">Nenhuma música encontrada</p>
+              <p className="text-label-sm">Tente buscar por outro termo ou limpe os filtros.</p>
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* Suggest Modal Popup */}
+      <SuggestSongModal
+        isOpen={isSuggestModalOpen}
+        onClose={() => setIsSuggestModalOpen(false)}
+        onSubmit={handleSuggestSubmit}
+      />
+    </div>
+  );
+};
+
+export default SongsView;

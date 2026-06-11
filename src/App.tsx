@@ -2,6 +2,7 @@ import { useState, Suspense } from 'react';
 import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
+import { SongsView } from '@features/songs';
 import { Layout, PageHeader } from '@shared/components';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
@@ -29,14 +30,14 @@ function App() {
       <Layout
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        showHeader={activeTab !== 'profile'}
+        showHeader={activeTab !== 'profile' && activeTab !== 'songs'}
         pageHeader={
           activeTab === 'profile' ? (
             <PageHeader title="Perfil" onBack={handleBack} />
           ) : undefined
         }
         contentClassName={
-          activeTab === 'profile'
+          activeTab === 'profile' || activeTab === 'songs'
             ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
             : undefined
         }
@@ -44,6 +45,8 @@ function App() {
       >
         {activeTab === 'profile' ? (
           <ProfileView />
+        ) : activeTab === 'songs' ? (
+          <SongsView onBack={handleBack} />
         ) : activeTab === 'scales' ? (
           <ScalesPreviewView />
         ) : (

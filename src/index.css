@@ -382,4 +382,53 @@ ul, ol {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* ─── Marquee Animation & Edge Mask Styles ────────────────────────────────── */
+@keyframes marquee-bounce {
+  0%, 15% { transform: translateX(0); }
+  45%, 65% { transform: translateX(var(--marquee-scroll)); }
+  90%, 100% { transform: translateX(0); }
+}
+
+@keyframes marquee-mask {
+  0%, 15% {
+    mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+  }
+  45%, 65% {
+    mask-image: linear-gradient(to right, transparent 0%, #000 var(--marquee-mask-width, 12px), #000 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 var(--marquee-mask-width, 12px), #000 100%);
+  }
+  90%, 100% {
+    mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+  }
+}
+
+.animate-marquee-bounce {
+  animation: marquee-bounce var(--marquee-duration, 8s) ease-in-out infinite;
+}
+
+.mask-marquee {
+  mask-image: linear-gradient(to right, transparent 0%, #000 var(--marquee-mask-width, 12px), #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 var(--marquee-mask-width, 12px), #000 calc(100% - var(--marquee-mask-width, 12px)), transparent 100%);
+  animation: marquee-mask var(--marquee-duration, 8s) ease-in-out infinite;
+}
+
+
+
+/* ─── Celebration Particles Animation ───────────────────────────────────── */
+@keyframes fadeOutParticle {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0.3) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-fade-out-particle {
+  animation: fadeOutParticle 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
 
