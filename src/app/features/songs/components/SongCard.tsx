@@ -55,8 +55,8 @@ export const SongCard = ({
 
   return (
     <div
-      className="bg-white/80 dark:bg-inverse-surface/80 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-white/40 flex flex-col gap-4 relative overflow-visible"
-      style={{ padding: '16px' }}
+      className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible"
+      style={{ padding: '20px' }}
     >
       {/* Celebration Particles */}
       {renderParticles('50%', '85%')}
