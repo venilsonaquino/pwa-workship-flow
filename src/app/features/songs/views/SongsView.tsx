@@ -3,7 +3,7 @@ import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SuggestSongModal from '../components/SuggestSongModal';
 import Button from '@shared/components/ui/button';
-import { PageHeader, Input } from '@shared/components';
+import { PageHeader } from '@shared/components';
 import type { Song } from '../types';
 
 const INITIAL_SONGS: Song[] = [
@@ -161,23 +161,32 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         <span className="material-symbols-outlined text-[24px]">arrow_back</span>
       </Button>
       <div className="flex-1">
-        <Input
-          autoFocus
-          placeholder="Buscar em todas as abas..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          leftAdornment={<span className="material-symbols-outlined text-outline text-[20px]">search</span>}
-          rightAdornment={
-            searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
-            )
-          }
-        />
+        <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl border-2 border-transparent shadow-sm transition-all duration-200"
+          style={{ padding: '12px 16px' }}>
+          <span className="material-symbols-outlined text-outline text-[20px]">search</span>
+          <input
+            autoFocus
+            type="text"
+            placeholder="Buscar em todas as abas..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
+              background: 'transparent',
+            }}
+            className="flex-1 bg-transparent text-on-surface font-body-lg text-body-lg border-none outline-none focus:bg-transparent focus:border-none focus:ring-0 focus:outline-none p-0"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="w-6 h-6 flex items-center justify-center rounded-full bg-outline-variant/30 text-on-surface-variant hover:bg-outline-variant transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
