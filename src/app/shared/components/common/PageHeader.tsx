@@ -30,8 +30,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 onClick={onBack}
                 variant="ghost"
                 size="sm"
-                className="absolute left-0 w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200"
-                style={{ padding: 0 }}
+                iconOnly
+                className="absolute left-0 text-primary"
                 aria-label="Voltar"
               >
                 <span className="material-symbols-outlined text-[24px]">arrow_back</span>

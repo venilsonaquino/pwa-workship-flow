@@ -73,8 +73,8 @@ export const Header = ({
           onClick={onNotificationClick}
           variant="ghost"
           size="sm"
-          className="w-9 h-9 flex items-center justify-center text-on-surface-variant dark:text-on-surface-variant/90 hover:bg-surface-variant/60 dark:hover:bg-surface-container-high/60 active:scale-95 transition-all cursor-pointer relative"
-          style={{ borderRadius: '9999px' }}
+          iconOnly
+          className="text-on-surface-variant dark:text-on-surface-variant/90 relative"
           aria-label="Notificações"
           title="Notificações"
         >

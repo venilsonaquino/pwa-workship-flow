@@ -68,14 +68,14 @@ export const SuggestSongModal = ({
               type="button"
               variant="secondary"
               onClick={onClose}
-              className="flex-1 rounded-xl py-3 cursor-pointer"
+              className="flex-1"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="flex-1 rounded-xl py-3 cursor-pointer text-white"
-              style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #2170e4 100%)' }}
+              variant="primary"
+              className="flex-1"
             >
               Sugerir
             </Button>

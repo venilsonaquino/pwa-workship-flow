@@ -88,18 +88,10 @@ export const SongCard = ({
         </div>
         <Button
           onClick={onPlayToggle}
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-10 w-10 flex items-center justify-center rounded-full shadow-lg active:scale-90 transition-transform cursor-pointer p-0",
-            isPlaying
-              ? "text-white"
-              : "text-primary shadow-sm"
-          )}
-          style={{
-            padding: 0,
-            backgroundColor: isPlaying ? '#7c3aed' : '#d6e4ff'
-          }}
+          variant={isPlaying ? 'primary' : 'secondary'}
+          size="md"
+          iconOnly
+          className="shadow-lg active:scale-90"
         >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>
             {isPlaying ? 'pause' : 'play_arrow'}
@@ -111,10 +103,9 @@ export const SongCard = ({
       <div className="space-y-1">
         <div className="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full"
+            className="h-full rounded-full vivid-gradient"
             style={{
-              width: `${song.progressPct}%`,
-              background: 'linear-gradient(135deg, #7c3aed 0%, #2170e4 100%)'
+              width: `${song.progressPct}%`
             }}
           />
         </div>
@@ -155,18 +146,9 @@ export const SongCard = ({
       {/* Heard Checkbox Action */}
       <Button
         onClick={handleHeardClick}
-        variant="ghost"
-        className={cn(
-          "w-full rounded-full font-label-lg flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer active:scale-95",
-          song.isHeard ? "text-white" : "text-primary"
-        )}
-        style={{
-          paddingTop: '8px',
-          paddingBottom: '8px',
-          marginTop: '4px',
-          backgroundColor: song.isHeard ? '#630ed4' : 'transparent',
-          border: song.isHeard ? 'none' : '1px solid #630ed4'
-        }}
+        variant={song.isHeard ? 'primary' : 'outline'}
+        isFullWidth
+        className="mt-1"
         leftIcon={
           <span
             className="material-symbols-outlined text-[20px]"

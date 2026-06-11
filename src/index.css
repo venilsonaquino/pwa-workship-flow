@@ -432,3 +432,12 @@ ul, ol {
   animation: fadeOutParticle 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
 }
 
+.vivid-gradient {
+  background: linear-gradient(135deg, #7c3aed 0%, #0058be 100%);
+}
+
+.soft-shadow {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+

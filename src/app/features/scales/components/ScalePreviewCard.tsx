@@ -160,13 +160,13 @@ export const ScalePreviewCard: React.FC = () => {
           Preview da Escala
         </h3>
         <Button
-          variant="secondary"
+          variant="outline"
           size="sm"
           onClick={handleShare}
-          style={{ padding: '8px' }}
-          className="rounded-xl border border-outline-variant/30 min-h-0 py-2"
-          leftIcon={<span className="material-symbols-outlined text-[20px]">share</span>}
-        />
+          iconOnly
+        >
+          <span className="material-symbols-outlined text-[20px]">share</span>
+        </Button>
       </div>
 
       <Card>
@@ -220,31 +220,15 @@ export const ScalePreviewCard: React.FC = () => {
       </Card>
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className="relative h-36" style={{ position: 'relative', height: '156px' }}>
-          <Button
-            onClick={handleExport}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #7c3aed 0%, #630ed4 100%)',
-              color: '#ffffff',
-              padding: '16px 24px',
-              borderRadius: '16px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            size="lg"
-            leftIcon={<span className="material-symbols-outlined text-[20px]">download</span>}
-          >
-            Exportar para WhatsApp
-          </Button>
-        </div>
+        <Button
+          onClick={handleExport}
+          variant="primary"
+          size="lg"
+          isFullWidth
+          leftIcon={<span className="material-symbols-outlined text-[20px]">download</span>}
+        >
+          Exportar para WhatsApp
+        </Button>
       </section>
 
     </section>

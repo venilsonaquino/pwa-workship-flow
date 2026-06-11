@@ -28,9 +28,9 @@ export const SongsFilterTabs = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                'rounded-full font-label-lg whitespace-nowrap transition-colors select-none cursor-pointer duration-200 active:scale-95',
+                'rounded-full font-label-lg whitespace-nowrap transition-all select-none cursor-pointer duration-200 active:scale-95',
                 isActive
-                  ? 'text-white shadow-md'
+                  ? 'text-white shadow-md vivid-gradient'
                   : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant'
               )}
               style={{
@@ -38,7 +38,6 @@ export const SongsFilterTabs = ({
                 paddingRight: '20px',
                 paddingTop: '8px',
                 paddingBottom: '8px',
-                background: isActive ? 'linear-gradient(135deg, #7c3aed 0%, #2170e4 100%)' : undefined,
               }}
             >
               {tab.label}

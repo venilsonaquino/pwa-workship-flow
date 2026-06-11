@@ -228,9 +228,9 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
           <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
             <Button
               onClick={() => setIsSuggestModalOpen(true)}
+              variant="primary"
               size="lg"
-              className="w-full text-white rounded-xl font-headline-md flex items-center justify-center shadow-lg active:scale-95 cursor-pointer"
-              style={{ paddingTop: '16px', paddingBottom: '16px', background: 'linear-gradient(135deg, #7c3aed 0%, #630ed4 100%)' }}
+              isFullWidth
               leftIcon={<span className="material-symbols-outlined">add</span>}
             >
               Sugerir música
