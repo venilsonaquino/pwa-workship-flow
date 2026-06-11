@@ -161,7 +161,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         <span className="material-symbols-outlined text-[24px]">arrow_back</span>
       </Button>
       <div className="flex-1">
-        <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl border-2 border-transparent shadow-sm transition-all duration-200"
+        <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl border-2 border-transparent focus-within:border-primary focus-within:bg-surface-container-lowest  transition-all duration-200"
           style={{ padding: '12px 16px' }}>
           <span className="material-symbols-outlined text-outline text-[20px]">search</span>
           <input
@@ -170,20 +170,19 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
             placeholder="Buscar em todas as abas..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
-              background: 'transparent',
-            }}
-            className="flex-1 bg-transparent text-on-surface font-body-lg text-body-lg border-none outline-none focus:bg-transparent focus:border-none focus:ring-0 focus:outline-none p-0"
+            style={{ caretColor: 'var(--primary)' }}
+            className="flex-1 bg-transparent text-on-surface font-body-lg text-body-lg border-none outline-none focus:outline-none focus:ring-0 focus:bg-transparent focus:border-none"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="w-6 h-6 flex items-center justify-center rounded-full bg-outline-variant/30 text-on-surface-variant hover:bg-outline-variant transition-colors"
+              style={{
+                backgroundColor: 'rgba(204, 195, 216, 0.3)',
+                color: 'var(--on-surface-variant)',
+              }}
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity shrink-0"
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              <span style={{ fontSize: '14px' }} className="material-symbols-outlined">close</span>
             </button>
           )}
         </div>
