@@ -27,15 +27,15 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'py-2 px-5 text-label-sm min-h-[36px]',
-  md: 'py-3 px-8 text-label-lg min-h-[44px]',
-  lg: 'py-4 px-10 text-label-lg min-h-[52px]',
+  sm: 'py-2 px-5 text-[12px] font-medium leading-[16px] min-h-[36px]',
+  md: 'py-3 px-8 text-[14px] font-semibold leading-[20px] min-h-[44px]',
+  lg: 'py-4 px-10 text-[14px] font-semibold leading-[20px] min-h-[52px]',
 };
 
 const iconSizeClasses: Record<ButtonSize, string> = {
-  sm: 'p-2 w-[36px] h-[36px] text-label-sm',
-  md: 'p-3 w-[44px] h-[44px] text-label-lg',
-  lg: 'p-4 w-[52px] h-[52px] text-label-lg',
+  sm: 'p-2 w-[36px] h-[36px] text-[12px] font-medium leading-[16px]',
+  md: 'p-3 w-[44px] h-[44px] text-[14px] font-semibold leading-[20px]',
+  lg: 'p-4 w-[52px] h-[52px] text-[14px] font-semibold leading-[20px]',
 };
 
 // ── Component ──────────────────────────────────────────────────────────────────
