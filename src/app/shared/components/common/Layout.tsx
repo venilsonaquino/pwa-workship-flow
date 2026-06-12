@@ -46,7 +46,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {pageHeader}
 
-      <div className={contentClassName ?? 'flex-1 scroll-container-native p-4 flex flex-col gap-4 pb-24 scrollbar-hide overflow-x-hidden'}>
+      <div className={contentClassName ?? 'flex-1 scroll-container-native flex flex-col gap-4 pb-24 scrollbar-hide overflow-x-hidden'}>
         {children}
       </div>
 

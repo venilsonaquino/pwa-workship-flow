@@ -183,7 +183,7 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </div>
 
-        <CardContent className="flex flex-col gap-6 p-6">
+        <CardContent className="flex flex-col gap-6 p-3">
           <BandMembersGrid members={MEMBERS_DATA} />
           <SetlistList songs={SONGS_DATA} />
         </CardContent>
