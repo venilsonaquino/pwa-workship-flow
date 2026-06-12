@@ -104,7 +104,7 @@ export const DropdownMenuContent = React.forwardRef<
     <div
       ref={handleRef}
       className={cn(
-        'absolute top-full mt-2 w-48 rounded-2xl border border-outline-variant bg-surface-container-lowest p-1.5 shadow-lg z-50 animate-fade-in-up focus:outline-none',
+        'absolute top-full mt-2 w-48 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest py-2 shadow-xl z-50 overflow-hidden animate-fade-in-up focus:outline-none',
         alignClass,
         className
       )}
@@ -136,7 +136,7 @@ export const DropdownMenuItem = React.forwardRef<
       type="button"
       onClick={handleClick}
       className={cn(
-        'w-full text-left px-3.5 py-2.5 text-body-md rounded-xl transition-all text-on-surface hover:bg-surface-container-low focus:bg-surface-container-low outline-none cursor-pointer select-none',
+        'w-full text-left px-6 py-3 text-label-lg transition-colors text-on-surface-variant hover:bg-surface-container-low outline-none cursor-pointer select-none',
         className
       )}
       {...props}

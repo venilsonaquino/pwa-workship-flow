@@ -6,7 +6,7 @@ export const ProfileSettings: React.FC = () => {
   const isDarkMode = theme === 'dark';
 
   return (
-    <div className="w-full" style={{ paddingLeft: 16, paddingRight: 16, marginTop: 24 }}>
+    <div className="w-full" style={{ marginTop: 24 }}>
       {/* ── Configurações da Conta ── */}
       <section style={{ marginBottom: 24 }}>
         <h3

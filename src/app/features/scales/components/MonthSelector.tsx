@@ -29,35 +29,42 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
   onMonthSelect,
 }) => {
   const currentObj = MONTHS.find((m) => m.value === selectedMonth) || MONTHS[1];
+  const [monthLabel, yearLabel] = currentObj.label.split(' ');
 
   return (
     <div className="relative">
       <section className="flex items-center justify-between w-full">
-        <h2 className="font-headline-md text-headline-md text-on-surface">
-          {currentObj.displayTitle}
-        </h2>
+        <div >
+          <h2 className="text-headline-md text-headline-md text-on-surface">
+            {currentObj.displayTitle}
+          </h2>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="group flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container rounded-full border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none active:scale-95 cursor-pointer"
-            style={{ padding: '8px 16px' }}
+            className="group flex items-center gap-3 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container px-5 py-3 rounded-3xl border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none active:scale-95 cursor-pointer"
+            style={{ padding: "6px 28px" }}
           >
-            <span className="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
-            <span>{currentObj.label}</span>
-            <span className="material-symbols-outlined text-[18px] transition-transform duration-200 group-data-[state=open]:rotate-180">
+            <span className="material-symbols-outlined text-primary">calendar_month</span>
+            <div className="flex flex-col items-start" >
+              <span className="text-on-surface">{monthLabel}</span>
+              <span className="text-on-surface-variant text-[10px]">{yearLabel}</span>
+            </div>
+            <span className="material-symbols-outlined text-on-surface-variant transition-transform duration-200 group-data-[state=open]:rotate-180">
               expand_more
             </span>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end">
             {MONTHS.map((month) => (
               <DropdownMenuItem
                 key={month.value}
                 onClick={() => onMonthSelect(month.value)}
+                style={{ padding: "6px 10px", textAlign: 'center' }}
                 className={
                   selectedMonth === month.value
-                    ? 'bg-primary/10 text-primary font-semibold text-center hover:bg-primary/15'
-                    : 'text-on-surface/80 hover:text-on-surface text-center'
+                    ? 'bg-primary/10 text-primary font-bold hover:bg-primary/15'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }
               >
                 {month.label}
