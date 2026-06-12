@@ -138,22 +138,26 @@ export const SongCard = ({
         </div>
       </div>
 
-      {/* Heard Checkbox Action */}
-      <Button
-        onClick={handleHeardClick}
-        variant={song.isHeard ? 'primary' : 'outline'}
-        isFullWidth
-        className="mt-1"
-        leftIcon={
-          <span
-            className={cn("material-symbols-outlined text-[20px]", song.isHeard && "icon-fill")}
-          >
+      <div className="flex items-center justify-between border-t border-outline-variant/20 pt-3 mt-1.5">
+        <button
+          onClick={handleHeardClick}
+          className={cn(
+            "text-label-sm font-semibold transition-all duration-200 flex items-center gap-1.5 select-none cursor-pointer hover:opacity-85 active:scale-95",
+            song.isHeard ? "text-success font-bold" : "text-on-surface-variant/70"
+          )}
+        >
+          <span className={cn("material-symbols-outlined text-[20px]", song.isHeard && "icon-fill")}>
             {song.isHeard ? 'check_circle' : 'radio_button_unchecked'}
           </span>
-        }
-      >
-        {song.isHeard ? 'ouvida' : 'Marcar como ouvida'}
-      </Button>
+          {song.isHeard ? 'Ouvida' : 'Marcar como ouvida'}
+        </button>
+
+        {song.suggestedBy && (
+          <span className="text-[11px] font-medium text-on-surface-variant/70">
+            Sugerida por <span className="text-on-surface font-semibold">{song.suggestedBy}</span>
+          </span>
+        )}
+      </div>
     </div>
   );
 };

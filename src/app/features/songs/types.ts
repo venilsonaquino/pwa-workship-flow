@@ -9,4 +9,5 @@ export interface Song {
   engagement: number;
   isHeard: boolean;
   image: string;
+  suggestedBy?: string;
 }

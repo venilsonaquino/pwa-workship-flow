@@ -17,7 +17,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 45,
     engagement: 85,
     isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
+    suggestedBy: 'Ana'
   },
   {
     id: '2',
@@ -29,7 +30,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 0,
     engagement: 32,
     isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
+    suggestedBy: 'Carlos'
   },
   {
     id: '3',
@@ -41,7 +43,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 15,
     engagement: 60,
     isHeard: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q',
+    suggestedBy: 'você'
   },
   {
     id: '4',
@@ -53,7 +56,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 38,
     engagement: 75,
     isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
+    suggestedBy: 'Mariana'
   },
   {
     id: '5',
@@ -65,7 +69,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 0,
     engagement: 18,
     isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
+    suggestedBy: 'você'
   },
   {
     id: '6',
@@ -77,7 +82,8 @@ const INITIAL_SONGS: Song[] = [
     progressPct: 100,
     engagement: 95,
     isHeard: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q'
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q',
+    suggestedBy: 'Pedro'
   }
 ];
 
@@ -128,7 +134,8 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
       progressPct: 0,
       engagement: 0,
       isHeard: false,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc'
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
+      suggestedBy: 'você'
     };
 
     setSongsList(prev => [newSong, ...prev]);

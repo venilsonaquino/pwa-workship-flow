@@ -204,19 +204,6 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </CardFooter>
       </Card>
-
-      <section className="flex flex-col gap-4">
-        <Button
-          onClick={handleExport}
-          variant="primary"
-          size="lg"
-          isFullWidth
-          leftIcon={<span className="material-symbols-outlined text-[20px]">download</span>}
-        >
-          Exportar para WhatsApp
-        </Button>
-      </section>
-
     </section>
   );
 };
