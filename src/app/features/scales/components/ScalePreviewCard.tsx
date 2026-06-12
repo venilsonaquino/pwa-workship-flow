@@ -42,22 +42,19 @@ interface BandMembersGridProps {
 const BandMembersGrid: React.FC<BandMembersGridProps> = ({ members }) => {
   return (
     <div
-      className="grid grid-cols-2 gap-4"
-      style={{ padding: 4 }}
+      className="grid grid-cols-2 gap-4 p-1"
     >
       {members.map((member, idx) => (
         <div
           key={idx}
-          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10"
-          style={{ padding: '12px', gap: '12px' }}
+          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3"
         >
           <span className="material-symbols-outlined text-primary text-[22px]">
             {member.icon}
           </span>
           <div>
             <p
-              className="text-label-sm font-label-sm"
-              style={{ color: 'var(--color-on-surface-variant)' }}
+              className="text-label-sm font-label-sm text-on-surface-variant"
             >
               {member.role}
             </p>
@@ -79,25 +76,19 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
   return (
     <div className='flex flex-col gap-3'>
       <p
-        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center"
-        style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)' }}
+        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-border"
       >
         Setlist
       </p>
-      <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <ul className="flex flex-col gap-3">
         {songs.map((song, idx) => (
           <li
             key={idx}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+            className="flex items-center justify-between"
           >
-            <div className="flex items-center" style={{ gap: '12px' }}>
+            <div className="flex items-center gap-3">
               <span
-                className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
-                style={{ width: '24px', height: '24px' }}
+                className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold w-6 h-6"
               >
                 {song.number}
               </span>
@@ -106,8 +97,7 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
               </p>
             </div>
             <span
-              className="text-label-sm"
-              style={{ color: 'var(--color-on-surface-variant)' }}
+              className="text-label-sm text-on-surface-variant"
             >
               {song.key}
             </span>
@@ -170,7 +160,7 @@ export const ScalePreviewCard: React.FC = () => {
       </div>
 
       <Card>
-        <div className="relative h-36" style={{ position: 'relative', height: '144px', marginBottom: '-1px', backgroundColor: 'var(--surface-container-lowest)' }}>
+        <div className="relative h-36 -mb-[1px] bg-surface-container-lowest">
           <img
             alt="Scale Background"
             className="w-full h-full object-cover"
@@ -178,13 +168,11 @@ export const ScalePreviewCard: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />
           <div
-            className="absolute"
-            style={{ bottom: '16px', left: '24px', display: 'flex', flexDirection: 'column', gap: '4px' }}
+            className="absolute bottom-4 left-6 flex flex-col gap-1"
           >
             <div>
               <span
-                className="bg-primary text-white text-[10px] rounded-full font-bold uppercase tracking-widest inline-block"
-                style={{ padding: '2px 8px', marginBottom: '4px' }}
+                className="bg-primary text-white text-[10px] rounded-full font-bold uppercase tracking-widest inline-block px-2 py-0.5 mb-1"
               >
                 Culto de Celebração
               </span>
@@ -195,13 +183,12 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </div>
 
-        <CardContent className="flex flex-col gap-6" style={{ padding: 24 }}>
+        <CardContent className="flex flex-col gap-6 p-6">
           <BandMembersGrid members={MEMBERS_DATA} />
           <SetlistList songs={SONGS_DATA} />
         </CardContent>
 
-        <CardFooter className="bg-surface-container-high border-t border-outline-variant/10 flex justify-between items-center"
-          style={{ padding: '12px 24px' }}>
+        <CardFooter className="bg-surface-container-high border-t border-outline-variant/10 flex justify-between items-center py-3 px-6">
           <p
             className="text-label-sm font-medium italic text-on-surface-variant"
           >
@@ -209,8 +196,7 @@ export const ScalePreviewCard: React.FC = () => {
           </p>
           <div className="flex items-center gap-1">
             <span
-              className="material-symbols-outlined text-primary text-[16px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+              className="material-symbols-outlined text-primary text-[16px] icon-fill"
             >
               favorite
             </span>
@@ -219,7 +205,7 @@ export const ScalePreviewCard: React.FC = () => {
         </CardFooter>
       </Card>
 
-      <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <section className="flex flex-col gap-4">
         <Button
           onClick={handleExport}
           variant="primary"

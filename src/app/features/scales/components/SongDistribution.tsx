@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@src/lib/utils';
 
 export interface EventCard {
   id: string;
@@ -53,7 +54,7 @@ const CARDS_DATA: EventCard[] = [
 
 export const SongDistribution: React.FC = () => {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <section className="flex flex-col gap-4">
       {/* Header Row */}
       <div className="flex items-center justify-between">
         <h3 className="font-headline-md text-headline-md text-on-surface">
@@ -70,34 +71,30 @@ export const SongDistribution: React.FC = () => {
 
       {/* Horizontal Carousel */}
       <div
-        className="flex overflow-x-auto scrollbar-hide snap-x"
-        style={{ paddingBottom: '16px', gap: '16px' }}
+        className="flex overflow-x-auto scrollbar-hide snap-x pb-4 gap-4"
       >
         {CARDS_DATA.map((card) => {
           const isPrimary = card.isActive;
           return (
             <div
               key={card.id}
-              className={`snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border ${isPrimary
+              className={`snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border p-5 flex flex-col gap-3 ${isPrimary
                   ? 'bg-primary text-on-primary border-primary shadow-lg'
                   : 'bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow'
                 }`}
-              style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}
             >
               {/* Day & Date info */}
               <p
-                className="text-label-sm font-label-sm uppercase tracking-wider"
-                style={{ opacity: isPrimary ? 0.8 : 1, color: isPrimary ? 'inherit' : 'var(--color-on-surface-variant)' }}
+                className={cn("text-label-sm font-label-sm uppercase tracking-wider", isPrimary ? "text-inherit opacity-80" : "text-on-surface-variant opacity-100")}
               >
                 {card.dayOfWeek} • {card.dateStr}
               </p>
 
               {/* Title and Song Count */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div className="flex flex-col gap-1">
                 <p className="font-bold text-lg leading-tight">{card.title}</p>
                 <p
-                  className="text-label-sm"
-                  style={{ opacity: isPrimary ? 0.9 : 1, color: isPrimary ? 'inherit' : 'var(--color-on-surface-variant)' }}
+                  className={cn("text-label-sm", isPrimary ? "text-inherit opacity-90" : "text-on-surface-variant opacity-100")}
                 >
                   {card.songsCount} Músicas
                 </p>
@@ -105,15 +102,16 @@ export const SongDistribution: React.FC = () => {
 
               {/* Volunteers list */}
               <div
-                className="flex"
-                style={{ paddingTop: '4px' }}
+                className="flex pt-1"
               >
                 {card.avatars.map((url, idx) => (
                   <div
                     key={idx}
-                    className={`w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high ${isPrimary ? 'border-primary' : 'border-surface-container-lowest'
-                      }`}
-                    style={idx > 0 ? { marginLeft: '-12px' } : undefined}
+                    className={cn(
+                      "w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high",
+                      isPrimary ? "border-primary" : "border-surface-container-lowest",
+                      idx > 0 && "-ml-3"
+                    )}
                   >
                     <img
                       alt={`Voluntário ${idx + 1}`}
@@ -124,11 +122,12 @@ export const SongDistribution: React.FC = () => {
                 ))}
                 {card.extraAvatarsCount !== undefined && card.extraAvatarsCount > 0 && (
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${isPrimary
+                    className={cn(
+                      "w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold -ml-3",
+                      isPrimary
                         ? 'border-primary bg-surface-container-lowest text-primary'
                         : 'border-surface-container-lowest bg-surface-container-lowest text-primary'
-                      }`}
-                    style={{ marginLeft: '-12px' }}
+                    )}
                   >
                     +{card.extraAvatarsCount}
                   </div>

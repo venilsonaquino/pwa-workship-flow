@@ -154,15 +154,13 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         onClick={handleSearchClose}
         variant="ghost"
         size="sm"
-        className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200"
-        style={{ padding: 0 }}
+        className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200 p-0"
         aria-label="Voltar"
       >
         <span className="material-symbols-outlined text-[24px]">arrow_back</span>
       </Button>
       <div className="flex-1">
-        <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl border-2 border-transparent focus-within:border-primary focus-within:bg-surface-container-lowest  transition-all duration-200"
-          style={{ padding: '12px 16px' }}>
+        <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl border-2 border-transparent focus-within:border-primary focus-within:bg-surface-container-lowest transition-all duration-200 py-3 px-4">
           <span className="material-symbols-outlined text-outline text-[20px]">search</span>
           <input
             autoFocus
@@ -170,19 +168,14 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
             placeholder="Buscar em todas as abas..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ caretColor: 'var(--primary)' }}
-            className="flex-1 bg-transparent text-on-surface font-body-lg text-body-lg border-none outline-none focus:outline-none focus:ring-0 focus:bg-transparent focus:border-none"
+            className="flex-1 bg-transparent text-on-surface font-body-lg text-body-lg border-none outline-none focus:outline-none focus:ring-0 focus:bg-transparent focus:border-none caret-primary"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              style={{
-                backgroundColor: 'rgba(204, 195, 216, 0.3)',
-                color: 'var(--on-surface-variant)',
-              }}
-              className="w-6 h-6 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity shrink-0"
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity shrink-0 bg-outline-variant/30 text-on-surface-variant"
             >
-              <span style={{ fontSize: '14px' }} className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined text-[14px]">close</span>
             </button>
           )}
         </div>
@@ -195,8 +188,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
       onClick={handleSearchToggle}
       variant="ghost"
       size="sm"
-      className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200"
-      style={{ padding: 0 }}
+      className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200 p-0"
       aria-label="Buscar música"
     >
       <span className="material-symbols-outlined text-[24px]">search</span>
@@ -205,8 +197,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
 
   return (
     <div
-      className="flex flex-col w-full bg-background text-on-background"
-      style={{ paddingBottom: '128px' }}
+      className="flex flex-col w-full bg-background text-on-background pb-32"
     >
       {/* Top AppBar */}
       {isSearchExpanded ? (
@@ -233,7 +224,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
 
         {/* Suggest Song Button Container */}
         {!searchQuery && (
-          <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+          <div className="px-5">
             <Button
               onClick={() => setIsSuggestModalOpen(true)}
               variant="primary"
@@ -252,8 +243,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         >
           {searchQuery && (
             <div
-              className="flex justify-between items-center"
-              style={{ marginBottom: '8px' }}
+              className="flex justify-between items-center mb-2"
             >
               <h2 className="text-label-lg font-semibold text-on-surface-variant">
                 Resultados da busca ({filteredSongs.length})
@@ -280,8 +270,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
             ))
           ) : (
             <div
-              className="flex flex-col items-center justify-center text-center opacity-60"
-              style={{ paddingTop: '48px', paddingBottom: '48px', gap: '8px' }}
+              className="flex flex-col items-center justify-center text-center opacity-60 py-12 gap-2"
             >
               <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
               <p className="text-body-lg font-medium">Nenhuma música encontrada</p>

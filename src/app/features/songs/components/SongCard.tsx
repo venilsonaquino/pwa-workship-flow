@@ -55,8 +55,7 @@ export const SongCard = ({
 
   return (
     <div
-      className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible"
-      style={{ padding: '20px' }}
+      className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible p-5"
     >
       {/* Celebration Particles */}
       {renderParticles('50%', '85%')}
@@ -74,8 +73,7 @@ export const SongCard = ({
             />
             {showCategoryBadge && (
               <span
-                className={cn("text-[9px] font-bold uppercase tracking-wider rounded-md shrink-0", getCategoryColorClass(song.category))}
-                style={{ paddingLeft: '6px', paddingRight: '6px', paddingTop: '2px', paddingBottom: '2px' }}
+                className={cn("text-[9px] font-bold uppercase tracking-wider rounded-md shrink-0 px-1.5 py-0.5", getCategoryColorClass(song.category))}
               >
                 {getCategoryLabel(song.category)}
               </span>
@@ -93,7 +91,7 @@ export const SongCard = ({
           iconOnly
           className="shadow-lg active:scale-90"
         >
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>
+          <span className="material-symbols-outlined icon-fill">
             {isPlaying ? 'pause' : 'play_arrow'}
           </span>
         </Button>
@@ -110,8 +108,7 @@ export const SongCard = ({
           />
         </div>
         <div
-          className="flex justify-between text-[10px] text-outline font-semibold"
-          style={{ marginTop: '2px' }}
+          className="flex justify-between text-[10px] text-outline font-semibold mt-[2px]"
         >
           <span>{song.progress}</span>
           <span>{song.duration}</span>
@@ -120,12 +117,10 @@ export const SongCard = ({
 
       {/* Band Engagement */}
       <div
-        className="border-t border-outline-variant/30"
-        style={{ paddingTop: '8px', marginTop: '4px' }}
+        className="border-t border-outline-variant/30 pt-2 mt-1"
       >
         <div
-          className="flex items-center justify-between"
-          style={{ marginBottom: '6px' }}
+          className="flex items-center justify-between mb-1.5"
         >
           <span className="text-label-sm text-on-surface-variant flex items-center gap-1">
             <span className="material-symbols-outlined text-[16px]">groups</span>
@@ -151,8 +146,7 @@ export const SongCard = ({
         className="mt-1"
         leftIcon={
           <span
-            className="material-symbols-outlined text-[20px]"
-            style={{ fontVariationSettings: song.isHeard ? '"FILL" 1' : '"FILL" 0' }}
+            className={cn("material-symbols-outlined text-[20px]", song.isHeard && "icon-fill")}
           >
             {song.isHeard ? 'check_circle' : 'radio_button_unchecked'}
           </span>

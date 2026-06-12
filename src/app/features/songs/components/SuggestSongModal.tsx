@@ -29,8 +29,7 @@ export const SuggestSongModal = ({
   return (
     <div className="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center p-4">
       <div 
-        className="bg-background rounded-2xl w-full max-w-sm flex flex-col gap-4 shadow-2xl border border-outline-variant/20"
-        style={{ padding: '24px' }}
+        className="bg-background rounded-2xl w-full max-w-sm flex flex-col gap-4 shadow-2xl border border-outline-variant/20 p-6"
       >
         <div className="flex justify-between items-center">
           <h3 className="text-headline-md font-bold text-on-surface">Sugerir Música</h3>
@@ -63,7 +62,7 @@ export const SuggestSongModal = ({
             />
           </div>
 
-          <div className="flex gap-3" style={{ marginTop: '12px' }}>
+          <div className="flex gap-3 mt-3">
             <Button
               type="button"
               variant="secondary"

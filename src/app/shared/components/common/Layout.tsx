@@ -34,7 +34,7 @@ export const Layout: React.FC<LayoutProps> = ({
   contentClassName,
 }) => {
   return (
-    <main className="flex flex-col h-screen bg-background overflow-hidden" style={{ padding: '10px' }}>
+    <main className="flex flex-col h-screen bg-background overflow-hidden p-2.5">
       {showHeader && !pageHeader && (
         <Header
           userName={userName}

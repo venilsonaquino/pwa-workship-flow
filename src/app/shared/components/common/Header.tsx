@@ -32,8 +32,7 @@ export const Header = ({
 
   return (
     <header
-      className="sticky top-0 z-[200] w-full h-16 bg-background flex items-center justify-between transition-colors duration-250"
-      style={{ paddingLeft: '16px', paddingRight: '16px' }}
+      className="sticky top-0 z-[200] w-full h-16 bg-background flex items-center justify-between transition-colors duration-250 px-4"
     >
       <div className="flex items-center select-none gap-4">
         <div
@@ -57,8 +56,7 @@ export const Header = ({
 
         <div className="flex flex-col text-left">
           <span
-            className="text-[10px] font-semibold text-on-surface-variant/70 dark:text-on-surface-variant/80 tracking-wider uppercase font-sans leading-none"
-            style={{ marginBottom: '2px' }}
+            className="text-[10px] font-semibold text-on-surface-variant/70 dark:text-on-surface-variant/80 tracking-wider uppercase font-sans leading-none mb-[2px]"
           >
             {greeting},
           </span>
@@ -83,8 +81,7 @@ export const Header = ({
           </span>
           {hasUnreadNotifications && (
             <span
-              className="absolute w-[9px] h-[9px] rounded-full bg-error border border-background animate-pulse"
-              style={{ top: '6px', right: '6px' }}
+              className="absolute w-[9px] h-[9px] rounded-full bg-error border border-background animate-pulse top-1.5 right-1.5"
             />
           )}
         </Button>

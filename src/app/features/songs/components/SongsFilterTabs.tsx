@@ -17,10 +17,9 @@ export const SongsFilterTabs = ({
 
   return (
     <section
-      className="flex flex-col"
-      style={{ paddingTop: '24px' }}
+      className="flex flex-col pt-6"
     >
-      <div className="flex gap-4 justify-between">
+      <div className="flex gap-4 justify-center">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -28,12 +27,11 @@ export const SongsFilterTabs = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                'rounded-full font-label-lg whitespace-nowrap transition-all select-none cursor-pointer duration-200 active:scale-95',
+                'rounded-full font-label-lg whitespace-nowrap transition-all select-none cursor-pointer duration-200 active:scale-95 py-1.5 px-2',
                 isActive
                   ? 'text-white shadow-md vivid-gradient'
                   : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant'
               )}
-              style={{ padding: '6px 8px' }}
             >
               {tab.label}
             </button>
