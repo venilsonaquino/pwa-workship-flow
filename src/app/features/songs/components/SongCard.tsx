@@ -142,7 +142,7 @@ export const SongCard = ({
         <button
           onClick={handleHeardClick}
           className={cn(
-            "text-label-sm font-semibold transition-all duration-200 flex items-center gap-1.5 select-none cursor-pointer hover:opacity-85 active:scale-95",
+            "text-[11px] font-semibold transition-all duration-200 flex items-center gap-1.5 select-none cursor-pointer hover:opacity-85 active:scale-95",
             song.isHeard ? "text-success font-bold" : "text-on-surface-variant/70"
           )}
         >
@@ -151,7 +151,6 @@ export const SongCard = ({
           </span>
           {song.isHeard ? 'Ouvida' : 'Marcar como ouvida'}
         </button>
-
         {song.suggestedBy && (
           <span className="text-[11px] font-medium text-on-surface-variant/70">
             Sugerida por <span className="text-on-surface font-semibold">{song.suggestedBy}</span>
