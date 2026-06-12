@@ -18,7 +18,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   avatarUrl = DEFAULT_AVATAR,
 }) => {
   return (
-    <div className="w-full" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="w-full flex flex-column">
       <ProfileHeader
         userName={userName}
         userEmail={userEmail}

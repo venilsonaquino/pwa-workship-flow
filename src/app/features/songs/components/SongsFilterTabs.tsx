@@ -16,11 +16,11 @@ export const SongsFilterTabs = ({
   ] as const;
 
   return (
-    <section 
+    <section
       className="flex flex-col"
-      style={{ paddingTop: '24px', paddingLeft: '20px', paddingRight: '20px' }}
+      style={{ paddingTop: '24px' }}
     >
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
+      <div className="flex gap-4 justify-between">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -33,12 +33,7 @@ export const SongsFilterTabs = ({
                   ? 'text-white shadow-md vivid-gradient'
                   : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant'
               )}
-              style={{
-                paddingLeft: '20px',
-                paddingRight: '20px',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-              }}
+              style={{ padding: '6px 8px' }}
             >
               {tab.label}
             </button>

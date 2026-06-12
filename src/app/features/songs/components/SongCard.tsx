@@ -158,7 +158,7 @@ export const SongCard = ({
           </span>
         }
       >
-        {song.isHeard ? 'Já ouvi' : 'Marcar como ouvida'}
+        {song.isHeard ? 'ouvida' : 'Marcar como ouvida'}
       </Button>
     </div>
   );

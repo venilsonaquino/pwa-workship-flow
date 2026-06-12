@@ -21,7 +21,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'vivid-gradient text-white soft-shadow hover:opacity-90',
   secondary: 'bg-primary-container/10 text-primary hover:bg-primary-container/20',
-  outline: 'border-[1.5px] border-outline-variant text-on-surface bg-transparent hover:bg-surface-variant/20',
+  outline: 'border-primary bg-transparent text-primary hover:bg-primary/5',
   ghost: 'bg-transparent text-primary hover:bg-primary/5',
   danger: 'bg-error text-white hover:brightness-110 hover:shadow-md',
 };
@@ -56,7 +56,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 border-none rounded-full font-semibold font-sans cursor-pointer transition-all duration-150 ease-in-out select-none -webkit-user-select-none touch-manipulation whitespace-nowrap active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 border border-solid border-transparent rounded-full font-semibold font-sans cursor-pointer transition-all duration-150 ease-in-out select-none -webkit-user-select-none touch-manipulation whitespace-nowrap active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
         iconOnly ? iconSizeClasses[size] : sizeClasses[size],
         isFullWidth ? 'w-full' : 'w-auto',
