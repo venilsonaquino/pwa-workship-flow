@@ -55,17 +55,12 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
             </span>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-48">
             {MONTHS.map((month) => (
               <DropdownMenuItem
                 key={month.value}
                 onClick={() => onMonthSelect(month.value)}
-                style={{ padding: "6px 10px", textAlign: 'center' }}
-                className={
-                  selectedMonth === month.value
-                    ? 'bg-primary/10 text-primary font-bold hover:bg-primary/15'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }
+                active={selectedMonth === month.value}
               >
                 {month.label}
               </DropdownMenuItem>

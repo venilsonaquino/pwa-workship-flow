@@ -104,7 +104,7 @@ export const DropdownMenuContent = React.forwardRef<
     <div
       ref={handleRef}
       className={cn(
-        'absolute top-full mt-2 w-48 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest py-2 shadow-xl z-50 overflow-hidden animate-fade-in-up focus:outline-none',
+        'absolute top-full mt-2 w-48 z-50 animate-fade-in-up focus:outline-none dropdown-menu-custom-content',
         alignClass,
         className
       )}
@@ -119,8 +119,8 @@ DropdownMenuContent.displayName = 'DropdownMenuContent';
 
 export const DropdownMenuItem = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, onClick, children, ...props }, ref) => {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }
+>(({ className, onClick, children, active, ...props }, ref) => {
   const context = useContext(DropdownContext);
   if (!context) throw new Error('DropdownMenuItem must be used within a DropdownMenu');
   const { setIsOpen } = context;
@@ -136,7 +136,8 @@ export const DropdownMenuItem = React.forwardRef<
       type="button"
       onClick={handleClick}
       className={cn(
-        'w-full text-left px-6 py-3 text-label-lg transition-colors text-on-surface-variant hover:bg-surface-container-low outline-none cursor-pointer select-none',
+        'dropdown-item-custom',
+        active && 'active',
         className
       )}
       {...props}
