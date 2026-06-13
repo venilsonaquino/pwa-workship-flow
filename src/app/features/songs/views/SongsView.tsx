@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
-import SuggestSongModal from '../components/SuggestSongModal';
+import SongSearchView from './SongSearchView';
 import EngagementDrawer from '../components/EngagementDrawer';
 import Button from '@shared/components/ui/button';
 import { PageHeader } from '@shared/components';
@@ -97,7 +97,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [songsList, setSongsList] = useState<Song[]>(INITIAL_SONGS);
-  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+  const [showSearchView, setShowSearchView] = useState(false);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
 
@@ -149,7 +149,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
       id: Math.random().toString(36).slice(2, 9),
       title,
       artist,
-      category: activeCategoryTab,
+      category: 'sugestao',
       duration: '4:15',
       progress: '0:00',
       progressPct: 0,
@@ -160,7 +160,6 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
     };
 
     setSongsList(prev => [newSong, ...prev]);
-    setIsSuggestModalOpen(false);
   };
 
   // Filter songs based on search and active tab
@@ -223,6 +222,16 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
     </Button>
   );
 
+  if (showSearchView) {
+    return (
+      <SongSearchView
+        onBack={() => setShowSearchView(false)}
+        onSuggest={handleSuggestSubmit}
+        existingSongs={songsList}
+      />
+    );
+  }
+
   return (
     <div
       className="flex flex-col w-full bg-background text-on-background pb-32"
@@ -254,7 +263,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         {!searchQuery && (
           <div className="px-5">
             <Button
-              onClick={() => setIsSuggestModalOpen(true)}
+              onClick={() => setShowSearchView(true)}
               variant="primary"
               size="lg"
               isFullWidth
@@ -309,12 +318,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         </section>
       </main>
 
-      {/* Suggest Modal Popup */}
-      <SuggestSongModal
-        isOpen={isSuggestModalOpen}
-        onClose={() => setIsSuggestModalOpen(false)}
-        onSubmit={handleSuggestSubmit}
-      />
+      {/* Suggest Modal Popup is now managed in SongSearchView */}
 
       {/* Team Engagement Drawer */}
       <EngagementDrawer
