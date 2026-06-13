@@ -4,8 +4,7 @@ import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SongSearchView from './SongSearchView';
 import EngagementDrawer from '../components/EngagementDrawer';
-import Button from '@shared/components/ui/button';
-import { PageHeader } from '@shared/components';
+import { PageHeader, Button, FloatingActionButton } from '@shared/components';
 import type { Song } from '../types';
 
 const INITIAL_SONGS: Song[] = [
@@ -273,20 +272,6 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
               />
             )}
 
-            {/* Suggest Song Button Container */}
-            {!searchQuery && (
-              <div className="px-5">
-                <Button
-                  onClick={() => setShowSearchView(true)}
-                  variant="primary"
-                  size="lg"
-                  isFullWidth
-                  leftIcon={<span className="material-symbols-outlined">add</span>}
-                >
-                  Sugerir música
-                </Button>
-              </div>
-            )}
 
             {/* Music List Section */}
             <section
@@ -338,6 +323,17 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
             song={selectedSongForDrawer}
             onClose={() => setSelectedSongForDrawer(null)}
           />
+
+          {/* Floating Action Button (FAB) */}
+          <AnimatePresence>
+            {!searchQuery && activeCategoryTab === 'sugestao' && (
+              <FloatingActionButton
+                onClick={() => setShowSearchView(true)}
+                icon={<span className="material-symbols-outlined text-[24px]">add</span>}
+                label="Sugerir músicas"
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>

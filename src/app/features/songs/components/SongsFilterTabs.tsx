@@ -15,11 +15,11 @@ export const SongsFilterTabs = ({
     { id: 'repertorio', label: 'Repertórios' },
   ] as const;
 
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
+
   return (
-    <section
-      className="flex flex-col pt-6"
-    >
-      <div className="flex gap-2 justify-center">
+    <section className="flex flex-col pt-6 px-5">
+      <div className="relative flex w-full border-b border-outline-variant/20">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -27,16 +27,25 @@ export const SongsFilterTabs = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                'rounded-full font-label-lg whitespace-nowrap transition-all select-none cursor-pointer duration-200 active:scale-95 py-1.5 px-3.5',
+                'flex-1 text-center font-label-lg whitespace-nowrap select-none cursor-pointer py-3 transition-colors duration-200 focus:outline-none active:scale-[0.98]',
                 isActive
-                  ? 'text-white shadow-md vivid-gradient'
-                  : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant'
+                  ? 'text-primary font-bold'
+                  : 'text-on-surface-variant hover:text-on-surface'
               )}
             >
               {tab.label}
             </button>
           );
         })}
+        <div
+          className="absolute bottom-0 h-0.5 bg-primary"
+          style={{
+            width: `${100 / tabs.length}%`,
+            left: 0,
+            transform: `translateX(${activeIndex * 100}%)`,
+            transition: 'transform 200ms ease-in-out',
+          }}
+        />
       </div>
     </section>
   );
