@@ -17,17 +17,17 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 
   return (
     <motion.button
-      initial={{ scale: 0, opacity: 0, y: 20 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0, opacity: 0, y: 20 }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      initial={{ opacity: 0, scale: 0.8, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.8, y: 12 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
       className={cn(
-        'fixed bottom-24 right-6 z-40 flex items-center justify-center vivid-gradient text-white shadow-[0_8px_25px_rgba(124,58,237,0.4)] transition-all select-none cursor-pointer',
+        'fixed bottom-24 right-6 z-40 flex items-center justify-center vivid-gradient text-white shadow-[0_6px_20px_rgba(124,58,237,0.3)] select-none cursor-pointer',
         isExtended 
-          ? 'h-14 px-6 rounded-full gap-2 text-[14px] font-semibold tracking-wide font-label-lg' 
-          : 'w-14 h-14 rounded-full',
+          ? 'h-12 px-4 rounded-full gap-1.5 text-[12px] font-semibold tracking-wide font-label-sm' 
+          : 'w-12 h-12 rounded-full',
         className
       )}
       {...props}

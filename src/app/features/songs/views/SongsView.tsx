@@ -329,8 +329,8 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
             {!searchQuery && activeCategoryTab === 'sugestao' && (
               <FloatingActionButton
                 onClick={() => setShowSearchView(true)}
-                icon={<span className="material-symbols-outlined text-[24px]">add</span>}
-                label="Sugerir músicas"
+                icon={<span className="material-symbols-outlined text-[20px]">add</span>}
+                label="Sugerir música"
               />
             )}
           </AnimatePresence>
