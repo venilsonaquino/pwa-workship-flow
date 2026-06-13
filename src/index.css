@@ -55,6 +55,13 @@
   --inverse-primary: #d2bbff;
   --surface-tint: #732ee4;
 
+  --primary-fixed: #eaddff;
+  --secondary-fixed: #d8e2ff;
+  --tertiary-fixed: #ffd8e7;
+  --on-primary-fixed: #25005a;
+  --on-secondary-fixed: #001a42;
+  --on-tertiary-fixed: #3d0026;
+
   --shadow-color-sm: hsla(220, 20%, 10%, 0.08);
   --shadow-color-sm-inner: hsla(220, 20%, 10%, 0.06);
   --shadow-color-md: hsla(220, 20%, 10%, 0.07);

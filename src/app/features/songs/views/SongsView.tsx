@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SuggestSongModal from '../components/SuggestSongModal';
+import EngagementDrawer from '../components/EngagementDrawer';
 import Button from '@shared/components/ui/button';
 import { PageHeader } from '@shared/components';
 import type { Song } from '../types';
@@ -98,6 +99,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
   const [songsList, setSongsList] = useState<Song[]>(INITIAL_SONGS);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
+  const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
 
   const handleSearchToggle = () => {
     setIsSearchExpanded(!isSearchExpanded);
@@ -117,9 +119,28 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
 
   const toggleHeardStatus = (songId: string) => {
     setSongsList(prev =>
-      prev.map(song =>
-        song.id === songId ? { ...song, isHeard: !song.isHeard } : song
-      )
+      prev.map(song => {
+        if (song.id === songId) {
+          const nextIsHeard = !song.isHeard;
+          const nextEngagement = nextIsHeard
+            ? Math.min(100, song.engagement + 15)
+            : Math.max(0, song.engagement - 15);
+          
+          const updatedSong = {
+            ...song,
+            isHeard: nextIsHeard,
+            engagement: nextEngagement,
+          };
+
+          // Also update the drawer state if this song is currently open in the drawer
+          setSelectedSongForDrawer(current => 
+            current?.id === songId ? updatedSong : current
+          );
+
+          return updatedSong;
+        }
+        return song;
+      })
     );
   };
 
@@ -272,6 +293,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
                 isPlaying={playingSongId === song.id}
                 onPlayToggle={() => togglePlaySong(song.id)}
                 onHeardToggle={() => toggleHeardStatus(song.id)}
+                onEngagementClick={() => setSelectedSongForDrawer(song)}
                 showCategoryBadge={!!searchQuery}
               />
             ))
@@ -292,6 +314,13 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
         isOpen={isSuggestModalOpen}
         onClose={() => setIsSuggestModalOpen(false)}
         onSubmit={handleSuggestSubmit}
+      />
+
+      {/* Team Engagement Drawer */}
+      <EngagementDrawer
+        isOpen={!!selectedSongForDrawer}
+        song={selectedSongForDrawer}
+        onClose={() => setSelectedSongForDrawer(null)}
       />
     </div>
   );

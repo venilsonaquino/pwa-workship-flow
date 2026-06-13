@@ -54,6 +54,12 @@ export default {
         'on-tertiary': colorWithOpacity('--on-tertiary'),
         'inverse-primary': colorWithOpacity('--inverse-primary'),
         'surface-tint': colorWithOpacity('--surface-tint'),
+        'primary-fixed': colorWithOpacity('--primary-fixed'),
+        'secondary-fixed': colorWithOpacity('--secondary-fixed'),
+        'tertiary-fixed': colorWithOpacity('--tertiary-fixed'),
+        'on-primary-fixed': colorWithOpacity('--on-primary-fixed'),
+        'on-secondary-fixed': colorWithOpacity('--on-secondary-fixed'),
+        'on-tertiary-fixed': colorWithOpacity('--on-tertiary-fixed'),
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'Roboto', 'system-ui', '-apple-system', 'sans-serif'],

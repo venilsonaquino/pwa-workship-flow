@@ -8,6 +8,7 @@ export interface SongCardProps {
   isPlaying: boolean;
   onPlayToggle: () => void;
   onHeardToggle: () => void;
+  onEngagementClick?: () => void;
   showCategoryBadge?: boolean;
 }
 
@@ -16,6 +17,7 @@ export const SongCard = ({
   isPlaying,
   onPlayToggle,
   onHeardToggle,
+  onEngagementClick,
   showCategoryBadge = false,
 }: SongCardProps) => {
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
@@ -117,7 +119,9 @@ export const SongCard = ({
 
       {/* Band Engagement */}
       <div
-        className="border-t border-outline-variant/30 pt-2 mt-1"
+        onClick={onEngagementClick}
+        className="border-t border-outline-variant/30 pt-2 mt-1 cursor-pointer hover:bg-surface-container-low/40 rounded-2xl px-2 -mx-2 transition-all duration-200"
+        title="Ver engajamento da equipe"
       >
         <div
           className="flex items-center justify-between mb-1.5"
