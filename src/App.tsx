@@ -1,4 +1,5 @@
 import { useState, Suspense } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
@@ -43,15 +44,26 @@ function App() {
         }
         onNotificationClick={() => console.info('[Header] Notifications clicked')}
       >
-        {activeTab === 'profile' ? (
-          <ProfileView />
-        ) : activeTab === 'songs' ? (
-          <SongsView onBack={handleBack} />
-        ) : activeTab === 'scales' ? (
-          <ScalesPreviewView />
-        ) : (
-          <UserListView />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+          >
+            {activeTab === 'profile' ? (
+              <ProfileView />
+            ) : activeTab === 'songs' ? (
+              <SongsView onBack={handleBack} />
+            ) : activeTab === 'scales' ? (
+              <ScalesPreviewView />
+            ) : (
+              <UserListView />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </Layout>
     </Suspense>
   );

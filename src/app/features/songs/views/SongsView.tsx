@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SongSearchView from './SongSearchView';
@@ -222,111 +223,124 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
     </Button>
   );
 
-  if (showSearchView) {
-    return (
-      <SongSearchView
-        onBack={() => setShowSearchView(false)}
-        onSuggest={handleSuggestSubmit}
-        existingSongs={songsList}
-      />
-    );
-  }
-
   return (
-    <div
-      className="flex flex-col w-full bg-background text-on-background pb-32"
-    >
-      {/* Top AppBar */}
-      {isSearchExpanded ? (
-        <PageHeader title="Buscar">
-          {searchBar}
-        </PageHeader>
-      ) : (
-        <PageHeader
-          title="Musicas"
-          onBack={onBack}
-          rightAction={searchButton}
-        />
-      )}
-
-      {/* Main Body */}
-      <main className="flex flex-col gap-6">
-        {/* Quick Filters / Segmented Tabs Row */}
-        {!searchQuery && (
-          <SongsFilterTabs
-            activeTab={activeCategoryTab}
-            onTabChange={setActiveCategoryTab}
-          />
-        )}
-
-        {/* Suggest Song Button Container */}
-        {!searchQuery && (
-          <div className="px-5">
-            <Button
-              onClick={() => setShowSearchView(true)}
-              variant="primary"
-              size="lg"
-              isFullWidth
-              leftIcon={<span className="material-symbols-outlined">add</span>}
-            >
-              Sugerir música
-            </Button>
-          </div>
-        )}
-
-        {/* Music List Section */}
-        <section
-          className="flex flex-col gap-4"
+    <AnimatePresence mode="wait" initial={false}>
+      {showSearchView ? (
+        <motion.div
+          key="search-view"
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
         >
-          {searchQuery && (
-            <div
-              className="flex justify-between items-center mb-2"
-            >
-              <h2 className="text-label-lg font-semibold text-on-surface-variant">
-                Resultados da busca ({filteredSongs.length})
-              </h2>
-              <button
-                onClick={handleSearchClose}
-                className="text-label-sm font-bold text-primary hover:underline cursor-pointer"
-              >
-                Limpar busca
-              </button>
-            </div>
-          )}
-
-          {filteredSongs.length > 0 ? (
-            filteredSongs.map((song) => (
-              <SongCard
-                key={song.id}
-                song={song}
-                isPlaying={playingSongId === song.id}
-                onPlayToggle={() => togglePlaySong(song.id)}
-                onHeardToggle={() => toggleHeardStatus(song.id)}
-                onEngagementClick={() => setSelectedSongForDrawer(song)}
-                showCategoryBadge={!!searchQuery}
-              />
-            ))
+          <SongSearchView
+            onBack={() => setShowSearchView(false)}
+            onSuggest={handleSuggestSubmit}
+            existingSongs={songsList}
+          />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="songs-list"
+          initial={{ x: '-30%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '-30%' }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+          className="flex flex-col w-full bg-background text-on-background pb-32"
+        >
+          {/* Top AppBar */}
+          {isSearchExpanded ? (
+            <PageHeader title="Buscar">
+              {searchBar}
+            </PageHeader>
           ) : (
-            <div
-              className="flex flex-col items-center justify-center text-center opacity-60 py-12 gap-2"
-            >
-              <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
-              <p className="text-body-lg font-medium">Nenhuma música encontrada</p>
-              <p className="text-label-sm">Tente buscar por outro termo ou limpe os filtros.</p>
-            </div>
+            <PageHeader
+              title="Musicas"
+              onBack={onBack}
+              rightAction={searchButton}
+            />
           )}
-        </section>
-      </main>
 
-      {/* Suggest Modal Popup is now managed in SongSearchView */}
+          {/* Main Body */}
+          <main className="flex flex-col gap-6">
+            {/* Quick Filters / Segmented Tabs Row */}
+            {!searchQuery && (
+              <SongsFilterTabs
+                activeTab={activeCategoryTab}
+                onTabChange={setActiveCategoryTab}
+              />
+            )}
 
-      {/* Team Engagement Drawer */}
-      <EngagementDrawer
-        isOpen={!!selectedSongForDrawer}
-        song={selectedSongForDrawer}
-        onClose={() => setSelectedSongForDrawer(null)}
-      />
-    </div>
+            {/* Suggest Song Button Container */}
+            {!searchQuery && (
+              <div className="px-5">
+                <Button
+                  onClick={() => setShowSearchView(true)}
+                  variant="primary"
+                  size="lg"
+                  isFullWidth
+                  leftIcon={<span className="material-symbols-outlined">add</span>}
+                >
+                  Sugerir música
+                </Button>
+              </div>
+            )}
+
+            {/* Music List Section */}
+            <section
+              className="flex flex-col gap-4"
+            >
+              {searchQuery && (
+                <div
+                  className="flex justify-between items-center mb-2"
+                >
+                  <h2 className="text-label-lg font-semibold text-on-surface-variant">
+                    Resultados da busca ({filteredSongs.length})
+                  </h2>
+                  <button
+                    onClick={handleSearchClose}
+                    className="text-label-sm font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    Limpar busca
+                  </button>
+                </div>
+              )}
+
+              {filteredSongs.length > 0 ? (
+                filteredSongs.map((song) => (
+                  <SongCard
+                    key={song.id}
+                    song={song}
+                    isPlaying={playingSongId === song.id}
+                    onPlayToggle={() => togglePlaySong(song.id)}
+                    onHeardToggle={() => toggleHeardStatus(song.id)}
+                    onEngagementClick={() => setSelectedSongForDrawer(song)}
+                    showCategoryBadge={!!searchQuery}
+                  />
+                ))
+              ) : (
+                <div
+                  className="flex flex-col items-center justify-center text-center opacity-60 py-12 gap-2"
+                >
+                  <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
+                  <p className="text-body-lg font-medium">Nenhuma música encontrada</p>
+                  <p className="text-label-sm">Tente buscar por outro termo ou limpe os filtros.</p>
+                </div>
+              )}
+            </section>
+          </main>
+
+          {/* Team Engagement Drawer */}
+          <EngagementDrawer
+            isOpen={!!selectedSongForDrawer}
+            song={selectedSongForDrawer}
+            onClose={() => setSelectedSongForDrawer(null)}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
