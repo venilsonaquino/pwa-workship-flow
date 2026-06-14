@@ -8,7 +8,7 @@ export interface SongCardProps {
   isPlaying: boolean;
   onPlayToggle: () => void;
   onHeardToggle: () => void;
-  onEngagementClick?: () => void;
+  onClick?: () => void;
   showCategoryBadge?: boolean;
 }
 
@@ -17,12 +17,13 @@ export const SongCard = ({
   isPlaying,
   onPlayToggle,
   onHeardToggle,
-  onEngagementClick,
+  onClick,
   showCategoryBadge = false,
 }: SongCardProps) => {
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
 
-  const handleHeardClick = () => {
+  const handleHeardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!song.isHeard) {
       triggerCelebration();
     }
@@ -57,7 +58,8 @@ export const SongCard = ({
 
   return (
     <div
-      className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible p-5"
+      onClick={onClick}
+      className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible p-5 cursor-pointer hover:bg-surface-container-low/20 transition-all duration-200 active:scale-[0.995]"
     >
       {/* Celebration Particles */}
       {renderParticles('50%', '85%')}
@@ -87,7 +89,10 @@ export const SongCard = ({
           />
         </div>
         <Button
-          onClick={onPlayToggle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPlayToggle();
+          }}
           variant={isPlaying ? 'primary' : 'secondary'}
           size="md"
           iconOnly
@@ -119,9 +124,7 @@ export const SongCard = ({
 
       {/* Band Engagement */}
       <div
-        onClick={onEngagementClick}
-        className="border-t border-outline-variant/30 pt-2 mt-1 cursor-pointer hover:bg-surface-container-low/40 rounded-2xl px-2 -mx-2 transition-all duration-200"
-        title="Ver engajamento da equipe"
+        className="border-t border-outline-variant/30 pt-2 mt-1 px-2 -mx-2"
       >
         <div
           className="flex items-center justify-between mb-1.5"

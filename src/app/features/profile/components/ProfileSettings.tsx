@@ -64,7 +64,7 @@ export const ProfileSettings: React.FC = () => {
         >
           Gestão do Ministério
         </h3>
-        <div className="grid grid-cols-2" style={{ gap: 12 }}>
+        <div className="grid" style={{ gap: 12 }}>
           {/* Equipe */}
           <div
             className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
@@ -72,30 +72,12 @@ export const ProfileSettings: React.FC = () => {
           >
             <div
               className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white"
-              style={{ marginBottom: 12 }}
             >
               <span className="material-symbols-outlined icon-fill">groups</span>
             </div>
             <div className="text-left">
               <p className="text-label-lg font-semibold text-on-surface">Equipe</p>
               <p className="text-label-sm text-on-surface-variant">24 Integrantes</p>
-            </div>
-          </div>
-
-          {/* Equipamento */}
-          <div
-            className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
-            style={{ padding: 20 }}
-          >
-            <div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white"
-              style={{ marginBottom: 12 }}
-            >
-              <span className="material-symbols-outlined icon-fill">inventory_2</span>
-            </div>
-            <div className="text-left">
-              <p className="text-label-lg font-semibold text-on-surface">Equipamento</p>
-              <p className="text-label-sm text-on-surface-variant">12 Ativos</p>
             </div>
           </div>
         </div>

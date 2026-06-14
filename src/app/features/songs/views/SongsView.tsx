@@ -301,7 +301,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
                     isPlaying={playingSongId === song.id}
                     onPlayToggle={() => togglePlaySong(song.id)}
                     onHeardToggle={() => toggleHeardStatus(song.id)}
-                    onEngagementClick={() => setSelectedSongForDrawer(song)}
+                    onClick={() => setSelectedSongForDrawer(song)}
                     showCategoryBadge={!!searchQuery}
                   />
                 ))

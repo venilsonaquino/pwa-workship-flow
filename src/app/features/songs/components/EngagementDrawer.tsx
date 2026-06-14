@@ -91,6 +91,11 @@ export const EngagementDrawer = ({
 
   if (!isOpen || !song) return null;
 
+  const searchTerms = encodeURIComponent(`${song.title} ${song.artist}`);
+  const cifraclubUrl = `https://www.cifraclub.com.br/?q=${searchTerms}`;
+  const youtubeUrl = `https://www.youtube.com/results?search_query=${searchTerms}`;
+  const letrasUrl = `https://www.letras.mus.br/?q=${searchTerms}`;
+
   return (
     <>
       {/* Backdrop */}
@@ -123,47 +128,111 @@ export const EngagementDrawer = ({
           </button>
         </div>
 
-        {/* Member List */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 pb-12">
-          {BAND_MEMBERS.map((member) => {
-            const hasHeard =
-              member.status === 'heard' ||
-              (member.status === 'dynamic' && song.isHeard);
+        {/* Member List & External Links */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 pb-24">
+          <div className="space-y-4">
+            {BAND_MEMBERS.map((member) => {
+              const hasHeard =
+                member.status === 'heard' ||
+                (member.status === 'dynamic' && song.isHeard);
 
-            return (
-              <div key={member.name} className="flex items-center justify-between">
+              return (
+                <div key={member.name} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-body-lg ${member.avatarBgClass} ${member.avatarTextClass}`}
+                    >
+                      {member.initials}
+                    </div>
+                    <div>
+                      <p className="font-label-lg text-on-surface">{member.name}</p>
+                      <p className="text-label-sm text-on-surface-variant">{member.role}</p>
+                    </div>
+                  </div>
+
+                  {hasHeard ? (
+                    <div className="flex items-center gap-1 text-primary">
+                      <span
+                        className="material-symbols-outlined text-[20px] icon-fill"
+                      >
+                        check_circle
+                      </span>
+                      <span className="text-label-sm">Já ouvi</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-outline">
+                      <span className="material-symbols-outlined text-[20px]">
+                        schedule
+                      </span>
+                      <span className="text-label-sm">Pendente</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* External Links Section */}
+          <div className="pt-6 border-t border-outline-variant/30">
+            <h3 className="text-label-sm font-bold text-outline mb-4 tracking-wider uppercase">
+              Links Externos
+            </h3>
+            <div className="space-y-3">
+              <a
+                href={cifraclubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]"
+              >
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-body-lg ${member.avatarBgClass} ${member.avatarTextClass}`}
-                  >
-                    {member.initials}
+                  <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+                    <span className="material-symbols-outlined text-[20px]">music_note</span>
                   </div>
                   <div>
-                    <p className="font-label-lg text-on-surface">{member.name}</p>
-                    <p className="text-label-sm text-on-surface-variant">{member.role}</p>
+                    <p className="font-label-lg text-on-surface">Cifraclub</p>
+                    <p className="text-[10px] text-outline">Cifras e acordes</p>
                   </div>
                 </div>
+                <span className="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
+              </a>
 
-                {hasHeard ? (
-                  <div className="flex items-center gap-1 text-primary">
-                    <span
-                      className="material-symbols-outlined text-[20px] icon-fill"
-                    >
-                      check_circle
-                    </span>
-                    <span className="text-label-sm">Já ouvi</span>
+              <a
+                href={youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center text-error">
+                    <span className="material-symbols-outlined text-[20px]">play_circle</span>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-1 text-outline">
-                    <span className="material-symbols-outlined text-[20px]">
-                      schedule
-                    </span>
-                    <span className="text-label-sm">Pendente</span>
+                  <div>
+                    <p className="font-label-lg text-on-surface">YouTube</p>
+                    <p className="text-[10px] text-outline">Vídeo aula e clipe</p>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+                <span className="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
+              </a>
+
+              <a
+                href={letrasUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[20px]">lyrics</span>
+                  </div>
+                  <div>
+                    <p className="font-label-lg text-on-surface">Letras.mus.br</p>
+                    <p className="text-[10px] text-outline">Letra completa</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </>
