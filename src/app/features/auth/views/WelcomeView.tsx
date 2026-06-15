@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { type UserRole } from '@shared/hooks';
+import { AuthLayout } from '../components';
 
 interface WelcomeViewProps {
   onSelectRole: (role: UserRole) => void;
@@ -12,17 +13,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole }) => {
   };
 
   return (
-    <div className="bg-[#131313] text-[#e5e2e1] font-sans min-h-screen flex flex-col relative overflow-hidden select-none">
-      {/* Ambient Background 'The Light of the Stage' */}
-      <div className="absolute inset-0 z-0 flex items-start justify-center pt-20 pointer-events-none">
-        <div
-          className="w-[150vw] h-[150vw] md:w-[80vw] md:h-[80vw] max-w-4xl max-h-4xl rounded-full blur-3xl opacity-80"
-          style={{
-            background: 'radial-gradient(circle at center, rgba(124, 77, 255, 0.15) 0%, rgba(19, 19, 19, 0) 70%)',
-          }}
-        />
-      </div>
-
+    <AuthLayout glowType="welcome">
       {/* Main Content Canvas */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-8 w-full max-w-md mx-auto">
         
@@ -121,7 +112,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole }) => {
         </motion.div>
 
       </main>
-    </div>
+    </AuthLayout>
   );
 };
 

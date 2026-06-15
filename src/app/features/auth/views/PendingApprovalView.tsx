@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { AuthLayout } from '../components';
 
 interface PendingApprovalViewProps {
   onBack: () => void;
@@ -7,29 +8,9 @@ interface PendingApprovalViewProps {
 
 export const PendingApprovalView: React.FC<PendingApprovalViewProps> = ({ onBack }) => {
   return (
-    <div className="bg-[#131313] min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-sans text-[#e5e2e1] antialiased select-none">
-      
-      {/* Atmospheric Background Layers */}
-      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        {/* Main Amber Glow (Secondary color as per guidelines for pending states) */}
-        <motion.div 
-          animate={{
-            opacity: [0.15, 0.25, 0.15],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute w-[60vh] h-[60vh] bg-[#ffb954] rounded-full blur-[120px]"
-        />
-        {/* Subtle Secondary Purple accent */}
-        <div className="absolute w-[40vh] h-[40vh] bg-[#7c4dff] rounded-full blur-[100px] opacity-10 -translate-y-1/4 translate-x-1/4" />
-      </div>
-
+    <AuthLayout glowType="pending">
       {/* Main Content Canvas */}
-      <main className="relative z-10 w-full max-w-[400px] px-6 flex flex-col items-center text-center py-10">
+      <main className="relative z-10 w-full max-w-[400px] px-6 flex flex-col items-center text-center py-10 mx-auto my-auto flex-1 justify-center">
         
         {/* Illustration/Icon Container */}
         <motion.div 
@@ -102,7 +83,7 @@ export const PendingApprovalView: React.FC<PendingApprovalViewProps> = ({ onBack
         </motion.div>
 
       </main>
-    </div>
+    </AuthLayout>
   );
 };
 

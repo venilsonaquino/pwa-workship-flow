@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@shared/hooks';
+import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
 
 interface MemberSignupViewProps {
   onBack: () => void;
@@ -12,11 +13,6 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
 
   const handleBandCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -47,39 +43,14 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
   };
 
   return (
-    <div className="bg-[#131313] text-[#e5e2e1] min-h-screen flex flex-col font-sans antialiased relative overflow-x-hidden select-none">
+    <AuthLayout glowType="member">
+      <BackButton onClick={onBack} />
       
-      {/* Back Button */}
-      <div className="absolute top-6 left-6 z-20">
-        <button 
-          onClick={onBack}
-          className="flex items-center gap-1.5 text-[#cac3d8] hover:text-[#cdbdff] transition-colors focus:outline-none group"
-        >
-          <span className="material-symbols-outlined text-xl transition-transform group-hover:-translate-x-0.5">
-            arrow_back
-          </span>
-          <span className="text-xs font-semibold tracking-wider uppercase font-sans">Voltar</span>
-        </button>
-      </div>
-
-      {/* The Light of the Stage - Ambient Background Effects */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[150vw] md:w-[80vw] h-[442px] bg-[#7c4dff]/10 rounded-[100%] blur-[120px] opacity-70"></div>
-        <div className="absolute bottom-0 right-0 w-[50vw] h-[353px] bg-[#c3841b]/5 rounded-full blur-[100px] opacity-50"></div>
-      </div>
-
       {/* Main Registration Canvas */}
       <main className="relative z-10 flex-1 flex flex-col px-6 py-10 md:justify-center md:items-center min-h-screen">
         
         {/* Glassmorphic Container */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md mx-auto bg-[#201f1f]/60 backdrop-blur-xl border border-white/10 rounded-xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.4)] relative overflow-hidden"
-        >
-          {/* Subtle internal glow top edge */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <AuthCard delay={0.1}>
           
           {/* Header Section */}
           <motion.header 
@@ -152,77 +123,41 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
               transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
               className="flex flex-col gap-4"
             >
-              {/* Nome */}
-              <div className="flex flex-col gap-1.5 group">
-                <label className="text-[12px] font-semibold tracking-wide text-[#cac3d8] group-focus-within:text-[#cdbdff] transition-colors" htmlFor="fullName">
-                  NOME COMPLETO
-                </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#cac3d8]/50 group-focus-within:text-[#cdbdff] transition-colors text-xl font-normal">
-                    person
-                  </span>
-                  <input 
-                    className="w-full bg-[#131313]/50 border border-white/10 rounded-lg py-3 pl-12 pr-4 text-base text-[#e5e2e1] placeholder:text-[#cac3d8]/30 focus:outline-none focus:border-[#cdbdff] focus:ring-1 focus:ring-[#cdbdff] focus:bg-[#0e0e0e] transition-all" 
-                    id="fullName" 
-                    placeholder="Como você é chamado na banda" 
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+              {/* NOME COMPLETO */}
+              <InputGroup
+                id="fullName"
+                label="NOME COMPLETO"
+                placeholder="Como você é chamado na banda"
+                icon="person"
+                required
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
 
-              {/* Email */}
-              <div className="flex flex-col gap-1.5 group">
-                <label className="text-[12px] font-semibold tracking-wide text-[#cac3d8] group-focus-within:text-[#cdbdff] transition-colors" htmlFor="email">
-                  E-MAIL
-                </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#cac3d8]/50 group-focus-within:text-[#cdbdff] transition-colors text-xl font-normal">
-                    mail
-                  </span>
-                  <input 
-                    className="w-full bg-[#131313]/50 border border-white/10 rounded-lg py-3 pl-12 pr-4 text-base text-[#e5e2e1] placeholder:text-[#cac3d8]/30 focus:outline-none focus:border-[#cdbdff] focus:ring-1 focus:ring-[#cdbdff] focus:bg-[#0e0e0e] transition-all" 
-                    id="email" 
-                    placeholder="seu@email.com" 
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+              {/* E-MAIL */}
+              <InputGroup
+                id="email"
+                label="E-MAIL"
+                placeholder="seu@email.com"
+                icon="mail"
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-              {/* Senha */}
-              <div className="flex flex-col gap-1.5 group">
-                <label className="text-[12px] font-semibold tracking-wide text-[#cac3d8] group-focus-within:text-[#cdbdff] transition-colors" htmlFor="password">
-                  SENHA DE ACESSO
-                </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#cac3d8]/50 group-focus-within:text-[#cdbdff] transition-colors text-xl font-normal">
-                    lock
-                  </span>
-                  <input 
-                    className="w-full bg-[#131313]/50 border border-white/10 rounded-lg py-3 pl-12 pr-12 text-base text-[#e5e2e1] placeholder:text-[#cac3d8]/30 focus:outline-none focus:border-[#cdbdff] focus:ring-1 focus:ring-[#cdbdff] focus:bg-[#0e0e0e] transition-all" 
-                    id="password" 
-                    placeholder="Mínimo de 6 caracteres" 
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button 
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#cac3d8]/50 hover:text-[#e5e2e1] transition-colors p-1 flex items-center justify-center focus:outline-none" 
-                    onClick={togglePasswordVisibility}
-                    type="button"
-                  >
-                    <span className="material-symbols-outlined text-[20px] font-normal">
-                      {showPassword ? 'visibility_off' : 'visibility'}
-                    </span>
-                  </button>
-                </div>
-              </div>
+              {/* SENHA DE ACESSO */}
+              <InputGroup
+                id="password"
+                label="SENHA DE ACESSO"
+                placeholder="Mínimo de 6 caracteres"
+                icon="lock"
+                isPassword
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </motion.div>
 
             {/* Primary Action Button */}
@@ -232,15 +167,12 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
               transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
               className="mt-2"
             >
-              <button 
-                className="w-full bg-gradient-to-r from-[#7c4dff] to-[#6833ea] text-white font-semibold text-sm py-4 rounded-full shadow-[0_12px_32px_rgba(124,77,255,0.3)] hover:shadow-[0_12px_32px_rgba(124,77,255,0.5)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2 group focus:outline-none" 
-                type="submit"
-              >
+              <SubmitButton type="submit">
                 Entrar na Equipe
                 <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform font-normal">
                   arrow_forward
                 </span>
-              </button>
+              </SubmitButton>
             </motion.div>
 
             {/* Secondary Link */}
@@ -260,10 +192,10 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
             </motion.div>
 
           </form>
-        </motion.div>
+        </AuthCard>
 
       </main>
-    </div>
+    </AuthLayout>
   );
 };
 
