@@ -1,8 +1,9 @@
 import React from 'react';
-import { useThemeStore } from '@shared/hooks';
+import { useThemeStore, useAuth } from '@shared/hooks';
 
 export const ProfileSettings: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
+  const { logout } = useAuth();
   const isDarkMode = theme === 'dark';
 
   return (
@@ -131,6 +132,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Sair da Conta */}
           <div
+            onClick={logout}
             className="flex items-center justify-between hover:bg-error-container/10 cursor-pointer transition-colors duration-150 text-error"
             style={{ padding: 16 }}
           >

@@ -4,7 +4,9 @@ import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
+import { AuthFlow } from '@features/auth';
 import { Layout, PageHeader } from '@shared/components';
+import { useAuth } from '@shared/hooks';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -19,11 +21,20 @@ function LoadingScreen() {
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function App() {
+  const { isAuthenticated, userName, userEmail, userRole, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
 
   const handleBack = () => {
     setActiveTab('scales');
   };
+
+  if (!isAuthenticated) {
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <AuthFlow />
+      </Suspense>
+    );
+  }
 
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -32,6 +43,8 @@ function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         showHeader={activeTab !== 'profile' && activeTab !== 'songs'}
+        userName={userName}
+        avatarUrl={avatarUrl}
         pageHeader={
           activeTab === 'profile' ? (
             <PageHeader title="Perfil" onBack={handleBack} />
@@ -54,7 +67,12 @@ function App() {
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
           >
             {activeTab === 'profile' ? (
-              <ProfileView />
+              <ProfileView
+                userName={userName}
+                userEmail={userEmail}
+                userRole={userRole ?? undefined}
+                avatarUrl={avatarUrl}
+              />
             ) : activeTab === 'songs' ? (
               <SongsView onBack={handleBack} />
             ) : activeTab === 'scales' ? (
