@@ -5,9 +5,10 @@ import { AuthLayout } from '../components';
 
 interface WelcomeViewProps {
   onSelectRole: (role: UserRole) => void;
+  onLogin: () => void;
 }
 
-export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole }) => {
+export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole, onLogin }) => {
   const handleSelectRole = (role: UserRole) => {
     onSelectRole(role);
   };
@@ -89,6 +90,21 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole }) => {
             <span className="material-symbols-outlined text-[#cac3d8] group-hover:text-[#ffb954] transition-all group-hover:translate-x-1 duration-300">
               arrow_forward
             </span>
+          </button>
+        </motion.div>
+
+        {/* Login Link */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-center mt-6"
+        >
+          <button 
+            onClick={onLogin}
+            className="text-xs text-[#cac3d8] hover:text-[#cdbdff] transition-colors focus:outline-none"
+          >
+            Já possui uma conta? <span className="text-[#cdbdff] font-bold underline decoration-[#cdbdff]/30 underline-offset-4 font-sans">Entrar</span>
           </button>
         </motion.div>
 

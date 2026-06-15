@@ -5,9 +5,10 @@ import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../c
 
 interface MemberSignupViewProps {
   onBack: () => void;
+  onLogin: () => void;
 }
 
-export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) => {
+export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLogin }) => {
   const { login } = useAuth();
   const [bandCode, setBandCode] = useState('');
   const [fullName, setFullName] = useState('');
@@ -183,7 +184,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack }) =>
               className="text-center mt-2"
             >
               <button 
-                onClick={onBack}
+                onClick={onLogin}
                 type="button"
                 className="text-xs text-[#cac3d8] hover:text-[#cdbdff] transition-colors focus:outline-none"
               >
