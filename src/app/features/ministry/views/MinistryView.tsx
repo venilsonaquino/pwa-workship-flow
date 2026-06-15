@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import BandSettingsCard from '../components/BandSettingsCard';
 import InviteCodeCard from '../components/InviteCodeCard';
 import MemberRow from '../components/MemberRow';
 import type { Member } from '../components/MemberRow';
+import { PageHeader } from '@shared/components';
+
+interface MinistryViewProps {
+  onBack?: () => void;
+}
 
 const INITIAL_MEMBERS: Member[] = [
   {
@@ -39,7 +45,7 @@ const INITIAL_MEMBERS: Member[] = [
   },
 ];
 
-export const MinistryView: React.FC = () => {
+export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   const members = INITIAL_MEMBERS;
   const [showToast, setShowToast] = useState(false);
 
@@ -56,10 +62,13 @@ export const MinistryView: React.FC = () => {
 
   return (
     <div className="w-full flex-1 max-w-[1200px] mx-auto py-4 space-y-8">
+      {onBack && (
+        <PageHeader title="Gestão da Banda" onBack={onBack} />
+      )}
       {/* Band Settings Section */}
       <section className="space-y-4">
         <h2 className="text-on-surface-variant text-[14px] font-semibold uppercase tracking-wider px-1">
-          Informações da Equipe
+          Informações da Banda
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <BandSettingsCard />
@@ -93,15 +102,20 @@ export const MinistryView: React.FC = () => {
       </section>
 
       {/* Micro-interaction Toast */}
-      <div
-        className={`fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3.5 rounded-full shadow-xl transition-all duration-500 ease-out z-[100] font-semibold text-[14px] flex items-center gap-2 border border-primary/10 dark:border-primary/20 backdrop-blur-md bg-white/90 dark:bg-surface-container-lowest/90 text-primary dark:text-primary-variant ${showToast
-          ? 'opacity-100 translate-y-0 scale-100'
-          : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
-          }`}
-      >
-        <span className="material-symbols-outlined text-success text-[18px]">check_circle</span>
-        <span>Código copiado para a área de transferência!</span>
-      </div>
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, x: '-50%', scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, x: '-50%', scale: 1 }}
+            exit={{ opacity: 0, y: 16, x: '-50%', scale: 0.95 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="fixed bottom-28 left-1/2 px-5 py-3 rounded-xl shadow-xl z-[100] text-sm font-medium flex items-center gap-2.5 border border-white/10 backdrop-blur-md bg-neutral-900/90 text-white whitespace-nowrap"
+          >
+            <span className="material-symbols-outlined text-success text-[20px]">check_circle</span>
+            <span>Código copiado para a área de transferência!</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

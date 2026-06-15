@@ -23,10 +23,12 @@ export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
     // Generate a random-looking invite code, e.g., WORSHIP-[4 alphanumeric characters]
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let suffix = '';
+    let suffix2 = '';
     for (let i = 0; i < 4; i++) {
       suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+      suffix2 += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    setCode(`WORSHIP-X${suffix}`);
+    setCode(`${suffix}-${suffix2}`);
   };
 
   return (

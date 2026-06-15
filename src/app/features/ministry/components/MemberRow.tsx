@@ -34,9 +34,6 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
               (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
             }}
           />
-          {isActive && (
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-surface-container-lowest rounded-full" />
-          )}
         </div>
         <div>
           <h3 className="font-bold text-on-surface text-[16px]">
@@ -50,15 +47,6 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
           </div>
         </div>
       </div>
-      <button
-        onClick={() => onAction && onAction(member)}
-        className="p-2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center rounded-full hover:bg-surface-container"
-        aria-label={isSelf ? "Configurações da minha conta" : `Mais opções para ${name}`}
-      >
-        <span className="material-symbols-outlined">
-          {isSelf ? 'settings' : 'more_vert'}
-        </span>
-      </button>
     </div>
   );
 };

@@ -72,21 +72,24 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           Gestão do Ministério
         </h3>
         <div className="grid" style={{ gap: 12 }}>
-          {/* Equipe */}
+          {/* Banda */}
           <div
             onClick={onNavigateToTeam}
-            className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
-            style={{ padding: 20 }}
+            className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
+            style={{ padding: 16 }}
           >
-            <div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white"
-            >
-              <span className="material-symbols-outlined icon-fill">groups</span>
+            <div className="flex items-center" style={{ gap: 16 }}>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined">groups</span>
+              </div>
+              <div className="text-left">
+                <p className="text-label-lg font-semibold text-on-surface">Banda</p>
+                <p className="text-body-md text-on-surface-variant">24 Integrantes</p>
+              </div>
             </div>
-            <div className="text-left">
-              <p className="text-label-lg font-semibold text-on-surface">Equipe</p>
-              <p className="text-label-sm text-on-surface-variant">24 Integrantes</p>
-            </div>
+            <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">
+              chevron_right
+            </span>
           </div>
         </div>
       </section>
