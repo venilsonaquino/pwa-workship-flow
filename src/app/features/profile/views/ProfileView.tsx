@@ -7,6 +7,7 @@ interface ProfileViewProps {
   userEmail?: string;
   userRole?: string;
   avatarUrl?: string;
+  onNavigateToTeam?: () => void;
 }
 
 const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDsgr8hEMXWD3smxicINNeHHDp0jwIqYfk5L1SbzfC3lc5hacvBys6Kl-HfnwinW9P736vU3aCr8_FCkKzcqbP0fay92KwJX0jl1HKM7L-umYIaLMI4th2yFjFtkfbqfgVq__LDCfZeLPN0fJ-buEJ1hK1bDzdUBxG9-KblIiMgRcPPAcRzhk7DFIRNTr8yTdJJcedXJEh6ER_UgRl0mh_mLFgtw-gddkh8tF0vi2Un9eVjBgUHVQVhGL85Ae8pDytSaDiFk1iRRtE';
@@ -16,6 +17,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   userEmail = 'manusilveira@worshipflow.com',
   userRole = 'Líder de Louvor',
   avatarUrl = DEFAULT_AVATAR,
+  onNavigateToTeam,
 }) => {
   return (
     <div className="w-full flex flex-col">
@@ -25,7 +27,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         userRole={userRole}
         avatarUrl={avatarUrl}
       />
-      <ProfileSettings />
+      <ProfileSettings onNavigateToTeam={onNavigateToTeam} />
     </div>
   );
 };

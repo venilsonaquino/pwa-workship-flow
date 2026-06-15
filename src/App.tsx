@@ -5,6 +5,7 @@ import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
 import { AuthFlow } from '@features/auth';
+import { MinistryView } from '@features/ministry';
 import { Layout, PageHeader } from '@shared/components';
 import { useAuth } from '@shared/hooks';
 
@@ -42,16 +43,21 @@ function App() {
       <Layout
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        showHeader={activeTab !== 'profile' && activeTab !== 'songs'}
+        showHeader={activeTab !== 'profile' && activeTab !== 'songs' && activeTab !== 'ministry'}
         userName={userName}
         avatarUrl={avatarUrl}
         pageHeader={
           activeTab === 'profile' ? (
             <PageHeader title="Perfil" onBack={handleBack} />
+          ) : activeTab === 'ministry' ? (
+            <PageHeader
+              title="Gestão de Equipe"
+              onBack={() => setActiveTab('profile')}
+            />
           ) : undefined
         }
         contentClassName={
-          activeTab === 'profile' || activeTab === 'songs'
+          activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ministry'
             ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
             : undefined
         }
@@ -72,7 +78,10 @@ function App() {
                 userEmail={userEmail}
                 userRole={userRole ?? undefined}
                 avatarUrl={avatarUrl}
+                onNavigateToTeam={() => setActiveTab('ministry')}
               />
+            ) : activeTab === 'ministry' ? (
+              <MinistryView />
             ) : activeTab === 'songs' ? (
               <SongsView onBack={handleBack} />
             ) : activeTab === 'scales' ? (

@@ -1,7 +1,13 @@
 import React from 'react';
 import { useThemeStore, useAuth } from '@shared/hooks';
 
-export const ProfileSettings: React.FC = () => {
+interface ProfileSettingsProps {
+  onNavigateToTeam?: () => void;
+}
+
+export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
+  onNavigateToTeam,
+}) => {
   const { theme, toggleTheme } = useThemeStore();
   const { logout } = useAuth();
   const isDarkMode = theme === 'dark';
@@ -68,6 +74,7 @@ export const ProfileSettings: React.FC = () => {
         <div className="grid" style={{ gap: 12 }}>
           {/* Equipe */}
           <div
+            onClick={onNavigateToTeam}
             className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
             style={{ padding: 20 }}
           >
