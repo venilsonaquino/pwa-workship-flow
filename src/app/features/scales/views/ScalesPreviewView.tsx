@@ -148,8 +148,8 @@ const IntegrantesSection: React.FC = () => (
 
 const SetlistSection: React.FC = () => (
   <section className="flex flex-col gap-3">
-    <p className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-outline-variant">
-      Setlist
+    <p className="text-label-lg font-label-lg text-primary tracking-widest text-center pb-2 border-b border-outline-variant">
+      Louvores
     </p>
 
     <ul className="flex flex-col gap-3">
