@@ -1,5 +1,11 @@
 import React from 'react';
-import { cn } from '@src/lib/utils';
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@shared/components';
 
 export interface EventCard {
   id: string;
@@ -12,7 +18,7 @@ export interface EventCard {
   isActive?: boolean;
 }
 
-const CARDS_DATA: EventCard[] = [
+export const CARDS_DATA: EventCard[] = [
   {
     id: '1',
     dayOfWeek: 'DOM',
@@ -42,7 +48,7 @@ const CARDS_DATA: EventCard[] = [
     id: '3',
     dayOfWeek: 'DOM',
     dateStr: '15 Out',
-    title: 'Culto Noite',
+    title: 'Culto Tarde',
     songsCount: 5,
     isActive: false,
     avatars: [
@@ -50,92 +56,98 @@ const CARDS_DATA: EventCard[] = [
     ],
     extraAvatarsCount: 5,
   },
+  {
+    id: '4',
+    dayOfWeek: 'DOM',
+    dateStr: '22 Out',
+    title: 'Culto Noite',
+    songsCount: 4,
+    isActive: false,
+    avatars: [
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuASmRq5dvksI_1fkhttqANKJtjIQ6cbdR3SjN0jI9GkwtYawkNXzIvPOQoXaYl4dRTaEVX1j8aBKdfhvQa_96XZfFpSOQY-QoktK3JbChzV3Ug_tC3NRtCjW7JYq5C7M2jkPsaQCTphTDVOi05o5Qtf2_H5mtgSbng9ehvSijuF8I6fo4dSFRAVSChTTQFi1VVHGrGfh_CuHGiKI5WDOeaM06Bj3BUsLotBetX8koCqRXjz_PpardnMmWSi4fxsE0Jj7W1jhgN6b18',
+    ],
+    extraAvatarsCount: 3,
+  },
 ];
 
-export const SongDistribution: React.FC = () => {
+interface MonthOption {
+  value: string;
+  label: string;
+  titleMonth: string;
+}
+
+const MONTHS: MonthOption[] = [
+  { value: '2023-09', label: 'Set 2023', titleMonth: 'Setembro' },
+  { value: '2023-10', label: 'Out 2023', titleMonth: 'Outubro' },
+  { value: '2023-11', label: 'Nov 2023', titleMonth: 'Novembro' },
+  { value: '2023-12', label: 'Dez 2023', titleMonth: 'Dezembro' },
+];
+
+export interface SongDistributionProps {
+  selectedMonth: string;
+  onMonthSelect: (month: string) => void;
+}
+
+export const SongDistribution: React.FC<SongDistributionProps> = ({
+  selectedMonth,
+  onMonthSelect,
+}) => {
+  const currentMonth = MONTHS.find((m) => m.value === selectedMonth) || MONTHS[1];
+
   return (
     <section className="flex flex-col gap-4">
       {/* Header Row */}
       <div className="flex items-center justify-between">
         <h3 className="font-headline-md text-headline-md text-on-surface">
-          Distribuição de Músicas
+          Escalas de {currentMonth.titleMonth}
         </h3>
-        <button
-          type="button"
-          className="text-primary font-label-lg text-label-lg flex items-center gap-1 active:scale-95 transition-transform cursor-pointer"
-        >
-          Ver tudo
-          <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-        </button>
+
+        {/* Month picker dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="group flex items-center gap-1.5 text-primary font-label-lg text-label-lg transition-all select-none active:scale-95 cursor-pointer"
+          >
+            Ver tudo
+            <span className="material-symbols-outlined text-[18px] transition-transform duration-200 group-data-[state=open]:rotate-180">
+              expand_more
+            </span>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-44">
+            {MONTHS.map((month) => (
+              <DropdownMenuItem
+                key={month.value}
+                onClick={() => onMonthSelect(month.value)}
+                active={selectedMonth === month.value}
+              >
+                {month.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Horizontal Carousel */}
-      <div
-        className="flex overflow-x-auto scrollbar-hide snap-x pb-4 gap-4"
-      >
-        {CARDS_DATA.map((card) => {
-          const isPrimary = card.isActive;
-          return (
-            <div
-              key={card.id}
-              className={`snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border p-5 flex flex-col gap-3 ${isPrimary
-                  ? 'bg-primary text-on-primary border-primary shadow-lg'
-                  : 'bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow'
-                }`}
-            >
-              {/* Day & Date info */}
-              <p
-                className={cn("text-label-sm font-label-sm uppercase tracking-wider", isPrimary ? "text-inherit opacity-80" : "text-on-surface-variant opacity-100")}
-              >
-                {card.dayOfWeek} • {card.dateStr}
+      <div className="flex overflow-x-auto scrollbar-hide snap-x pb-2 gap-4">
+        {CARDS_DATA.map((card) => (
+          <div
+            key={card.id}
+            className="snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border p-5 flex flex-col gap-3 bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow"
+          >
+            {/* Day & Date info */}
+            <p className="text-label-sm font-label-sm uppercase tracking-wider text-on-surface-variant">
+              {card.dayOfWeek} • {card.dateStr}
+            </p>
+
+            {/* Title and Song Count */}
+            <div className="flex flex-col gap-1">
+              <p className="font-bold text-lg leading-tight">{card.title}</p>
+              <p className="text-label-sm text-on-surface-variant">
+                {card.songsCount} músicas
               </p>
-
-              {/* Title and Song Count */}
-              <div className="flex flex-col gap-1">
-                <p className="font-bold text-lg leading-tight">{card.title}</p>
-                <p
-                  className={cn("text-label-sm", isPrimary ? "text-inherit opacity-90" : "text-on-surface-variant opacity-100")}
-                >
-                  {card.songsCount} Músicas
-                </p>
-              </div>
-
-              {/* Volunteers list */}
-              <div
-                className="flex pt-1"
-              >
-                {card.avatars.map((url, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "w-6 h-6 rounded-full border-2 overflow-hidden bg-surface-container-high",
-                      isPrimary ? "border-primary" : "border-surface-container-lowest",
-                      idx > 0 && "-ml-3"
-                    )}
-                  >
-                    <img
-                      alt={`Voluntário ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                      src={url}
-                    />
-                  </div>
-                ))}
-                {card.extraAvatarsCount !== undefined && card.extraAvatarsCount > 0 && (
-                  <div
-                    className={cn(
-                      "w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold -ml-3",
-                      isPrimary
-                        ? 'border-primary bg-surface-container-lowest text-primary'
-                        : 'border-surface-container-lowest bg-surface-container-lowest text-primary'
-                    )}
-                  >
-                    +{card.extraAvatarsCount}
-                  </div>
-                )}
-              </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </section>
   );
