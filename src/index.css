@@ -361,9 +361,30 @@ ul, ol {
   background: linear-gradient(135deg, #7c3aed 0%, #0058be 100%);
 }
 
+.gradient-brand {
+  background: linear-gradient(135deg, #7c3aed 0%, #630ed4 100%);
+}
+
+.text-headline-lg {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+.font-headline-lg {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+}
+
+
 .soft-shadow {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
 }
+
+.custom-shadow {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+}
+
 
 /* ── Custom Dropdown Menu styles (Bypassing Tailwind watcher or cache issues) ── */
 .dropdown-menu-custom-content {

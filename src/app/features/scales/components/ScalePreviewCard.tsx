@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardFooter, Button } from '@shared/components';
+import { Card, CardContent, CardFooter } from '@shared/components';
 import scaleBg from '@assets/ceia.png';
 
 
@@ -76,9 +76,9 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
   return (
     <div className='flex flex-col gap-3'>
       <p
-        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-border"
+        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-outline-variant"
       >
-        Louvores
+        Setlist
       </p>
       <ul className="flex flex-col gap-3">
         {songs.map((song, idx) => (
@@ -138,14 +138,13 @@ export const ScalePreviewCard: React.FC = () => {
         <h3 className="font-headline-md text-headline-md text-on-surface">
           Preview da Escala
         </h3>
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          type="button"
           onClick={handleShare}
-          iconOnly
+          className="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary/20 active:scale-95 transition-all cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[20px]">share</span>
-        </Button>
+          <span className="material-symbols-outlined">share</span>
+        </button>
       </div>
 
       <Card>
@@ -172,7 +171,7 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </div>
 
-        <CardContent className="flex flex-col gap-6 p-3">
+        <CardContent className="flex flex-col gap-6 p-6 pt-2">
           <BandMembersGrid members={MEMBERS_DATA} />
           <SetlistList songs={SONGS_DATA} />
         </CardContent>
@@ -193,6 +192,16 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </CardFooter>
       </Card>
+
+      {/* Export Button */}
+      <button
+        type="button"
+        onClick={handleShare}
+        className="w-full gradient-brand text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform cursor-pointer"
+      >
+        <span className="material-symbols-outlined">download</span>
+        Exportar para WhatsApp
+      </button>
     </section>
   );
 };

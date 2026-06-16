@@ -14,14 +14,15 @@ export interface MonthSelectorProps {
 export interface MonthOption {
   value: string;
   label: string;
-  displayTitle: string;
+  titleLine1: string;
+  titleLine2: string;
 }
 
 const MONTHS: MonthOption[] = [
-  { value: '2023-09', label: 'Set 2023', displayTitle: 'Escalas de Setembro' },
-  { value: '2023-10', label: 'Out 2023', displayTitle: 'Escalas de Outubro' },
-  { value: '2023-11', label: 'Nov 2023', displayTitle: 'Escalas de Novembro' },
-  { value: '2023-12', label: 'Dez 2023', displayTitle: 'Escalas de Dezembro' },
+  { value: '2023-09', label: 'Set 2023', titleLine1: 'Escalas de', titleLine2: 'Setembro' },
+  { value: '2023-10', label: 'Out 2023', titleLine1: 'Escalas de', titleLine2: 'Outubro' },
+  { value: '2023-11', label: 'Nov 2023', titleLine1: 'Escalas de', titleLine2: 'Novembro' },
+  { value: '2023-12', label: 'Dez 2023', titleLine1: 'Escalas de', titleLine2: 'Dezembro' },
 ];
 
 export const MonthSelector: React.FC<MonthSelectorProps> = ({
@@ -34,9 +35,9 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
   return (
     <div className="relative">
       <section className="flex items-center justify-between w-full">
-        <div >
-          <h2 className="text-headline-md text-headline-md text-on-surface">
-            {currentObj.displayTitle}
+        <div>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface leading-tight">
+            {currentObj.titleLine1}<br />{currentObj.titleLine2}
           </h2>
         </div>
 
