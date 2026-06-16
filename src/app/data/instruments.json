@@ -1,0 +1,26 @@
+[
+  {
+    "name": "vocal",
+    "icon": "mic"
+  },
+  {
+    "name": "teclado",
+    "icon": "piano"
+  },
+  {
+    "name": "bateria",
+    "icon": "potted_plant"
+  },
+  {
+    "name": "violão",
+    "icon": "music_note"
+  },
+  {
+    "name": "guitarra",
+    "icon": "music_note"
+  },
+  {
+    "name": "contrabaixo",
+    "icon": "music_note"
+  }
+]
