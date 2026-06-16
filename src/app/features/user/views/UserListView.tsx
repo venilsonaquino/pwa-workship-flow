@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@shared/components/ui/button';
-import { Input } from '@shared/components/ui/input';
+import { Button, Input, Header } from '@shared/components';
 import { UserTableRow } from '../components/UserTableRow';
 import { useUsersList } from '../hooks/useUsersList';
 import type { User } from '../types';
@@ -37,30 +36,36 @@ export const UserListView: React.FC = () => {
     console.info('[UserList] Navigating to user:', user.id);
   };
 
+  const addButton = (
+    <Button
+      variant="primary"
+      size="sm"
+      onClick={() => console.info('[UserList] Add user')}
+      leftIcon={<span className="material-symbols-outlined text-base">add</span>}
+    >
+      Novo
+    </Button>
+  );
+
+  const headerTitle = (
+    <div className="flex items-center gap-2.5">
+      <h1 className="text-[20px] font-bold text-on-surface font-sans leading-tight">
+        Repertório
+      </h1>
+      {!isLoading && (
+        <span className="text-[12px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full font-sans">
+          {total}
+        </span>
+      )}
+    </div>
+  );
+
   return (
     <>
-      {/* Page Title & Action Row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold text-on-surface font-sans">
-            Usuários
-          </h1>
-          {!isLoading && (
-            <span className="text-[12px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full font-sans">
-              {total}
-            </span>
-          )}
-        </div>
-
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => console.info('[UserList] Add user')}
-          leftIcon={<span className="material-symbols-outlined text-base">add</span>}
-        >
-          Novo
-        </Button>
-      </div>
+      <Header
+        title={headerTitle}
+        rightAction={addButton}
+      />
 
       {/* Search input - Page Specific Filter */}
       <Input

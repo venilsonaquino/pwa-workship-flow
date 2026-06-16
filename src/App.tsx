@@ -24,9 +24,6 @@ function App() {
   const { isAuthenticated, userName, userEmail, userRole, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
 
-  const handleBack = () => {
-    setActiveTab('scales');
-  };
 
   if (!isAuthenticated) {
     return (
@@ -42,7 +39,7 @@ function App() {
       <Layout
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        showHeader={activeTab !== 'profile' && activeTab !== 'songs'}
+        showHeader={activeTab === 'scales'}
         userName={userName}
         avatarUrl={avatarUrl}
         contentClassName={
@@ -67,10 +64,14 @@ function App() {
                 userEmail={userEmail}
                 userRole={userRole ?? undefined}
                 avatarUrl={avatarUrl}
-                onBackToScales={handleBack}
+                onNotificationClick={() => console.info('[Header] Notifications clicked')}
+                hasUnreadNotifications={true}
               />
             ) : activeTab === 'songs' ? (
-              <SongsView onBack={handleBack} />
+              <SongsView
+                onNotificationClick={() => console.info('[Header] Notifications clicked')}
+                hasUnreadNotifications={true}
+              />
             ) : activeTab === 'scales' ? (
               <ScalesPreviewView />
             ) : (

@@ -4,7 +4,7 @@ import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SongSearchView from './SongSearchView';
 import EngagementDrawer from '../components/EngagementDrawer';
-import { PageHeader, Button, FloatingActionButton } from '@shared/components';
+import { PageHeader, Button, FloatingActionButton, Header } from '@shared/components';
 import type { Song } from '../types';
 
 const INITIAL_SONGS: Song[] = [
@@ -89,10 +89,14 @@ const INITIAL_SONGS: Song[] = [
 ];
 
 export interface SongsViewProps {
-  onBack: () => void;
+  onNotificationClick?: () => void;
+  hasUnreadNotifications?: boolean;
 }
 
-export const SongsView = ({ onBack }: SongsViewProps) => {
+export const SongsView = ({
+  onNotificationClick,
+  hasUnreadNotifications = true,
+}: SongsViewProps) => {
   const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -125,7 +129,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
           const nextEngagement = nextIsHeard
             ? Math.min(100, song.engagement + 15)
             : Math.max(0, song.engagement - 15);
-          
+
           const updatedSong = {
             ...song,
             isHeard: nextIsHeard,
@@ -133,7 +137,7 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
           };
 
           // Also update the drawer state if this song is currently open in the drawer
-          setSelectedSongForDrawer(current => 
+          setSelectedSongForDrawer(current =>
             current?.id === songId ? updatedSong : current
           );
 
@@ -255,10 +259,12 @@ export const SongsView = ({ onBack }: SongsViewProps) => {
               {searchBar}
             </PageHeader>
           ) : (
-            <PageHeader
-              title="Musicas"
-              onBack={onBack}
+            <Header
+              title="Músicas"
               rightAction={searchButton}
+              showNotification={true}
+              onNotificationClick={onNotificationClick}
+              hasUnreadNotifications={hasUnreadNotifications}
             />
           )}
 
