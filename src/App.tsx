@@ -1,12 +1,8 @@
 import { useState, Suspense } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { UserListView } from '@features/user';
-import { ProfileView } from '@features/profile';
-import { ScalesPreviewView } from '@features/scales';
-import { SongsView } from '@features/songs';
 import { AuthFlow } from '@features/auth';
 import { Layout } from '@shared/components';
 import { useAuth } from '@shared/hooks';
+import AppRoutes from '@core/routes/AppRoutes';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -21,7 +17,7 @@ function LoadingScreen() {
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function App() {
-  const { isAuthenticated, userName, userEmail, userRole, avatarUrl } = useAuth();
+  const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
 
 
@@ -49,36 +45,7 @@ function App() {
         }
         onNotificationClick={() => console.info('[Header] Notifications clicked')}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
-          >
-            {activeTab === 'profile' ? (
-              <ProfileView
-                userName={userName}
-                userEmail={userEmail}
-                userRole={userRole ?? undefined}
-                avatarUrl={avatarUrl}
-                onNotificationClick={() => console.info('[Header] Notifications clicked')}
-                hasUnreadNotifications={true}
-              />
-            ) : activeTab === 'songs' ? (
-              <SongsView
-                onNotificationClick={() => console.info('[Header] Notifications clicked')}
-                hasUnreadNotifications={true}
-              />
-            ) : activeTab === 'scales' ? (
-              <ScalesPreviewView />
-            ) : (
-              <UserListView />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        <AppRoutes activeTab={activeTab} />
       </Layout>
     </Suspense>
   );
