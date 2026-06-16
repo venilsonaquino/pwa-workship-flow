@@ -78,7 +78,7 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
       <p
         className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-border"
       >
-        Setlist
+        Louvores
       </p>
       <ul className="flex flex-col gap-3">
         {songs.map((song, idx) => (
@@ -116,7 +116,7 @@ export const ScalePreviewCard: React.FC = () => {
     const text = `📅 *Escala: Culto de Celebração (08/10)*\n\n` +
       `🎸 *Equipe:*\n` +
       MEMBERS_DATA.map(m => `- ${m.role}: ${m.name}`).join('\n') + `\n\n` +
-      `🎵 *Setlist:*\n` +
+      `🎵 *Louvores:*\n` +
       SONGS_DATA.map(s => `${s.number}. ${s.title} (${s.key})`).join('\n') + `\n\n` +
       `#WorshipFlow #EscalaDominical`;
 
@@ -131,17 +131,6 @@ export const ScalePreviewCard: React.FC = () => {
         .catch(err => console.error('[ScalePreview] Error copying:', err));
     }
   };
-
-  // const handleExport = () => {
-  //   const text = `📅 *Escala: Culto de Celebração (08/10)*\n\n` +
-  //     `🎸 *Equipe:*\n` +
-  //     MEMBERS_DATA.map(m => `- ${m.role}: ${m.name}`).join('\n') + `\n\n` +
-  //     `🎵 *Setlist:*\n` +
-  //     SONGS_DATA.map(s => `${s.number}. ${s.title} (${s.key})`).join('\n') + `\n\n` +
-  //     `#WorshipFlow #EscalaDominical`;
-  // 
-  //   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-  // };
 
   return (
     <section className="flex flex-col gap-4">
