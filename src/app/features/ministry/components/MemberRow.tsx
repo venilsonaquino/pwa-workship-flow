@@ -40,12 +40,10 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
       className="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors group cursor-pointer"
     >
       <div className="flex items-center gap-4">
-        <div className="relative">
+        <div className="relative w-12 h-12 shrink-0">
           <img
             alt={name}
-            className={cn(
-              "w-12 h-12 rounded-full object-cover border-2 border-primary-container",
-            )}
+            className="w-full h-full rounded-full object-cover border-2 border-primary-container"
             src={avatarUrl}
             onError={(e) => {
               // Fallback default avatar icon
