@@ -3,10 +3,16 @@ import { useThemeStore, useAuth } from '@shared/hooks';
 
 interface ProfileSettingsProps {
   onNavigateToTeam?: () => void;
+  onEditPersonalData?: () => void;
+  onNavigateToSecurity?: () => void;
+  memberCount?: number;
 }
 
 export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   onNavigateToTeam,
+  onEditPersonalData,
+  onNavigateToSecurity,
+  memberCount = 24,
 }) => {
   const { theme, toggleTheme } = useThemeStore();
   const { logout } = useAuth();
@@ -25,6 +31,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         <div className="grid grid-cols-1" style={{ gap: 12 }}>
           {/* Dados Pessoais */}
           <div
+            onClick={onEditPersonalData}
             className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
             style={{ padding: 16 }}
           >
@@ -44,6 +51,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
           {/* Segurança */}
           <div
+            onClick={onNavigateToSecurity}
             className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
             style={{ padding: 16 }}
           >
@@ -84,7 +92,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               </div>
               <div className="text-left">
                 <p className="text-label-lg font-semibold text-on-surface">Banda</p>
-                <p className="text-body-md text-on-surface-variant">24 Integrantes</p>
+                <p className="text-body-md text-on-surface-variant">{memberCount} Integrantes</p>
               </div>
             </div>
             <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">

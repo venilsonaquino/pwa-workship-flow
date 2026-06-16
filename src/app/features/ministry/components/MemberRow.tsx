@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from '@src/lib/utils';
 
 export interface Member {
   id: string;

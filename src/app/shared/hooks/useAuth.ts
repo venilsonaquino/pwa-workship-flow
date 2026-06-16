@@ -81,9 +81,19 @@ export function useAuth() {
     notifySubscribers();
   }, []);
 
+  const updateAuthProfile = useCallback((updates: Partial<UserProfile>) => {
+    const updated = { ..._authStore, ...updates };
+    // TODO(security): Implement safe session token cookies on the server-side instead of localStorage in prod.
+    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    _authStore = updated;
+    notifySubscribers();
+  }, []);
+
   return {
     ..._authStore,
     login,
     logout,
+    updateAuthProfile,
   };
 }
+
