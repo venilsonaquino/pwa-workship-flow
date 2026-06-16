@@ -1,7 +1,7 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@shared/components';
 import scaleBg from '@assets/ceia.png';
-
 
 export interface BandMember {
   role: string;
@@ -35,19 +35,52 @@ const SONGS_DATA: SongItem[] = [
   { number: '07', title: 'Aclame ao Senhor', key: 'G Maior' },
 ];
 
+// ── Animation Variants ────────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+};
+
 interface BandMembersGridProps {
   members: BandMember[];
 }
 
 const BandMembersGrid: React.FC<BandMembersGridProps> = ({ members }) => {
   return (
-    <div
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-50px' }}
       className="grid grid-cols-2 gap-4 p-1"
     >
       {members.map((member, idx) => (
-        <div
+        <motion.div
           key={idx}
-          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3"
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02, boxShadow: '0 8px 16px rgba(0,0,0,0.04)' }}
+          whileTap={{ scale: 0.98 }}
+          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3 transition-shadow"
         >
           <span className="material-symbols-outlined text-primary text-[22px]">
             {member.icon}
@@ -62,9 +95,9 @@ const BandMembersGrid: React.FC<BandMembersGridProps> = ({ members }) => {
               {member.name}
             </p>
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 
@@ -80,11 +113,19 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
       >
         Setlist
       </p>
-      <ul className="flex flex-col gap-3">
+      <motion.ul
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-50px' }}
+        className="flex flex-col gap-3"
+      >
         {songs.map((song, idx) => (
-          <li
+          <motion.li
             key={idx}
-            className="flex items-center justify-between"
+            variants={itemVariants}
+            whileHover={{ x: 4 }}
+            className="flex items-center justify-between py-1 rounded-lg hover:bg-surface-container-lowest/50 px-2 transition-all"
           >
             <div className="flex items-center gap-3">
               <span
@@ -101,9 +142,9 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
             >
               {song.key}
             </span>
-          </li>
+          </motion.li>
         ))}
-      </ul>
+      </motion.ul>
     </div>
   );
 };
@@ -133,18 +174,25 @@ export const ScalePreviewCard: React.FC = () => {
   };
 
   return (
-    <section className="flex flex-col gap-4">
+    <motion.section
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-4"
+    >
       <div className="flex items-center justify-between">
         <h3 className="font-headline-md text-headline-md text-on-surface">
           Preview da Escala
         </h3>
-        <button
+        <motion.button
           type="button"
           onClick={handleShare}
-          className="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary/20 active:scale-95 transition-all cursor-pointer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary/20 transition-all cursor-pointer"
         >
           <span className="material-symbols-outlined">share</span>
-        </button>
+        </motion.button>
       </div>
 
       <Card>
@@ -194,15 +242,17 @@ export const ScalePreviewCard: React.FC = () => {
       </Card>
 
       {/* Export Button */}
-      <button
+      <motion.button
         type="button"
         onClick={handleShare}
-        className="w-full gradient-brand text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform cursor-pointer"
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        className="w-full gradient-brand text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
       >
         <span className="material-symbols-outlined">download</span>
         Exportar para WhatsApp
-      </button>
-    </section>
+      </motion.button>
+    </motion.section>
   );
 };
 

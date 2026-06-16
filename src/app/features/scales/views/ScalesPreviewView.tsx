@@ -1,6 +1,33 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import SongDistribution, { CARDS_DATA } from '../components/SongDistribution';
 import { FloatingActionButton } from '@shared/components';
+
+// ── Animation Variants ────────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+};
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -51,7 +78,11 @@ const ProximaEscalaBanner: React.FC = () => {
       </p>
 
       {/* Primary banner card – reuses same gradient/radius from SongDistribution active card */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+        whileHover={{ y: -2, boxShadow: '0 12px 20px -3px rgba(99, 102, 241, 0.3)' }}
         className="relative overflow-hidden rounded-3xl p-5 flex flex-col gap-3 shadow-lg text-white"
         style={{
           background: 'linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)',
@@ -68,12 +99,14 @@ const ProximaEscalaBanner: React.FC = () => {
             <p className="text-label-sm font-label-sm text-white opacity-80 uppercase tracking-wider leading-tight">
               {NEXT_EVENT.dayOfWeek} • {NEXT_EVENT.dateStr} • Culto de Celebração
             </p>
-            <button
+            <motion.button
               type="button"
-              className="shrink-0 bg-white/20 hover:bg-white/30 text-white text-label-sm font-label-sm px-3 py-1 rounded-full transition-colors active:scale-95 cursor-pointer"
+              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+              whileTap={{ scale: 0.95 }}
+              className="shrink-0 bg-white/20 text-white text-label-sm font-label-sm px-3 py-1 rounded-full transition-colors cursor-pointer"
             >
               Ver tudo
-            </button>
+            </motion.button>
           </div>
 
           {/* Event title */}
@@ -89,8 +122,11 @@ const ProximaEscalaBanner: React.FC = () => {
           {/* Avatars */}
           <div className="flex pt-1">
             {shownAvatars.map((url, idx) => (
-              <div
+              <motion.div
                 key={idx}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + idx * 0.1, type: 'spring', stiffness: 200 }}
                 className={`w-8 h-8 rounded-full border-2 border-[#7C3AED] overflow-hidden bg-surface-container-high ${idx > 0 ? '-ml-3' : ''}`}
               >
                 <img
@@ -98,16 +134,21 @@ const ProximaEscalaBanner: React.FC = () => {
                   className="w-full h-full object-cover"
                   src={url}
                 />
-              </div>
+              </motion.div>
             ))}
             {extraCount > 0 && (
-              <div className="-ml-3 w-8 h-8 rounded-full border-2 border-[#7C3AED] bg-surface-container-lowest text-primary flex items-center justify-center text-[10px] font-bold">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + shownAvatars.length * 0.1, type: 'spring', stiffness: 200 }}
+                className="-ml-3 w-8 h-8 rounded-full border-2 border-[#7C3AED] bg-surface-container-lowest text-primary flex items-center justify-center text-[10px] font-bold"
+              >
                 +{extraCount}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
@@ -121,11 +162,20 @@ const IntegrantesSection: React.FC = () => (
     </p>
 
     {/* 2-col grid – mesmos estilos do BandMembersGrid original */}
-    <div className="grid grid-cols-2 gap-4 p-1">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-50px' }}
+      className="grid grid-cols-2 gap-4 p-1"
+    >
       {MEMBERS_DATA.map((member, idx) => (
-        <div
+        <motion.div
           key={idx}
-          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3"
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02, boxShadow: '0 8px 16px rgba(0,0,0,0.04)' }}
+          whileTap={{ scale: 0.98 }}
+          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3 transition-shadow"
         >
           <span className="material-symbols-outlined text-primary text-[22px]">
             {member.icon}
@@ -138,9 +188,9 @@ const IntegrantesSection: React.FC = () => (
               {member.name}
             </p>
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   </section>
 );
 
@@ -152,11 +202,19 @@ const SetlistSection: React.FC = () => (
       Louvores
     </p>
 
-    <ul className="flex flex-col gap-3">
+    <motion.ul
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-50px' }}
+      className="flex flex-col gap-3"
+    >
       {SONGS_DATA.map((song, idx) => (
-        <li
+        <motion.li
           key={idx}
-          className="flex items-center justify-between"
+          variants={itemVariants}
+          whileHover={{ x: 4 }}
+          className="flex items-center justify-between py-1 rounded-lg hover:bg-surface-container-lowest/50 px-2 transition-all"
         >
           <div className="flex items-center gap-3 min-w-0">
             <span className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold w-6 h-6 shrink-0">
@@ -169,9 +227,9 @@ const SetlistSection: React.FC = () => (
           <span className="text-label-sm text-on-surface-variant shrink-0 ml-2">
             {song.key}
           </span>
-        </li>
+        </motion.li>
       ))}
-    </ul>
+    </motion.ul>
   </section>
 );
 

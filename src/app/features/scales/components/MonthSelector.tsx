@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,6 +26,8 @@ const MONTHS: MonthOption[] = [
   { value: '2023-12', label: 'Dez 2023', titleLine1: 'Escalas de', titleLine2: 'Dezembro' },
 ];
 
+const MotionTrigger = motion(DropdownMenuTrigger);
+
 export const MonthSelector: React.FC<MonthSelectorProps> = ({
   selectedMonth,
   onMonthSelect,
@@ -33,7 +36,12 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
   const [monthLabel, yearLabel] = currentObj.label.split(' ');
 
   return (
-    <div className="relative">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="relative"
+    >
       <section className="flex items-center justify-between w-full">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-on-surface leading-tight">
@@ -42,8 +50,10 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger
-            className="group flex items-center gap-3 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container px-5 py-3 rounded-3xl border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none active:scale-95 cursor-pointer"
+          <MotionTrigger
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.97 }}
+            className="group flex items-center gap-3 bg-surface-container-lowest hover:bg-surface-container-low dark:hover:bg-surface-container px-5 py-3 rounded-3xl border border-outline-variant shadow-sm text-label-lg font-label-lg text-on-surface transition-all select-none cursor-pointer"
             style={{ padding: "6px 28px" }}
           >
             <span className="material-symbols-outlined text-primary">calendar_month</span>
@@ -54,7 +64,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
             <span className="material-symbols-outlined text-on-surface-variant transition-transform duration-200 group-data-[state=open]:rotate-180">
               expand_more
             </span>
-          </DropdownMenuTrigger>
+          </MotionTrigger>
 
           <DropdownMenuContent align="end" className="w-48">
             {MONTHS.map((month) => (
@@ -69,7 +79,7 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </section>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 import {
   DropdownMenu,
@@ -70,18 +71,44 @@ export const CARDS_DATA: EventCard[] = [
   },
 ];
 
-interface MonthOption {
-  value: string;
-  label: string;
-  titleMonth: string;
-}
-
 const MONTHS: MonthOption[] = [
   { value: '2023-09', label: 'Set 2023', titleMonth: 'Setembro' },
   { value: '2023-10', label: 'Out 2023', titleMonth: 'Outubro' },
   { value: '2023-11', label: 'Nov 2023', titleMonth: 'Novembro' },
   { value: '2023-12', label: 'Dez 2023', titleMonth: 'Dezembro' },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.9, x: 20 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    x: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 260,
+      damping: 20,
+    },
+  },
+};
+
+const MotionTrigger = motion(DropdownMenuTrigger);
+
+interface MonthOption {
+  value: string;
+  label: string;
+  titleMonth: string;
+}
 
 export interface SongDistributionProps {
   selectedMonth: string;
@@ -104,14 +131,16 @@ export const SongDistribution: React.FC<SongDistributionProps> = ({
 
         {/* Month picker dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger
-            className="group flex items-center gap-1.5 text-primary font-label-lg text-label-lg transition-all select-none active:scale-95 cursor-pointer"
+          <MotionTrigger
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group flex items-center gap-1.5 text-primary font-label-lg text-label-lg transition-all select-none cursor-pointer"
           >
             Ver tudo
             <span className="material-symbols-outlined text-[18px] transition-transform duration-200 group-data-[state=open]:rotate-180">
               expand_more
             </span>
-          </DropdownMenuTrigger>
+          </MotionTrigger>
 
           <DropdownMenuContent align="end" className="w-44">
             {MONTHS.map((month) => (
@@ -128,11 +157,20 @@ export const SongDistribution: React.FC<SongDistributionProps> = ({
       </div>
 
       {/* Horizontal Carousel */}
-      <div className="flex overflow-x-auto scrollbar-hide snap-x pb-2 gap-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-20px' }}
+        className="flex overflow-x-auto scrollbar-hide snap-x pb-2 gap-4"
+      >
         {CARDS_DATA.map((card) => (
-          <div
+          <motion.div
             key={card.id}
-            className="snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border p-5 flex flex-col gap-3 bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow"
+            variants={cardVariants}
+            whileHover={{ y: -6, scale: 1.02, boxShadow: '0 8px 20px rgba(0, 0, 0, 0.06)' }}
+            whileTap={{ scale: 0.98 }}
+            className="snap-center min-w-[140px] rounded-3xl flex-shrink-0 transition-all select-none border p-5 flex flex-col gap-3 bg-surface-container-lowest text-on-surface border-outline-variant/30 custom-shadow cursor-pointer"
           >
             {/* Day & Date info */}
             <p className="text-label-sm font-label-sm uppercase tracking-wider text-on-surface-variant">
@@ -146,9 +184,9 @@ export const SongDistribution: React.FC<SongDistributionProps> = ({
                 {card.songsCount} músicas
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };
