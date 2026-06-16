@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SongDistribution, { CARDS_DATA } from '../components/SongDistribution';
+import { FloatingActionButton } from '@shared/components';
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -50,49 +51,61 @@ const ProximaEscalaBanner: React.FC = () => {
       </p>
 
       {/* Primary banner card – reuses same gradient/radius from SongDistribution active card */}
-      <div className="bg-primary rounded-3xl p-5 flex flex-col gap-3 shadow-lg">
-        {/* Top row: event badge + "Ver tudo" */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-label-sm font-label-sm text-on-primary opacity-80 uppercase tracking-wider leading-tight">
-            {NEXT_EVENT.dayOfWeek} • {NEXT_EVENT.dateStr} • Culto de Celebração
-          </p>
-          <button
-            type="button"
-            className="shrink-0 bg-white/20 hover:bg-white/30 text-on-primary text-label-sm font-label-sm px-3 py-1 rounded-full transition-colors active:scale-95 cursor-pointer"
-          >
-            Ver tudo
-          </button>
-        </div>
+      <div
+        className="relative overflow-hidden rounded-3xl p-5 flex flex-col gap-3 shadow-lg text-white"
+        style={{
+          background: 'linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)',
+          boxShadow: '0 10px 15px -3px rgba(99, 102, 241, 0.2)',
+        }}
+      >
+        {/* Concentric circles background elements */}
+        <div className="absolute right-[-20px] bottom-[-20px] w-[100px] h-[100px] border border-white/20 rounded-full pointer-events-none" />
+        <div className="absolute right-[40px] bottom-[-40px] w-[150px] h-[150px] border border-white/10 rounded-full pointer-events-none" />
 
-        {/* Event title */}
-        <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-primary">
-            {NEXT_EVENT.title}
-          </h2>
-          <p className="text-label-sm text-on-primary opacity-80 mt-0.5">
-            {totalMembers} Integrantes · {totalSongs} músicas
-          </p>
-        </div>
-
-        {/* Avatars */}
-        <div className="flex pt-1">
-          {shownAvatars.map((url, idx) => (
-            <div
-              key={idx}
-              className={`w-8 h-8 rounded-full border-2 border-primary overflow-hidden bg-surface-container-high ${idx > 0 ? '-ml-3' : ''}`}
+        <div className="relative z-10 flex flex-col gap-3">
+          {/* Top row: event badge + "Ver tudo" */}
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-label-sm font-label-sm text-white opacity-80 uppercase tracking-wider leading-tight">
+              {NEXT_EVENT.dayOfWeek} • {NEXT_EVENT.dateStr} • Culto de Celebração
+            </p>
+            <button
+              type="button"
+              className="shrink-0 bg-white/20 hover:bg-white/30 text-white text-label-sm font-label-sm px-3 py-1 rounded-full transition-colors active:scale-95 cursor-pointer"
             >
-              <img
-                alt={`Membro ${idx + 1}`}
-                className="w-full h-full object-cover"
-                src={url}
-              />
-            </div>
-          ))}
-          {extraCount > 0 && (
-            <div className="-ml-3 w-8 h-8 rounded-full border-2 border-primary bg-surface-container-lowest text-primary flex items-center justify-center text-[10px] font-bold">
-              +{extraCount}
-            </div>
-          )}
+              Ver tudo
+            </button>
+          </div>
+
+          {/* Event title */}
+          <div>
+            <h2 className="font-headline-lg text-headline-lg text-white">
+              {NEXT_EVENT.title}
+            </h2>
+            <p className="text-label-sm text-white opacity-80 mt-0.5">
+              {totalMembers} Integrantes · {totalSongs} músicas
+            </p>
+          </div>
+
+          {/* Avatars */}
+          <div className="flex pt-1">
+            {shownAvatars.map((url, idx) => (
+              <div
+                key={idx}
+                className={`w-8 h-8 rounded-full border-2 border-[#7C3AED] overflow-hidden bg-surface-container-high ${idx > 0 ? '-ml-3' : ''}`}
+              >
+                <img
+                  alt={`Membro ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                  src={url}
+                />
+              </div>
+            ))}
+            {extraCount > 0 && (
+              <div className="-ml-3 w-8 h-8 rounded-full border-2 border-[#7C3AED] bg-surface-container-lowest text-primary flex items-center justify-center text-[10px] font-bold">
+                +{extraCount}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -145,11 +158,11 @@ const SetlistSection: React.FC = () => (
           key={idx}
           className="flex items-center justify-between"
         >
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold w-6 h-6">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold w-6 h-6 shrink-0">
               {song.number}
             </span>
-            <p className="text-body-lg font-semibold text-on-surface">
+            <p className="text-body-lg font-semibold text-on-surface truncate">
               {song.title}
             </p>
           </div>
@@ -168,7 +181,7 @@ export const ScalesPreviewView: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState('2023-10');
 
   return (
-    <div className="w-full flex flex-col gap-6 pb-6">
+    <div className="w-full flex flex-col gap-6 pb-40">
       {/* 1. Próxima Escala */}
       <ProximaEscalaBanner />
 
@@ -185,13 +198,11 @@ export const ScalesPreviewView: React.FC = () => {
       <SetlistSection />
 
       {/* FAB - Nova Escala */}
-      <button
-        type="button"
-        className="fixed bottom-24 right-6 gradient-brand text-white flex items-center gap-2 px-6 py-3 rounded-full shadow-xl z-50 active:scale-95 transition-transform cursor-pointer font-bold text-label-lg"
-      >
-        <span className="material-symbols-outlined">add</span>
-        Nova Escala
-      </button>
+      <FloatingActionButton
+        onClick={() => console.info('Nova Escala')}
+        icon={<span className="material-symbols-outlined text-[20px]">add</span>}
+        label="Nova Escala"
+      />
     </div>
   );
 };
