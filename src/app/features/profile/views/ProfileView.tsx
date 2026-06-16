@@ -17,7 +17,7 @@ interface ProfileViewProps {
   hasUnreadNotifications?: boolean;
 }
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDsgr8hEMXWD3smxicINNeHHDp0jwIqYfk5L1SbzfC3lc5hacvBys6Kl-HfnwinW9P736vU3aCr8_FCkKzcqbP0fay92KwJX0jl1HKM7L-umYIaLMI4th2yFjFtkfbqfgVq__LDCfZeLPN0fJ-buEJ1hK1bDzdUBxG9-KblIiMgRcPPAcRzhk7DFIRNTr8yTdJJcedXJEh6ER_UgRl0mh_mLFgtw-gddkh8tF0vi2Un9eVjBgUHVQVhGL85Ae8pDytSaDiFk1iRRtE';
+const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aid/AP1WRLswmXqIplz1683Smw6K2v1v8G1iUK7XC9GpnmkZ77MtWlCtQM5_hSlxce0EK4dAFz9BQKi06bg2iMeDwClpAbDYqz32ik9B8KRsKZpCjFR7dg6Q1N9BgKjlGyhNN73dFMdcDTQUUDrH9zgiZCtPrxRKAXqu25U9zF6hk9gCSdIBZyIRsnSCjcz1VqMZyVWu7ujwGBt_Sx-9DxzL3KtElc7dTRqFnYsEqOedO6pucJJFYlAaWAXTqNp2fgs=s1600';
 
 const ProfileSkeleton: React.FC = () => (
   <div className="w-full flex flex-col p-6 animate-pulse space-y-6">

@@ -1,9 +1,10 @@
 import type { UserProfile, UpdateProfileDto, ChangePasswordDto } from '../types';
+import { showResponseToast } from '@src/lib/toast';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MOCK_PROFILE_KEY = 'worshipflow_mock_profile';
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDsgr8hEMXWD3smxicINNeHHDp0jwIqYfk5L1SbzfC3lc5hacvBys6Kl-HfnwinW9P736vU3aCr8_FCkKzcqbP0fay92KwJX0jl1HKM7L-umYIaLMI4th2yFjFtkfbqfgVq__LDCfZeLPN0fJ-buEJ1hK1bDzdUBxG9-KblIiMgRcPPAcRzhk7DFIRNTr8yTdJJcedXJEh6ER_UgRl0mh_mLFgtw-gddkh8tF0vi2Un9eVjBgUHVQVhGL85Ae8pDytSaDiFk1iRRtE';
+const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida/AP1WRLtRIKMDbeQdDo07toIYwRs7JXCqSi0H4I-k0smP_aKomYEpa0R6_BusE2i6QKVjUH2HDoJconeIJ496mNc40wTaf17vfHaxrlF3tA5KChyCPR9uaInpEPQabnQnGeBNV-3rpjD9zTcsdTyt8pdvkIxBfegbnA-pydQmRHJRqsehkdpFn3z8YMxlpsMr4QrjWgDFyWHcFNIJOcjYjXKpaTd5JLQQW8Q58dB-MBfeZXyH2Fngr_Qvj0QWlQ=s1600';
 
 /**
  * Obtém os dados mockados locais salvos no localStorage.
@@ -45,12 +46,16 @@ export const profileService = {
     try {
       const response = await fetch(`${BASE_URL}/profile`);
       if (!response.ok) {
+        showResponseToast(response.status, `Erro ao buscar perfil (HTTP ${response.status})`);
         throw new Error(`Erro na API de perfil: HTTP ${response.status}`);
       }
-      return await response.json() as UserProfile;
+      const data = await response.json() as UserProfile;
+      return data;
     } catch (error) {
       // Fallback off-line em ambiente de desenvolvimento
-      // TODO(security): Em ambiente de produção, garantir o envio de tokens JWT via cabeçalho Authorization ou cookies HttpOnly.
+      if (!(error instanceof Error && error.message.includes('HTTP'))) {
+        showResponseToast(500, 'Erro de rede: Carregando perfil offline.');
+      }
       return getMockProfile();
     }
   },
@@ -72,17 +77,24 @@ export const profileService = {
         body: JSON.stringify(data),
       });
       if (!response.ok) {
+        showResponseToast(response.status, `Erro ao salvar perfil (HTTP ${response.status})`);
         throw new Error(`Erro na atualização do perfil: HTTP ${response.status}`);
       }
-      return await response.json() as UserProfile;
+      const updated = await response.json() as UserProfile;
+      showResponseToast(200, 'Perfil atualizado com sucesso!');
+      return updated;
     } catch (error) {
       // Fallback off-line em ambiente de desenvolvimento: persiste a atualização localmente
+      if (!(error instanceof Error && error.message.includes('HTTP'))) {
+        showResponseToast(500, 'Erro de rede: Salvo localmente (offline).');
+      }
       const current = getMockProfile();
       const updated: UserProfile = {
         ...current,
         ...data,
       };
       localStorage.setItem(MOCK_PROFILE_KEY, JSON.stringify(updated));
+      showResponseToast(200, 'Perfil atualizado localmente!');
       return updated;
     }
   },
@@ -104,12 +116,18 @@ export const profileService = {
         body: JSON.stringify(data),
       });
       if (!response.ok) {
+        showResponseToast(response.status, `Erro ao alterar senha (HTTP ${response.status})`);
         throw new Error(`Erro ao alterar senha: HTTP ${response.status}`);
       }
+      showResponseToast(200, 'Senha atualizada com sucesso!');
     } catch (error) {
       // Fallback off-line em ambiente de desenvolvimento
-      // TODO(security): Adicionar validação JWT no backend
-      return new Promise((resolve) => setTimeout(resolve, 800));
+      if (error instanceof Error && error.message.includes('HTTP')) {
+        throw error;
+      }
+      showResponseToast(500, 'Erro de rede: Simulando sucesso (offline).');
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      showResponseToast(200, 'Senha alterada com sucesso (offline)!');
     }
   },
 };

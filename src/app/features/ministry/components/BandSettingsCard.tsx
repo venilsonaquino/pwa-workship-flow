@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface BandSettingsCardProps {
   initialName?: string;
@@ -11,6 +11,13 @@ export const BandSettingsCard: React.FC<BandSettingsCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [bandName, setBandName] = useState(initialName);
+
+  // Sincroniza o nome da banda vindo do serviço externo
+  useEffect(() => {
+    if (!isEditing) {
+      setBandName(initialName);
+    }
+  }, [initialName, isEditing]);
 
   const handleSave = () => {
     setIsEditing(false);

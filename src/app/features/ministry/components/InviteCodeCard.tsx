@@ -1,34 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface InviteCodeCardProps {
-  initialCode?: string;
+  code?: string;
   onCopy?: () => void;
+  onRegenerate?: () => void;
+  isUpdating?: boolean;
 }
 
 export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
-  initialCode = 'WORSHIP-X7K2',
+  code = 'WORSHIP-X7K2',
   onCopy,
+  onRegenerate,
+  isUpdating = false,
 }) => {
-  const [code, setCode] = useState(initialCode);
-
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
       if (onCopy) {
         onCopy();
       }
     });
-  };
-
-  const handleRegenerate = () => {
-    // Generate a random-looking invite code, e.g., WORSHIP-[4 alphanumeric characters]
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let suffix = '';
-    let suffix2 = '';
-    for (let i = 0; i < 4; i++) {
-      suffix += chars.charAt(Math.floor(Math.random() * chars.length));
-      suffix2 += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    setCode(`${suffix}-${suffix2}`);
   };
 
   return (
@@ -48,14 +38,19 @@ export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
         >
           <span className="material-symbols-outlined">content_copy</span>
         </button>
-        <button
-          onClick={handleRegenerate}
-          className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors flex items-center justify-center"
-          title="Regerar"
-          aria-label="Regerar código de convite"
-        >
-          <span className="material-symbols-outlined">refresh</span>
-        </button>
+        {onRegenerate && (
+          <button
+            onClick={onRegenerate}
+            disabled={isUpdating}
+            className={`p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors flex items-center justify-center ${
+              isUpdating ? 'animate-spin opacity-50' : ''
+            }`}
+            title="Regerar"
+            aria-label="Regerar código de convite"
+          >
+            <span className="material-symbols-outlined">refresh</span>
+          </button>
+        )}
       </div>
     </div>
   );

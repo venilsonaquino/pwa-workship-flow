@@ -1,4 +1,5 @@
 import { useState, Suspense } from 'react';
+import { Toaster } from 'sonner';
 import { AuthFlow } from '@features/auth';
 import { Layout } from '@shared/components';
 import { useAuth } from '@shared/hooks';
@@ -30,24 +31,27 @@ function App() {
   }
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
-      <Layout
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        showHeader={activeTab === 'scales'}
-        userName={userName}
-        avatarUrl={avatarUrl}
-        contentClassName={
-          activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
-            ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
-            : undefined
-        }
-        onNotificationClick={() => console.info('[Header] Notifications clicked')}
-      >
-        <AppRoutes activeTab={activeTab} />
-      </Layout>
-    </Suspense>
+    <>
+      <Toaster richColors position="top-right" />
+      <Suspense fallback={<LoadingScreen />}>
+        {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
+        <Layout
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          showHeader={activeTab === 'scales'}
+          userName={userName}
+          avatarUrl={avatarUrl}
+          contentClassName={
+            activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
+              ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
+              : undefined
+          }
+          onNotificationClick={() => console.info('[Header] Notifications clicked')}
+        >
+          <AppRoutes activeTab={activeTab} />
+        </Layout>
+      </Suspense>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BandSettingsCard from '../components/BandSettingsCard';
 import InviteCodeCard from '../components/InviteCodeCard';
@@ -6,6 +6,7 @@ import MemberRow from '../components/MemberRow';
 import type { Member } from '../components/MemberRow';
 import MemberManagementDrawer from '../components/MemberManagementDrawer';
 import { PageHeader } from '@shared/components';
+import { ministryService } from '../services/ministryService';
 
 interface MinistryViewProps {
   onBack?: () => void;
@@ -76,6 +77,64 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  // Estados para nome da banda e código de convite
+  const [bandName, setBandName] = useState('Banda da Colina');
+  const [inviteCode, setInviteCode] = useState('WORSHIP-X7K2');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdatingCode, setIsUpdatingCode] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchMinistry = async () => {
+      try {
+        const data = await ministryService.getMinistry();
+        if (active) {
+          setBandName(data.name);
+          setInviteCode(data.inviteCode);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar dados do ministério', err);
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchMinistry();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleNameChange = async (newName: string) => {
+    try {
+      const updated = await ministryService.updateMinistryName(newName);
+      setBandName(updated.name);
+    } catch (err) {
+      console.error('Erro ao salvar nome da banda', err);
+    }
+  };
+
+  const handleRegenerateCode = async () => {
+    setIsUpdatingCode(true);
+    try {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let suffix = '';
+      let suffix2 = '';
+      for (let i = 0; i < 4; i++) {
+        suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+        suffix2 += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const newCode = `${suffix}-${suffix2}`;
+      const updated = await ministryService.updateInviteCode(newCode);
+      setInviteCode(updated.inviteCode);
+    } catch (err) {
+      console.error('Erro ao regenerar código de convite', err);
+    } finally {
+      setIsUpdatingCode(false);
+    }
+  };
+
   const handleCopyCode = () => {
     setShowToast(true);
     setTimeout(() => {
@@ -113,8 +172,22 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
           Informações da Banda
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <BandSettingsCard />
-          <InviteCodeCard onCopy={handleCopyCode} />
+          {isLoading ? (
+            <div className="bg-surface-container-lowest p-5 rounded-xl shadow-sm h-[88px] animate-pulse" />
+          ) : (
+            <BandSettingsCard initialName={bandName} onNameChange={handleNameChange} />
+          )}
+
+          {isLoading ? (
+            <div className="bg-surface-container-lowest p-5 rounded-xl shadow-sm h-[88px] animate-pulse" />
+          ) : (
+            <InviteCodeCard
+              code={inviteCode}
+              onCopy={handleCopyCode}
+              onRegenerate={handleRegenerateCode}
+              isUpdating={isUpdatingCode}
+            />
+          )}
         </div>
       </section>
 
