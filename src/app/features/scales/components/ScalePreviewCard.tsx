@@ -26,13 +26,13 @@ const MEMBERS_DATA: BandMember[] = [
 ];
 
 const SONGS_DATA: SongItem[] = [
-  { number: '01', title: 'Ousado Amor', key: 'E Major' },
-  { number: '02', title: 'Tua Presença', key: 'G Major' },
-  { number: '03', title: 'Digno', key: 'A Major' },
-  { number: '04', title: 'Vim Para Adorar-te', key: 'D Major' },
-  { number: '05', title: 'Que Se Abram Os Céus', key: 'C Major' },
-  { number: '06', title: 'Lindo És', key: 'A Major' },
-  { number: '07', title: 'Aclame ao Senhor', key: 'G Major' },
+  { number: '01', title: 'Ousado Amor', key: 'E Maior' },
+  { number: '02', title: 'Tua Presença', key: 'G Maior' },
+  { number: '03', title: 'Digno', key: 'A Maior' },
+  { number: '04', title: 'Vim Para Adorar-te', key: 'D Maior' },
+  { number: '05', title: 'Que Se Abram Os Céus', key: 'C Maior' },
+  { number: '06', title: 'Lindo És', key: 'A Maior' },
+  { number: '07', title: 'Aclame ao Senhor', key: 'G Maior' },
 ];
 
 interface BandMembersGridProps {

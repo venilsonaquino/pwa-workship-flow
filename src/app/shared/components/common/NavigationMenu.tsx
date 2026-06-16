@@ -22,7 +22,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
   const tabs: TabItem[] = [
     { id: 'scales', label: 'Escalas', icon: 'event_note' },
     { id: 'songs', label: 'Músicas', icon: 'music_note' },
-    { id: 'repertoire', label: 'Repertório', icon: 'queue_music' },
+    { id: 'ranking', label: 'Ranking', icon: 'leaderboard' },
     { id: 'profile', label: 'Perfil', icon: 'account_circle' },
   ];
 

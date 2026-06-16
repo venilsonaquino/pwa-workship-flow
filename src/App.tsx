@@ -39,7 +39,7 @@ function App() {
         userName={userName}
         avatarUrl={avatarUrl}
         contentClassName={
-          activeTab === 'profile' || activeTab === 'songs'
+          activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
             ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
             : undefined
         }

@@ -18,7 +18,7 @@ export const SongsFilterTabs = ({
   const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
 
   return (
-    <section className="flex flex-col pt-6 px-5">
+    <section className="flex flex-col">
       <div className="relative flex w-full border-b border-outline-variant/20">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;

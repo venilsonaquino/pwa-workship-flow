@@ -4,6 +4,7 @@ import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
+import { RankingView } from '@features/ranking';
 import { useAuth } from '@shared/hooks';
 
 interface AppRoutesProps {
@@ -48,6 +49,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab }) => {
       />
     ),
     scales: <ScalesPreviewView />,
+    ranking: <RankingView />,
   };
 
   const activeView = tabComponents[activeTab] ?? <UserListView />;
