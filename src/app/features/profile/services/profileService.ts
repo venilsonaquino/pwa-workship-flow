@@ -4,7 +4,7 @@ import { showResponseToast } from '@src/lib/toast';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MOCK_PROFILE_KEY = 'worshipflow_mock_profile';
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida/AP1WRLtRIKMDbeQdDo07toIYwRs7JXCqSi0H4I-k0smP_aKomYEpa0R6_BusE2i6QKVjUH2HDoJconeIJ496mNc40wTaf17vfHaxrlF3tA5KChyCPR9uaInpEPQabnQnGeBNV-3rpjD9zTcsdTyt8pdvkIxBfegbnA-pydQmRHJRqsehkdpFn3z8YMxlpsMr4QrjWgDFyWHcFNIJOcjYjXKpaTd5JLQQW8Q58dB-MBfeZXyH2Fngr_Qvj0QWlQ=s1600';
+const DEFAULT_AVATAR = '';
 
 /**
  * Obtém os dados mockados locais salvos no localStorage.
