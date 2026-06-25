@@ -152,7 +152,9 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const [activeControl, setActiveControl] = useState<'none' | 'scroll' | 'tom'>('none');
   const [isControlsVisible, setIsControlsVisible] = useState(true);
   const lastScrollYRef = useRef(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const accumScrollYRef = useRef(0);
+  const contentWrapperRef = useRef<HTMLDivElement | null>(null);
+  const isUserTouchingRef = useRef(false);
 
   // Find the active scrollable container (.scroll-container-native or window)
   const getScrollContainer = (): HTMLElement | Window => {
@@ -181,42 +183,106 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
     }
   }, [isOpen, song]);
 
-  // Auto-scroll engine using the appropriate container
+  // Auto-scroll engine using the appropriate container with requestAnimationFrame and time-delta
   useEffect(() => {
-    const stop = () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
     if (!isScrolling) {
-      stop();
-      return stop;
+      // Reset transform when stopping
+      if (contentWrapperRef.current) {
+        contentWrapperRef.current.style.transform = '';
+      }
+      return;
     }
 
     const container = getScrollContainer();
+    // Initialize float accumulator with the current scroll position
+    accumScrollYRef.current = container instanceof Window ? window.scrollY : container.scrollTop;
 
-    timerRef.current = setInterval(() => {
+    let lastTime = performance.now();
+    let rafId: number;
+
+    const tick = (now: number) => {
+      // Calculate elapsed time in seconds
+      const deltaTime = (now - lastTime) / 1000;
+      lastTime = now;
+
+      // Cap delta time to prevent massive jumps when tab is blurred/backgrounded
+      const cappedDelta = Math.min(deltaTime, 0.1);
+
+      // Only increment the auto-scroll position if the user is NOT manually touching/dragging.
+      // This suspends the auto-scrolling while they manually interact.
+      if (!isUserTouchingRef.current) {
+        const speedPixelsPerSecond = scrollSpeedVal * 12.0;
+        accumScrollYRef.current += speedPixelsPerSecond * cappedDelta;
+      }
+
       let currentScrollY = 0;
       let maxScroll = 0;
 
+      const integerScroll = Math.floor(accumScrollYRef.current);
+      const fraction = accumScrollYRef.current - integerScroll;
+
+      // Apply subpixel translation to the content wrapper for GPU fluid rendering
+      if (contentWrapperRef.current) {
+        contentWrapperRef.current.style.transform = `translate3d(0, -${fraction}px, 0)`;
+      }
+
       if (container instanceof Window) {
-        window.scrollBy(0, scrollSpeedVal);
+        window.scrollTo(0, integerScroll);
         currentScrollY = window.scrollY;
         maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       } else {
-        container.scrollTop += scrollSpeedVal;
+        container.scrollTop = integerScroll;
         currentScrollY = container.scrollTop;
         maxScroll = container.scrollHeight - container.clientHeight;
       }
 
       if (currentScrollY >= maxScroll - 10) {
         setIsScrolling(false);
+      } else {
+        rafId = requestAnimationFrame(tick);
       }
-    }, 16);
+    };
 
-    return stop;
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      // Reset transform on cleanup
+      if (contentWrapperRef.current) {
+        contentWrapperRef.current.style.transform = '';
+      }
+    };
   }, [isScrolling, scrollSpeedVal]);
+
+  // Touch & Wheel event listeners to identify manual user scroll and suspend programmatic updates
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const container = getScrollContainer();
+
+    const handleTouchStart = () => {
+      isUserTouchingRef.current = true;
+    };
+    const handleTouchEnd = () => {
+      isUserTouchingRef.current = false;
+    };
+    const handleWheel = () => {
+      // Wheel events instantly change scroll coordinates, so sync the accumulator
+      accumScrollYRef.current = container instanceof Window ? window.scrollY : container.scrollTop;
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    container.addEventListener('wheel', handleWheel, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [isOpen]);
 
   // Scroll tracker to show/hide bottom controls bar based on scroll direction
   useEffect(() => {
@@ -228,8 +294,17 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       const currentScrollY = container instanceof Window ? window.scrollY : container.scrollTop;
       const lastScrollY = lastScrollYRef.current;
 
-      // If auto-scrolling or a control sub-panel is open, keep controls visible
-      if (isScrolling || activeControl !== 'none') {
+      // Sync accumulator if user manually scrolls via touch drag
+      if (isScrolling && isUserTouchingRef.current) {
+        accumScrollYRef.current = currentScrollY;
+      }
+
+      // If auto-scrolling, return immediately to avoid resetting float accumulator.
+      // Controls visibility is already locked to true while isScrolling is active.
+      if (isScrolling) return;
+
+      // If a control sub-panel is open, keep controls visible
+      if (activeControl !== 'none') {
         setIsControlsVisible(true);
         lastScrollYRef.current = currentScrollY;
         return;
@@ -294,6 +369,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         showBackButton={true}
       />
 
+      <div ref={contentWrapperRef} style={{ willChange: 'transform' }}>
       {/* ── Tab bar ───────────────────────────────────────────────── */}
       <div className="flex-shrink-0 px-4 pb-3 flex items-center gap-3">
         <div className="flex items-center border border-outline-variant rounded-2xl overflow-hidden">
@@ -438,9 +514,10 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
           </pre>
         );
       })}
+      </div>
       <div className="h-20" />
 
-      {/* Style overrides for custom range slider styling */}
+      {/* Style overrides for custom range slider and GPU compositing */}
       <style dangerouslySetInnerHTML={{
         __html: `
         .speed-slider-input::-webkit-slider-thumb {
@@ -469,6 +546,11 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         }
         .speed-slider-input::-moz-range-thumb:active {
           transform: scaleY(1.3) scaleX(1.3);
+        }
+        .scroll-container-native {
+          will-change: scroll-position;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
         }
       `}} />
 
@@ -554,13 +636,17 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
                 {/* Range input slider */}
                 <input
                   type="range"
-                  min="0.1"
-                  max="5"
-                  step="0.1"
+                  min="0.0"
+                  max="2.0"
+                  step="0.05"
                   value={scrollSpeedVal}
-                  onChange={(e) => setScrollSpeedVal(parseFloat(e.target.value))}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setScrollSpeedVal(val);
+                    console.log("[Cifra Scroll] Speed changed to:", val, "Actual pixels/tick:", val * 0.2);
+                  }}
                   style={{
-                    background: `linear-gradient(to right, #ffffff 0%, #ffffff ${((scrollSpeedVal - 0.1) / 4.9) * 100}%, rgba(255, 255, 255, 0.12) ${((scrollSpeedVal - 0.1) / 4.9) * 100}%, rgba(255, 255, 255, 0.12) 100%)`
+                    background: `linear-gradient(to right, #ffffff 0%, #ffffff ${(scrollSpeedVal / 2.0) * 100}%, rgba(255, 255, 255, 0.12) ${(scrollSpeedVal / 2.0) * 100}%, rgba(255, 255, 255, 0.12) 100%)`
                   }}
                   className="speed-slider-input flex-1 h-1.5 rounded-full appearance-none cursor-pointer outline-none transition-all"
                 />
