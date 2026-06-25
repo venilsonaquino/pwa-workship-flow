@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
           suppressWarnings: true,
         },
         workbox: {
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // Allow up to 10 MiB to cache large assets like ceia.png
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           // Cache-first strategy for static assets
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           runtimeCaching: [

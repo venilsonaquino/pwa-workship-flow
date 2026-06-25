@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@shared/components';
-import scaleBg from '@assets/ceia.png';
 
 export interface BandMember {
   role: string;
@@ -200,7 +199,7 @@ export const ScalePreviewCard: React.FC = () => {
           <img
             alt="Scale Background"
             className="w-full h-full object-cover"
-            src={scaleBg}
+            src={''}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />
           <div
