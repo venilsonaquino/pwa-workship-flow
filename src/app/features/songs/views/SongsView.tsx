@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
@@ -216,11 +216,13 @@ const INITIAL_SONGS: Song[] = [
 export interface SongsViewProps {
   onNotificationClick?: () => void;
   hasUnreadNotifications?: boolean;
+  onShowNavigationChange?: (show: boolean) => void;
 }
 
 export const SongsView = ({
   onNotificationClick,
   hasUnreadNotifications = true,
+  onShowNavigationChange,
 }: SongsViewProps) => {
   const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
@@ -230,6 +232,11 @@ export const SongsView = ({
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
   const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
+
+  // Notify parent component when cifra view changes
+  useEffect(() => {
+    onShowNavigationChange?.(!selectedSongForCifra);
+  }, [selectedSongForCifra, onShowNavigationChange]);
 
   const handleViewCifra = (song: Song) => {
     setSelectedSongForDrawer(null);

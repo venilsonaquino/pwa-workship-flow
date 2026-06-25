@@ -2,126 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@shared/components';
 import type { Song } from '../types';
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
-
 type TabOption = 'principal' | 'letra';
 type ScrollSpeed = 1 | 2 | 3;
-
-// ─── Chord Shape Data ──────────────────────────────────────────────────────────
-
-interface ChordShape {
-  frets: [number, number, number, number, number, number];
-  baseFret?: number;
-  barre?: { fret: number; from: number; to: number };
-}
-
-const CHORD_SHAPES: Record<string, ChordShape> = {
-  Dm7: { frets: [-1, -1, 0, 2, 1, 1] },
-  Bb9: { frets: [-1, 1, 3, 1, 3, 1], barre: { fret: 1, from: 1, to: 5 } },
-  F: { frets: [1, 3, 3, 2, 1, 1], barre: { fret: 1, from: 0, to: 5 } },
-  F2: { frets: [-1, -1, 3, 0, 1, 3] },
-  C4: { frets: [-1, 3, 3, 0, 1, 1] },
-  'F7M': { frets: [-1, -1, 3, 2, 1, 0] },
-  'F7M(9)': { frets: [-1, -1, 3, 2, 1, 0] },
-  'F6': { frets: [-1, -1, 3, 2, 1, 2] },
-  'C11/E': { frets: [0, 3, 3, 0, 3, 3], barre: { fret: 3, from: 1, to: 5 } },
-};
-
-// ─── SVG chord diagram constants ───────────────────────────────────────────────
-
-const STR = 6;   // number of strings
-const FRETS = 4;   // frets shown
-const SS = 13;  // string spacing (px)
-const FH = 14;  // fret height (px)
-const PL = 12;  // left padding (for fret number)
-const PM = 18;  // top margin for open/muted markers
-const NUT = 3;   // nut thickness (px)
-const SVGW = PL + (STR - 1) * SS + 6;
-const SVGH = PM + NUT + FRETS * FH + 6;
-
-// ─── ChordDiagram ──────────────────────────────────────────────────────────────
-
-function ChordDiagram({ name, shape }: { name: string; shape: ChordShape }) {
-  const bf = shape.baseFret ?? 1;
-  const showNum = bf > 1;
-  const sx = (i: number) => PL + i * SS;
-  const fy = (f: number) => PM + NUT + f * FH;
-
-  return (
-    <div className="flex flex-col items-center flex-shrink-0 gap-1">
-      <span className="text-[12px] font-bold text-primary leading-none">{name}</span>
-      <svg width={SVGW} height={SVGH} viewBox={`0 0 ${SVGW} ${SVGH}`} style={{ overflow: 'visible' }}>
-
-        {/* Fret number label */}
-        {showNum && (
-          <text x={PL - 3} y={fy(0) + FH / 2 + 4} fontSize={8} textAnchor="end" fill="var(--on-surface-variant)">{bf}</text>
-        )}
-
-        {/* Nut (thick) or open fret line */}
-        {!showNum
-          ? <rect x={PL} y={PM} width={(STR - 1) * SS} height={NUT} rx={1} fill="var(--on-surface)" />
-          : <line x1={PL} y1={PM + NUT} x2={PL + (STR - 1) * SS} y2={PM + NUT} stroke="var(--outline-variant)" strokeWidth={1} />
-        }
-
-        {/* Fret lines */}
-        {Array.from({ length: FRETS + 1 }, (_, f) => (
-          <line key={f} x1={PL} y1={fy(f)} x2={PL + (STR - 1) * SS} y2={fy(f)} stroke="var(--outline-variant)" strokeWidth={0.8} />
-        ))}
-
-        {/* String lines */}
-        {Array.from({ length: STR }, (_, s) => (
-          <line key={s} x1={sx(s)} y1={PM} x2={sx(s)} y2={fy(FRETS)} stroke="var(--outline-variant)" strokeWidth={0.8} />
-        ))}
-
-        {/* Open / muted markers above nut */}
-        {shape.frets.map((fret, s) => {
-          if (fret === -1) {
-            return (
-              <text key={s} x={sx(s)} y={PM - 5} fontSize={10} textAnchor="middle" fill="var(--on-surface-variant)" fontFamily="sans-serif">x</text>
-            );
-          }
-          if (fret === 0) {
-            return (
-              <circle key={s} cx={sx(s)} cy={PM - 8} r={3.5} fill="none" stroke="var(--on-surface-variant)" strokeWidth={1.2} />
-            );
-          }
-          return null;
-        })}
-
-        {/* Barre bar */}
-        {shape.barre && (() => {
-          const rel = shape.barre.fret - bf + 1;
-          if (rel < 1 || rel > FRETS) return null;
-          const cy = fy(rel - 1) + FH / 2;
-          return (
-            <rect
-              x={sx(shape.barre.from)} y={cy - 5.5}
-              width={sx(shape.barre.to) - sx(shape.barre.from)}
-              height={11} rx={5.5}
-              fill="var(--primary)" opacity={0.9}
-            />
-          );
-        })()}
-
-        {/* Fretted note dots */}
-        {shape.frets.map((fret, s) => {
-          if (fret <= 0) return null;
-          const rel = fret - bf + 1;
-          if (rel < 1 || rel > FRETS) return null;
-          const isBarreMiddle =
-            shape.barre &&
-            shape.barre.fret === fret &&
-            s > shape.barre.from &&
-            s < shape.barre.to;
-          if (isBarreMiddle) return null;
-          return <circle key={s} cx={sx(s)} cy={fy(rel - 1) + FH / 2} r={5.5} fill="var(--primary)" />;
-        })}
-      </svg>
-    </div>
-  );
-}
-
-// ─── Cifra parser ──────────────────────────────────────────────────────────────
 
 const CHORD_RE = /^[A-G][b#]?[0-9a-zA-Z()/#b]*$/;
 
@@ -180,20 +62,6 @@ function parseCifra(lines: string[]): CifraSegment[] {
   return out;
 }
 
-function extractUniqueChords(lines: string[]): string[] {
-  const seen = new Set<string>();
-  const re = /[A-G][b#]?[0-9a-zA-Z()/#b]*/g;
-  for (const line of lines) {
-    if (!isChordLine(line)) continue;
-    for (const m of line.matchAll(re)) {
-      if (isChordToken(m[0])) seen.add(m[0]);
-    }
-  }
-  return [...seen];
-}
-
-// ─── ChordLyricPair ────────────────────────────────────────────────────────────
-
 interface PairProps {
   chords: string;
   lyrics: string;
@@ -202,28 +70,30 @@ interface PairProps {
 }
 
 function ChordLyricPair({ chords, lyrics, fontSize, showChords }: PairProps) {
-  const chordSize = Math.max(fontSize - 2, 10);
   return (
     <div className="mb-4">
       {showChords && (
         <pre
           className="text-primary font-mono whitespace-pre leading-tight"
-          style={{ fontSize: `${chordSize}px`, margin: 0 }}
         >
           {chords}
         </pre>
       )}
       <pre
-        className="text-on-background font-mono whitespace-pre leading-relaxed"
-        style={{ fontSize: `${fontSize}px`, margin: 0 }}
+        className="text-on-background whitespace-pre"
+        style={{
+          fontFamily: '"Roboto Mono", "Courier New", Courier, monospace',
+          fontWeight: 400,
+          fontSize: `${fontSize}px`,
+          lineHeight: `${fontSize * 1.6}px`,
+          margin: 0
+        }}
       >
         {lyrics}
       </pre>
     </div>
   );
 }
-
-// ─── SongCifraReader ───────────────────────────────────────────────────────────
 
 export interface SongCifraReaderProps {
   isOpen: boolean;
@@ -300,7 +170,6 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   }
 
   const segments = parseCifra(linesToParse);
-  const uniqueChords = extractUniqueChords(linesToParse);
   const showChords = activeTab === 'principal';
 
   return (
@@ -328,14 +197,6 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
           </button>
           <div className="w-px h-5 bg-outline-variant" />
           <button
-            className={`px-2.5 py-1.5 flex items-center justify-center transition-all ${activeTab === 'principal' ? 'text-on-surface' : 'text-on-surface-variant'
-              }`}
-            aria-label="Salvar"
-          >
-            <span className="material-symbols-outlined text-[18px]">bookmark</span>
-          </button>
-          <div className="w-px h-5 bg-outline-variant" />
-          <button
             id="cifra-tab-letra"
             onClick={() => setActiveTab('letra')}
             className={`px-4 py-1.5 text-sm transition-all ${activeTab === 'letra'
@@ -343,13 +204,9 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
               : 'text-on-surface-variant'
               }`}
           >
-            Lyrics
+            Letras
           </button>
           <div className="w-px h-5 bg-outline-variant" />
-          <button className="px-3 py-1.5 flex items-center gap-0.5 text-on-surface-variant">
-            <span className="text-sm">Mais</span>
-            <span className="material-symbols-outlined text-[16px]">expand_more</span>
-          </button>
         </div>
 
         {/* Font controls */}
@@ -468,8 +325,14 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
           return (
             <pre
               key={idx}
-              className="text-primary font-mono whitespace-pre mb-3"
-              style={{ fontSize: `${Math.max(fontSize - 2, 10)}px`, margin: '0 0 12px' }}
+              className="text-primary whitespace-pre"
+              style={{
+                fontFamily: '"Roboto Mono", "Courier New", Courier, monospace',
+                fontWeight: 700,
+                fontSize: `${fontSize}px`,
+                lineHeight: `${fontSize * 1.6}px`,
+                margin: '0 0 12px'
+              }}
             >
               {seg.chords}
             </pre>
@@ -479,8 +342,14 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         return (
           <pre
             key={idx}
-            className="text-on-background font-mono whitespace-pre"
-            style={{ fontSize: `${fontSize}px`, margin: '0 0 4px' }}
+            className="text-on-background whitespace-pre"
+            style={{
+              fontFamily: '"Roboto Mono", "Courier New", Courier, monospace',
+              fontWeight: 400,
+              fontSize: `${fontSize}px`,
+              lineHeight: `${fontSize * 1.6}px`,
+              margin: '0 0 4px'
+            }}
           >
             {seg.text}
           </pre>

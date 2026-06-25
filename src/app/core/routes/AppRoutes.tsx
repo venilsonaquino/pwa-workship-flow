@@ -9,6 +9,7 @@ import { useAuth } from '@shared/hooks';
 
 interface AppRoutesProps {
   activeTab: string;
+  onShowNavigationChange?: (show: boolean) => void;
 }
 
 const handleNotificationClick = () => console.info('[Header] Notifications clicked');
@@ -28,7 +29,7 @@ const TAB_STYLE: React.CSSProperties = {
   minHeight: '100%',
 };
 
-export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab }) => {
+export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab, onShowNavigationChange }) => {
   const { userName, userEmail, userRole, avatarUrl } = useAuth();
 
   const tabComponents: Record<string, React.ReactNode> = {
@@ -46,6 +47,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab }) => {
       <SongsView
         onNotificationClick={handleNotificationClick}
         hasUnreadNotifications={true}
+        onShowNavigationChange={onShowNavigationChange}
       />
     ),
     scales: <ScalesPreviewView />,

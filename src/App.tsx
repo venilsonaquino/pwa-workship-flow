@@ -20,7 +20,7 @@ function LoadingScreen() {
 function App() {
   const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
-
+  const [showNavigation, setShowNavigation] = useState(true);
 
   if (!isAuthenticated) {
     return (
@@ -39,16 +39,17 @@ function App() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           showHeader={activeTab === 'scales'}
+          showNavigation={showNavigation}
           userName={userName}
           avatarUrl={avatarUrl}
           contentClassName={
             activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
-              ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
+              ? `flex-1 scroll-container-native ${!showNavigation ? 'pb-0' : 'pb-24'} scrollbar-hide overflow-x-hidden`
               : undefined
           }
           onNotificationClick={() => console.info('[Header] Notifications clicked')}
         >
-          <AppRoutes activeTab={activeTab} />
+          <AppRoutes activeTab={activeTab} onShowNavigationChange={setShowNavigation} />
         </Layout>
       </Suspense>
     </>
