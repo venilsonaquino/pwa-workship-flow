@@ -10,4 +10,8 @@ export interface Song {
   isHeard: boolean;
   image: string;
   suggestedBy?: string;
+  /** Musical key, e.g. 'F', 'Am' */
+  tom?: string;
+  /** Raw cifra lines as received from the data source */
+  cifra?: string[];
 }

@@ -5,6 +5,7 @@ export interface EngagementDrawerProps {
   isOpen: boolean;
   song: Song | null;
   onClose: () => void;
+  onViewCifra?: (song: Song) => void;
 }
 
 interface Member {
@@ -63,7 +64,9 @@ export const EngagementDrawer = ({
   isOpen,
   song,
   onClose,
+  onViewCifra,
 }: EngagementDrawerProps) => {
+
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -172,6 +175,30 @@ export const EngagementDrawer = ({
             })}
           </div>
 
+          {/* Cifra Reader Section */}
+          {song.cifra && (
+            <div className="pt-6 border-t border-outline-variant/30">
+              <h3 className="text-label-sm font-bold text-outline mb-4 tracking-wider uppercase">
+                Cifra
+              </h3>
+              <button
+                onClick={() => { onViewCifra?.(song); onClose(); }}
+                className="w-full flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm hover:bg-primary/10 transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[20px]">piano</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-label-lg text-on-surface">Visualizar Cifra</p>
+                    <p className="text-[10px] text-outline">Tom: {song.tom ?? '—'} · Acordes e letra</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-primary text-[20px]">chevron_right</span>
+              </button>
+            </div>
+          )}
+
           {/* External Links Section */}
           <div className="pt-6 border-t border-outline-variant/30">
             <h3 className="text-label-sm font-bold text-outline mb-4 tracking-wider uppercase">
@@ -235,6 +262,7 @@ export const EngagementDrawer = ({
           </div>
         </div>
       </div>
+
     </>
   );
 };

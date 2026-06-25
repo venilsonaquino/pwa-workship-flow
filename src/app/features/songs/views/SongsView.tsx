@@ -4,6 +4,7 @@ import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SongSearchView from './SongSearchView';
 import EngagementDrawer from '../components/EngagementDrawer';
+import SongCifraReader from '../components/SongCifraReader';
 import { PageHeader, Button, FloatingActionButton, Header } from '@shared/components';
 import type { Song } from '../types';
 
@@ -85,6 +86,130 @@ const INITIAL_SONGS: Song[] = [
     isHeard: true,
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q',
     suggestedBy: 'Pedro'
+  },
+  {
+    id: '7',
+    title: 'The Scientist',
+    artist: 'Coldplay',
+    category: 'repertorio',
+    duration: '5:09',
+    progress: '0:00',
+    progressPct: 0,
+    engagement: 88,
+    isHeard: false,
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
+    suggestedBy: 'Pedro',
+    tom: 'F',
+    cifra: [
+      'Afinação: E A D G C F',
+      '',
+      '[Primeira Parte]',
+      '',
+      'Dm7             Bb9',
+      '    Come up to meet you',
+      '              F',
+      'Tell you I\'m sorry',
+      '                    F2',
+      'You don\'t know how lovely you are',
+      '',
+      'Dm7                Bb9',
+      '    I had to find you',
+      '            F',
+      'Tell you I need you',
+      '               F2',
+      'Tell you I\'ll set you apart',
+      '',
+      'Dm7               Bb9',
+      '    Tell me your secrets',
+      '                  F',
+      'And ask me your questions',
+      '             F2',
+      'Oh, lets go back to the start',
+      '',
+      'Dm7             Bb9',
+      '    Running in circles',
+      '           F',
+      'Coming up tails',
+      '             F2',
+      'Heads on a science apart',
+      '',
+      '[Refrão]',
+      '',
+      'Bb9                         F',
+      '    Nobody said it was easy',
+      '              F2',
+      'It\'s such a shame for us to part',
+      'Bb9                         F',
+      '    Nobody said it was easy',
+      '             F7M(9)',
+      'No one ever said',
+      '          F6      C4',
+      'It would be this hard',
+      '',
+      'Oh take me back to the start',
+      '',
+      '( F  Bb9  F  F2 )',
+      '',
+      '[Segunda Parte]',
+      '',
+      'Dm7              Bb9',
+      '    I was just guessing',
+      '                F',
+      'At numbers and figures',
+      '              F2',
+      'Pulling your puzzles apart',
+      '',
+      'Dm7                Bb9',
+      '    Questions of science',
+      '              F',
+      'Science and progress',
+      '                 F2',
+      'Do not speak as loud as my heart',
+      '',
+      'Dm7              Bb9',
+      '    Tell me you love me',
+      '               F',
+      'Come back and haunt me',
+      '          F2',
+      'Oh and I rush to the start',
+      '',
+      'Dm7             Bb9',
+      '    Running in circles',
+      '             F',
+      'Chasing our tails',
+      '        F2        C11/E',
+      'Coming back as we are',
+      '',
+      '[Refrão]',
+      '',
+      'Bb9                         F',
+      '    Nobody said it was easy',
+      '              F2',
+      'It\'s such a shame for us to part',
+      'Bb9                         F',
+      '    Nobody said it was easy',
+      '             F7M',
+      'No one ever said',
+      '          F6    C4',
+      'It would be so hard',
+      '                        F',
+      'I\'m going back to the start',
+      '',
+      '( Bb9  F  F2 )',
+      '',
+      '[Final]',
+      '',
+      '( Dm7  Bb9  F  F2 )',
+      '',
+      'Dm7    Bb9           F  F2',
+      '    Oh uhhh uh uh uh uh',
+      'Dm7    Bb9           F  F2',
+      '    Oh uhhh uh uh uh uh',
+      'Dm7    Bb9           F  F2',
+      '    Oh uhhh uh uh uh uh',
+      'Dm7    Bb9           F',
+      '    Oh uhhh uh uh uh uh'
+    ]
   }
 ];
 
@@ -104,6 +229,12 @@ export const SongsView = ({
   const [showSearchView, setShowSearchView] = useState(false);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
+  const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
+
+  const handleViewCifra = (song: Song) => {
+    setSelectedSongForDrawer(null);
+    setSelectedSongForCifra(song);
+  };
 
   const handleSearchToggle = () => {
     setIsSearchExpanded(!isSearchExpanded);
@@ -227,8 +358,25 @@ export const SongsView = ({
   );
 
   return (
+    <>
     <AnimatePresence mode="wait" initial={false}>
-      {showSearchView ? (
+      {selectedSongForCifra ? (
+        <motion.div
+          key="cifra-reader"
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+          className="bg-background"
+        >
+          <SongCifraReader
+            isOpen={!!selectedSongForCifra}
+            song={selectedSongForCifra}
+            onClose={() => setSelectedSongForCifra(null)}
+          />
+        </motion.div>
+      ) : showSearchView ? (
         <motion.div
           key="search-view"
           initial={{ x: '100%' }}
@@ -328,6 +476,7 @@ export const SongsView = ({
             isOpen={!!selectedSongForDrawer}
             song={selectedSongForDrawer}
             onClose={() => setSelectedSongForDrawer(null)}
+            onViewCifra={handleViewCifra}
           />
 
           {/* Floating Action Button (FAB) */}
@@ -343,6 +492,7 @@ export const SongsView = ({
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 };
 
