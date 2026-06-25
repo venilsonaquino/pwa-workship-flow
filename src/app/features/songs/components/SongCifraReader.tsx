@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Song } from '../types';
 
 type TabOption = 'principal' | 'letra';
-type ScrollSpeed = 1 | 2 | 3;
 
 const CHORD_RE = /^[A-G][b#]?[0-9a-zA-Z()/#b]*$/;
 
@@ -20,7 +19,7 @@ function isChordLine(line: string): boolean {
 }
 
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const NOTES_FLAT  = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 export function transposeNote(note: string, semitones: number): string {
   let idx = NOTES_SHARP.indexOf(note);
@@ -110,7 +109,7 @@ interface PairProps {
 
 function ChordLyricPair({ chords, lyrics, fontSize, showChords }: PairProps) {
   return (
-    <div className="mb-4">
+    <div className="">
       {showChords && (
         <pre
           className="text-primary font-mono whitespace-pre leading-tight"
@@ -151,7 +150,15 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const [scrollSpeedVal, setScrollSpeedVal] = useState(1.0);
   const [transposeOffset, setTransposeOffset] = useState(0);
   const [activeControl, setActiveControl] = useState<'none' | 'scroll' | 'tom'>('none');
+  const [isControlsVisible, setIsControlsVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Find the active scrollable container (.scroll-container-native or window)
+  const getScrollContainer = (): HTMLElement | Window => {
+    const container = document.querySelector('.scroll-container-native');
+    return (container as HTMLElement) || window;
+  };
 
   // Reset on close & scroll to top on open
   useEffect(() => {
@@ -160,14 +167,21 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       setActiveTab('principal');
       setTransposeOffset(0);
       setActiveControl('none');
+      setIsControlsVisible(true);
     } else {
-      window.scrollTo(0, 0);
+      const container = getScrollContainer();
+      if (container instanceof Window) {
+        window.scrollTo(0, 0);
+      } else {
+        container.scrollTop = 0;
+      }
       setTransposeOffset(0);
       setActiveControl('none');
+      setIsControlsVisible(true);
     }
   }, [isOpen, song]);
 
-  // Auto-scroll engine using window scroll
+  // Auto-scroll engine using the appropriate container
   useEffect(() => {
     const stop = () => {
       if (timerRef.current) {
@@ -179,15 +193,65 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       stop();
       return stop;
     }
+
+    const container = getScrollContainer();
+
     timerRef.current = setInterval(() => {
-      window.scrollBy(0, scrollSpeedVal);
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (window.scrollY >= maxScroll - 10) {
+      let currentScrollY = 0;
+      let maxScroll = 0;
+
+      if (container instanceof Window) {
+        window.scrollBy(0, scrollSpeedVal);
+        currentScrollY = window.scrollY;
+        maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      } else {
+        container.scrollTop += scrollSpeedVal;
+        currentScrollY = container.scrollTop;
+        maxScroll = container.scrollHeight - container.clientHeight;
+      }
+
+      if (currentScrollY >= maxScroll - 10) {
         setIsScrolling(false);
       }
     }, 16);
+
     return stop;
   }, [isScrolling, scrollSpeedVal]);
+
+  // Scroll tracker to show/hide bottom controls bar based on scroll direction
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const container = getScrollContainer();
+
+    const handleScroll = () => {
+      const currentScrollY = container instanceof Window ? window.scrollY : container.scrollTop;
+      const lastScrollY = lastScrollYRef.current;
+
+      // If auto-scrolling or a control sub-panel is open, keep controls visible
+      if (isScrolling || activeControl !== 'none') {
+        setIsControlsVisible(true);
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      // Show always at the top of the page
+      if (currentScrollY < 20) {
+        setIsControlsVisible(true);
+      } else {
+        if (currentScrollY > lastScrollY) {
+          setIsControlsVisible(false);
+        } else if (currentScrollY < lastScrollY) {
+          setIsControlsVisible(true);
+        }
+      }
+
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isOpen, isScrolling, activeControl]);
 
   // Escape key handler
   useEffect(() => {
@@ -221,7 +285,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const showChords = activeTab === 'principal';
 
   return (
-    <div className="w-full min-h-screen bg-background flex flex-col pb-24">
+    <div className="w-full min-h-screen bg-background flex flex-col pb-10">
 
       {/* ── Header ────────────────────────────────────────────────── */}
       <PageHeader
@@ -377,7 +441,8 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       <div className="h-20" />
 
       {/* Style overrides for custom range slider styling */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .speed-slider-input::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
@@ -408,7 +473,18 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       `}} />
 
       {/* ── Floating Controls Bar (Simplified: Scroll, Tom) ─── */}
-      <div className="fixed bottom-6 left-4 right-4 mx-auto max-w-sm z-[200]">
+      <motion.div
+        className="fixed bottom-6 left-4 right-4 mx-auto max-w-sm z-[200]"
+        animate={{
+          y: isControlsVisible ? 0 : 80,
+          opacity: isControlsVisible ? 1 : 0,
+          scale: isControlsVisible ? 1 : 0.95
+        }}
+        style={{
+          pointerEvents: isControlsVisible ? 'auto' : 'none'
+        }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
         <AnimatePresence mode="wait">
           {activeControl === 'none' && (
             <motion.div
@@ -551,7 +627,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </div>
   );
 }
