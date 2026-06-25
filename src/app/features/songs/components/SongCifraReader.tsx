@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@shared/components';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Song } from '../types';
 
 type TabOption = 'principal' | 'letra';
@@ -16,6 +17,44 @@ function isChordLine(line: string): boolean {
   if (!clean) return false;
   const tokens = clean.split(/\s+/).filter(Boolean);
   return tokens.length > 0 && tokens.every(isChordToken);
+}
+
+const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const NOTES_FLAT  = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+export function transposeNote(note: string, semitones: number): string {
+  let idx = NOTES_SHARP.indexOf(note);
+  if (idx === -1) {
+    idx = NOTES_FLAT.indexOf(note);
+  }
+  if (idx === -1) return note;
+
+  const newIdx = (idx + semitones + 12) % 12;
+  const preferFlat = ['Db', 'Eb', 'Gb', 'Ab', 'Bb'].includes(note);
+  return preferFlat ? NOTES_FLAT[newIdx] : NOTES_SHARP[newIdx];
+}
+
+export function transposeChordToken(token: string, semitones: number): string {
+  if (semitones === 0) return token;
+  if (token.includes('/')) {
+    return token.split('/').map(t => transposeChordToken(t, semitones)).join('/');
+  }
+
+  const match = token.match(/^([A-G][#b]?)(.*)$/);
+  if (!match) return token;
+  const [_, root, suffix] = match;
+  return transposeNote(root, semitones) + suffix;
+}
+
+export function transposeChordLine(line: string, semitones: number): string {
+  if (semitones === 0) return line;
+  const re = /[A-G][b#]?[0-9a-zA-Z()/#b]*/g;
+  return line.replace(re, (match) => {
+    if (isChordToken(match)) {
+      return transposeChordToken(match, semitones);
+    }
+    return match;
+  });
 }
 
 type CifraSegment =
@@ -109,7 +148,9 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const [activeTab, setActiveTab] = useState<TabOption>('principal');
   const [fontSize, setFontSize] = useState(18);
   const [isScrolling, setIsScrolling] = useState(false);
-  const [scrollSpeed, setScrollSpeed] = useState<ScrollSpeed>(1);
+  const [scrollSpeedVal, setScrollSpeedVal] = useState(1.0);
+  const [transposeOffset, setTransposeOffset] = useState(0);
+  const [activeControl, setActiveControl] = useState<'none' | 'scroll' | 'tom'>('none');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Reset on close & scroll to top on open
@@ -117,8 +158,12 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
     if (!isOpen) {
       setIsScrolling(false);
       setActiveTab('principal');
+      setTransposeOffset(0);
+      setActiveControl('none');
     } else {
       window.scrollTo(0, 0);
+      setTransposeOffset(0);
+      setActiveControl('none');
     }
   }, [isOpen, song]);
 
@@ -134,16 +179,15 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       stop();
       return stop;
     }
-    const pxMap: Record<ScrollSpeed, number> = { 1: 0.5, 2: 1.2, 3: 2.5 };
     timerRef.current = setInterval(() => {
-      window.scrollBy(0, pxMap[scrollSpeed]);
+      window.scrollBy(0, scrollSpeedVal);
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       if (window.scrollY >= maxScroll - 10) {
         setIsScrolling(false);
       }
     }, 16);
     return stop;
-  }, [isScrolling, scrollSpeed]);
+  }, [isScrolling, scrollSpeedVal]);
 
   // Escape key handler
   useEffect(() => {
@@ -181,7 +225,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
 
       {/* ── Header ────────────────────────────────────────────────── */}
       <PageHeader
-        title={''}
+        title={song.title}
         onBack={onClose}
         showBackButton={true}
       />
@@ -235,36 +279,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         </div>
       </div>
 
-      {/* ── Auto-scroll bar ──────────────────────────────────────── */}
-      <div className="flex-shrink-0 py-2 flex items-center gap-2 bg-surface-container-lowest border-b border-outline-variant/10">
-        <button
-          id="cifra-scroll-toggle"
-          onClick={() => setIsScrolling(s => !s)}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${isScrolling
-            ? 'bg-primary text-on-primary'
-            : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-            }`}
-        >
-          <span className="material-symbols-outlined text-[14px] leading-none">
-            {isScrolling ? 'pause' : 'play_arrow'}
-          </span>
-          Auto-scroll
-        </button>
-        <div className="flex gap-1">
-          {([1, 2, 3] as ScrollSpeed[]).map(sp => (
-            <button
-              key={sp}
-              onClick={() => setScrollSpeed(sp)}
-              className={`w-7 h-7 rounded-full text-[11px] font-bold transition-all ${scrollSpeed === sp
-                ? 'bg-primary text-on-primary'
-                : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-                }`}
-            >
-              {sp}x
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {/* ── Cifra content ─────────────────────────────────────────── */}
       <div className="">
@@ -283,7 +298,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
             {song.tom && (
               <div className="flex items-center gap-1 text-sm text-on-surface-variant mb-6">
                 <span className='font-bold'>Tom:</span>
-                <span className="font-bold text-primary">{song.tom}</span>
+                <span className="font-bold text-primary">{song.tom ? transposeNote(song.tom, transposeOffset) : '—'}</span>
               </div>
             )}
             {tuning && (
@@ -316,7 +331,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
           return (
             <ChordLyricPair
               key={idx}
-              chords={seg.chords}
+              chords={transposeChordLine(seg.chords, transposeOffset)}
               lyrics={seg.lyrics}
               fontSize={fontSize}
               showChords={showChords}
@@ -334,11 +349,11 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
                 fontFamily: '"Roboto Mono", "Courier New", Courier, monospace',
                 fontWeight: 700,
                 fontSize: `${fontSize}px`,
-                lineHeight: `${fontSize * 1.6}px`,
+                lineHeight: `${fontSize * 1.2}px`,
                 margin: '0 0 12px'
               }}
             >
-              {seg.chords}
+              {transposeChordLine(seg.chords, transposeOffset)}
             </pre>
           );
         }
@@ -359,9 +374,229 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
           </pre>
         );
       })}
-      <div className="h-16" />
+      <div className="h-20" />
+
+      {/* Style overrides for custom range slider styling */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .speed-slider-input::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 6px;
+          height: 16px;
+          border-radius: 9999px;
+          background: #ffffff;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          transition: transform 0.15s ease;
+        }
+        .speed-slider-input::-webkit-slider-thumb:active {
+          transform: scaleY(1.3) scaleX(1.3);
+        }
+        .speed-slider-input::-moz-range-thumb {
+          width: 6px;
+          height: 16px;
+          border: none;
+          border-radius: 9999px;
+          background: #ffffff;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          transition: transform 0.15s ease;
+        }
+        .speed-slider-input::-moz-range-thumb:active {
+          transform: scaleY(1.3) scaleX(1.3);
+        }
+      `}} />
+
+      {/* ── Floating Controls Bar (Simplified: Scroll, Tom) ─── */}
+      <div className="fixed bottom-6 left-4 right-4 mx-auto max-w-sm z-[200]">
+        <AnimatePresence mode="wait">
+          {activeControl === 'none' && (
+            <motion.div
+              key="none"
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-[#1c1b1f] text-white shadow-2xl rounded-full px-5 py-2.5 flex items-center justify-center gap-6 border border-white/10 mx-auto w-fit"
+            >
+              {/* Scroll */}
+              <button
+                onClick={() => {
+                  setActiveControl('scroll');
+                  if (!isScrolling) {
+                    setIsScrolling(true);
+                  }
+                }}
+                className={`flex flex-col items-center justify-center gap-1 hover:opacity-80 transition-all active:scale-90 duration-100 min-w-[52px] ${isScrolling ? 'text-primary' : 'text-white'}`}
+              >
+                <span className="material-symbols-outlined text-[22px] leading-none">
+                  {isScrolling ? 'pause' : 'play_arrow'}
+                </span>
+                <span className="text-[10px] font-bold tracking-wide uppercase leading-none opacity-80">Scroll</span>
+              </button>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/15" />
+
+              {/* Tom */}
+              <button
+                onClick={() => setActiveControl('tom')}
+                className="flex flex-col items-center justify-center gap-1 hover:opacity-80 transition-all active:scale-90 duration-100 min-w-[52px] text-white"
+              >
+                <span className="material-symbols-outlined text-[22px] leading-none">music_note</span>
+                <span className="text-[10px] font-bold tracking-wide uppercase leading-none opacity-80">Tom</span>
+              </button>
+            </motion.div>
+          )}
+
+          {activeControl === 'scroll' && (
+            <motion.div
+              key="scroll"
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full bg-[#1c1b1f] text-white shadow-2xl rounded-full px-3 py-2 flex items-center justify-between border border-white/10"
+            >
+              {/* Play/Pause icon button */}
+              <button
+                onClick={() => setIsScrolling(s => !s)}
+                className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors active:scale-90 duration-100 flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-[24px]">
+                  {isScrolling ? 'pause' : 'play_arrow'}
+                </span>
+              </button>
+
+              {/* Divider */}
+              <div className="w-px h-6 bg-white/15 mx-1 flex-shrink-0" />
+
+              {/* Slider section */}
+              <div className="flex-1 flex items-center gap-3.5 px-2 min-w-0">
+                <TurtleIcon className="w-5 h-5 text-white/50 flex-shrink-0" />
+
+                {/* Range input slider */}
+                <input
+                  type="range"
+                  min="0.1"
+                  max="5"
+                  step="0.1"
+                  value={scrollSpeedVal}
+                  onChange={(e) => setScrollSpeedVal(parseFloat(e.target.value))}
+                  style={{
+                    background: `linear-gradient(to right, #ffffff 0%, #ffffff ${((scrollSpeedVal - 0.1) / 4.9) * 100}%, rgba(255, 255, 255, 0.12) ${((scrollSpeedVal - 0.1) / 4.9) * 100}%, rgba(255, 255, 255, 0.12) 100%)`
+                  }}
+                  className="speed-slider-input flex-1 h-1.5 rounded-full appearance-none cursor-pointer outline-none transition-all"
+                />
+
+                <RabbitIcon className="w-5 h-5 text-white/50 flex-shrink-0" />
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-6 bg-white/15 mx-1 flex-shrink-0" />
+
+              {/* Close button */}
+              <button
+                onClick={() => setActiveControl('none')}
+                className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-colors active:scale-90 duration-100 flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </motion.div>
+          )}
+
+          {activeControl === 'tom' && (
+            <motion.div
+              key="tom"
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-[#1c1b1f] text-white shadow-2xl rounded-full px-3 py-2 flex items-center border border-white/10 gap-2 min-w-[240px] mx-auto w-fit"
+            >
+              {/* Transpose Down */}
+              <button
+                onClick={() => setTransposeOffset(o => o - 1)}
+                className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors active:scale-90 duration-100 flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-[20px]">remove</span>
+              </button>
+
+              {/* Current Key display */}
+              <div className="flex-1 flex flex-col items-center justify-center px-2 min-w-[70px]">
+                <span className="text-[9px] text-white/40 font-bold uppercase tracking-wider leading-none mb-1">Tom</span>
+                <span className="text-sm font-extrabold text-primary leading-none">
+                  {song.tom ? transposeNote(song.tom, transposeOffset) : '—'}
+                </span>
+              </div>
+
+              {/* Transpose Up */}
+              <button
+                onClick={() => setTransposeOffset(o => o + 1)}
+                className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors active:scale-90 duration-100 flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-[20px]">add</span>
+              </button>
+
+              {/* Divider */}
+              <div className="w-px h-6 bg-white/15 mx-1 flex-shrink-0" />
+
+              {/* Close button */}
+              <button
+                onClick={() => setActiveControl('none')}
+                className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-colors active:scale-90 duration-100 flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
 
+// ── Custom SVG Icons for Turtle and Rabbit ─────────────────────────
+function TurtleIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M12 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      <path d="M3.4 18c.1-2 1.6-3.6 3.7-4.1-.1-.3-.1-.6-.1-1 0-3 2.2-5.5 5-5.9V5a2 2 0 1 1 4 0v2c2.8.4 5 2.9 5 5.9 0 .4 0 .7-.1 1 2.1.5 3.6 2.1 3.7 4.1.1 1.2-.7 2.2-1.9 2.2h-1c-.5 0-1-.3-1.2-.8-.6-1.1-1.8-1.7-3-1.5-1 .1-1.7.9-1.7 1.9v.4c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1v-.4c0-1-.7-1.8-1.7-1.9-1.2-.2-2.4.4-3 1.5-.2.5-.7.8-1.2.8h-1c-1.2 0-2-1-1.9-2.2Z" />
+      <path d="M19 14h-1a2 2 0 0 0-2 2v1" />
+      <path d="M5 14h1a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function RabbitIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M20 8.54V4a2 2 0 1 0-4 0v3" />
+      <path d="M18 21h-8a4 4 0 0 1-4-4 7 7 0 0 1 7-7h.2L9.6 6.4a1.93 1.93 0 1 1 2.8-2.8L15.8 7h.2c3.3 0 6 2.7 6 6v1a2 2 0 0 1-2 2h-1c-1.7 0-3 1.3-3 3" />
+      <path d="M7.61 12.53a3 3 0 1 0-1.6 4.3" />
+      <path d="M13 16a3 3 0 0 1 2.24 5" />
+      <path d="M18 12h.01" />
+    </svg>
+  );
+}
+
 export default SongCifraReader;
+
