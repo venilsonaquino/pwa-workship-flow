@@ -75,6 +75,11 @@ function ChordLyricPair({ chords, lyrics, fontSize, showChords }: PairProps) {
       {showChords && (
         <pre
           className="text-primary font-mono whitespace-pre leading-tight"
+          style={{
+            fontWeight: 700,
+            fontSize: `${fontSize}px`,
+            lineHeight: `${fontSize * 1.6}px`,
+          }}
         >
           {chords}
         </pre>
@@ -82,7 +87,6 @@ function ChordLyricPair({ chords, lyrics, fontSize, showChords }: PairProps) {
       <pre
         className="text-on-background whitespace-pre"
         style={{
-          fontFamily: '"Roboto Mono", "Courier New", Courier, monospace',
           fontWeight: 400,
           fontSize: `${fontSize}px`,
           lineHeight: `${fontSize * 1.6}px`,
@@ -103,7 +107,7 @@ export interface SongCifraReaderProps {
 
 export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps) {
   const [activeTab, setActiveTab] = useState<TabOption>('principal');
-  const [fontSize, setFontSize] = useState(14);
+  const [fontSize, setFontSize] = useState(18);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState<ScrollSpeed>(1);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -165,7 +169,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   if (tuningIdx !== -1) {
     const line = lines[tuningIdx];
     const colonIdx = line.indexOf(':');
-    tuning = line.substring(colonIdx + 1).trim();
+    tuning = line.substring(colonIdx + 1).trim().replace(/\s+/g, '    ');
     linesToParse = lines.filter((_, idx) => idx !== tuningIdx);
   }
 
@@ -223,7 +227,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
             id="cifra-font-increase"
             onClick={() => setFontSize(s => Math.min(22, s + 1))}
             className="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant font-bold hover:bg-surface-container-high transition-colors"
-            style={{ fontSize: '13px' }}
+            style={{ fontSize: fontSize }}
             aria-label="Aumentar fonte"
           >
             A+
@@ -277,15 +281,15 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         {(song.tom || tuning) && (
           <div className="flex-shrink-0 border-b border-outline-variant/10 flex flex-col gap-1.5">
             {song.tom && (
-              <div className="flex items-center gap-1 text-sm text-on-surface-variant">
-                <span>Tom:</span>
+              <div className="flex items-center gap-1 text-sm text-on-surface-variant mb-6">
+                <span className='font-bold'>Tom:</span>
                 <span className="font-bold text-primary">{song.tom}</span>
               </div>
             )}
             {tuning && (
               <div className="flex items-center gap-1 text-sm text-on-surface-variant">
-                <span>Afinação:</span>
-                <span className="font-medium text-on-surface">{tuning}</span>
+                <span className=''>Afinação:</span>
+                <span className="font-medium text-on-surface whitespace-pre">{tuning}</span>
               </div>
             )}
           </div>
@@ -299,7 +303,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
 
         if (seg.kind === 'header') {
           return (
-            <div key={idx} className="mt-7 mb-2 flex items-center gap-2">
+            <div key={idx} className="mt-2 mb-2 flex items-center gap-2">
               <div className="h-4 w-[3px] bg-primary rounded-full flex-shrink-0" />
               <span className="text-xs font-bold text-outline uppercase tracking-widest">
                 {seg.text.replace(/[\[\]]/g, '')}
