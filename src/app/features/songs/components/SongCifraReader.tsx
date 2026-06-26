@@ -155,6 +155,8 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const accumScrollYRef = useRef(0);
   const contentWrapperRef = useRef<HTMLDivElement | null>(null);
   const isUserTouchingRef = useRef(false);
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollAccumulatorRef = useRef(0);
 
   // Find the active scrollable container (.scroll-container-native or window)
   const getScrollContainer = (): HTMLElement | Window => {
@@ -164,6 +166,11 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
 
   // Reset on close & scroll to top on open
   useEffect(() => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    scrollAccumulatorRef.current = 0;
     if (!isOpen) {
       setIsScrolling(false);
       setActiveTab('principal');
@@ -299,25 +306,36 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         accumScrollYRef.current = currentScrollY;
       }
 
-      // If auto-scrolling, return immediately to avoid resetting float accumulator.
-      // Controls visibility is already locked to true while isScrolling is active.
-      if (isScrolling) return;
-
-      // If a control sub-panel is open, keep controls visible
-      if (activeControl !== 'none') {
-        setIsControlsVisible(true);
-        lastScrollYRef.current = currentScrollY;
-        return;
-      }
-
       // Show always at the top of the page
       if (currentScrollY < 20) {
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current);
+          hideTimeoutRef.current = null;
+        }
         setIsControlsVisible(true);
+        scrollAccumulatorRef.current = 0;
       } else {
-        if (currentScrollY > lastScrollY) {
-          setIsControlsVisible(false);
-        } else if (currentScrollY < lastScrollY) {
-          setIsControlsVisible(true);
+        const delta = currentScrollY - lastScrollY;
+        if (delta > 0) {
+          scrollAccumulatorRef.current = 0; // Reset up-scroll accumulator
+          // Only schedule hide if currently visible and no hide timeout is already running
+          if (isControlsVisible && !hideTimeoutRef.current) {
+            hideTimeoutRef.current = setTimeout(() => {
+              setIsControlsVisible(false);
+              hideTimeoutRef.current = null;
+            }, 1000);
+          }
+        } else if (delta < 0) {
+          scrollAccumulatorRef.current += Math.abs(delta);
+          // Only show controls if the up-scroll delta exceeds the 15px threshold
+          if (scrollAccumulatorRef.current > 15) {
+            if (hideTimeoutRef.current) {
+              clearTimeout(hideTimeoutRef.current);
+              hideTimeoutRef.current = null;
+            }
+            setIsControlsVisible(true);
+            scrollAccumulatorRef.current = 0;
+          }
         }
       }
 
@@ -325,8 +343,14 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [isOpen, isScrolling, activeControl]);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+    };
+  }, [isOpen, isScrolling, activeControl, isControlsVisible]);
 
   // Escape key handler
   useEffect(() => {
