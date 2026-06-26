@@ -18,8 +18,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       <div className='relative' style={{ marginBottom: 32 }}>
         {/* Gradient ring: outermost layer */}
         <div className='w-32 h-32 rounded-full' style={{ padding: 3, background: 'linear-gradient(135deg, #630ed4 0%, #0058be 100%)', boxShadow: '0 8px 24px rgba(99, 14, 212, 0.25)' }}>
-          <div className='w-full h-full rounded-full border-[3px] border-white overflow-hidden'>
-            <img className='w-full h-full object-cover' src={avatarUrl} alt={userName} />
+          <div className='w-full h-full rounded-full border-[3px] border-white overflow-hidden bg-surface-container flex items-center justify-center text-on-surface-variant'>
+            {avatarUrl ? (
+              <img className='w-full h-full object-cover' src={avatarUrl} alt={userName} />
+            ) : (
+              <span className="material-symbols-outlined text-[48px]">person</span>
+            )}
           </div>
         </div>
         {/* Badge: verified + role label, overlaps bottom of avatar */}

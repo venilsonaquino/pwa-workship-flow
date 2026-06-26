@@ -12,7 +12,7 @@ export interface HeaderProps {
   showNotification?: boolean;
 }
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuD06iOmChUDtHnvRGKmvPX3VM5ICai2yvJgMXluA85CE_dqlTUe3cKybaHYSGfsOJ3CJlXF33lgznYR40NhswT7HhMw8z0qs_YwXv0QMIuwML1_5HrdnHvK9keVZm-3kHh1vLdde5dMY62IshBGZz51y_KPLMYZ2vJpPz7CTRT9SlF750Qb9f-51ZHAcQCgJHELIhQZbEbopGaakirZ6N6cBaPFQb6fTWgI8yaIXKl_XMU_pEk4Pxnn5TzdF8O47i6Ry4UpSw8jNFE';
+const DEFAULT_AVATAR = '';
 
 export const Header = ({
   userName,
@@ -34,12 +34,6 @@ export const Header = ({
     return 'Boa noite';
   });
 
-  const initials = resolvedUserName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <header
@@ -60,8 +54,8 @@ export const Header = ({
                 }}
               />
             ) : (
-              <span className="text-xs font-bold text-primary dark:text-primary-variant">
-                {initials}
+              <span className="material-symbols-outlined text-[20px] text-on-surface-variant">
+                person
               </span>
             )}
           </div>
@@ -80,8 +74,8 @@ export const Header = ({
                   }}
                 />
               ) : (
-                <span className="text-xs font-bold text-primary dark:text-primary-variant">
-                  {initials}
+                <span className="material-symbols-outlined text-[20px] text-on-surface-variant">
+                  person
                 </span>
               )}
             </div>

@@ -17,7 +17,7 @@ interface ProfileViewProps {
   hasUnreadNotifications?: boolean;
 }
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aid/AP1WRLswmXqIplz1683Smw6K2v1v8G1iUK7XC9GpnmkZ77MtWlCtQM5_hSlxce0EK4dAFz9BQKi06bg2iMeDwClpAbDYqz32ik9B8KRsKZpCjFR7dg6Q1N9BgKjlGyhNN73dFMdcDTQUUDrH9zgiZCtPrxRKAXqu25U9zF6hk9gCSdIBZyIRsnSCjcz1VqMZyVWu7ujwGBt_Sx-9DxzL3KtElc7dTRqFnYsEqOedO6pucJJFYlAaWAXTqNp2fgs=s1600';
+const DEFAULT_AVATAR = '';
 
 const ProfileSkeleton: React.FC = () => (
   <div className="w-full flex flex-col p-6 animate-pulse space-y-6">
