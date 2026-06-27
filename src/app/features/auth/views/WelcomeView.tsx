@@ -26,7 +26,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole, onLogin 
           className="flex flex-col items-center mb-10 w-full text-center"
         >
           {/* Logo Mark */}
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7c4dff] to-[#6833ea] flex items-center justify-center mb-6 shadow-[0_8px_32px_rgba(124,77,255,0.3)]">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-container to-inverse-primary flex items-center justify-center mb-6 shadow-[0_8px_32px_rgba(124,77,255,0.3)]">
             <span className="material-symbols-outlined text-[#fcf6ff] text-4xl font-normal" style={{ fontVariationSettings: "'FILL' 1" }}>
               graphic_eq
             </span>

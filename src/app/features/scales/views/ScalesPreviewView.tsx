@@ -83,9 +83,8 @@ const ProximaEscalaBanner: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 100, damping: 15 }}
         whileHover={{ y: -2, boxShadow: '0 12px 20px -3px rgba(99, 102, 241, 0.3)' }}
-        className="relative overflow-hidden rounded-3xl p-5 flex flex-col gap-3 shadow-lg text-white"
+        className="relative overflow-hidden rounded-3xl p-5 flex flex-col gap-3 shadow-lg text-white gradient-brand"
         style={{
-          background: 'linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)',
           boxShadow: '0 10px 15px -3px rgba(99, 102, 241, 0.2)',
         }}
       >

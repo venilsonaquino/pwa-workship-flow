@@ -8,6 +8,8 @@ export interface UserProfile {
   userEmail: string;
   userRole: UserRole | null;
   avatarUrl: string;
+  token?: string;
+  ministryName?: string;
 }
 
 const AUTH_KEY = 'worshipflow_auth_profile';
@@ -35,6 +37,7 @@ let _authStore: UserProfile = getInitialState();
 const _subscribers = new Set<() => void>();
 
 function notifySubscribers() {
+  console.log('[useAuth] Notifying subscribers, count:', _subscribers.size);
   _subscribers.forEach((cb) => cb());
 }
 
@@ -46,20 +49,33 @@ export function useAuth() {
   const [, forceRender] = useState(0);
 
   useEffect(() => {
-    const rerender = () => forceRender((n) => n + 1);
+    const rerender = () => {
+      console.log('[useAuth] Rerendering component due to auth changes!');
+      forceRender((n) => n + 1);
+    };
     _subscribers.add(rerender);
+    console.log('[useAuth] Subscribed new component. Total count:', _subscribers.size);
     return () => {
       _subscribers.delete(rerender);
+      console.log('[useAuth] Unsubscribed component. Total count:', _subscribers.size);
     };
   }, []);
 
-  const login = useCallback((role: UserRole, customName?: string, customEmail?: string) => {
+  const login = useCallback((
+    role: UserRole,
+    customName?: string,
+    customEmail?: string,
+    token?: string,
+    ministryName?: string
+  ) => {
     const mockUser: UserProfile = {
       isAuthenticated: true,
       userName: customName || (role === 'Líder de Louvor' ? 'Manu Silveira' : 'Gabriel Lima'),
       userEmail: customEmail || (role === 'Líder de Louvor' ? 'manusilveira@worshipflow.com' : 'gabriellima@worshipflow.com'),
       userRole: role,
       avatarUrl: DEFAULT_AVATAR,
+      token,
+      ministryName,
     };
     
     // Nota: Armazenando apenas preferências fictícias não sensíveis localmente.

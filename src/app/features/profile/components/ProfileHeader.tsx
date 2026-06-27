@@ -17,7 +17,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     <section className='flex flex-col items-center text-center w-full pt-4'>
       <div className='relative' style={{ marginBottom: 32 }}>
         {/* Gradient ring: outermost layer */}
-        <div className='w-32 h-32 rounded-full' style={{ padding: 3, background: 'linear-gradient(135deg, #630ed4 0%, #0058be 100%)', boxShadow: '0 8px 24px rgba(99, 14, 212, 0.25)' }}>
+        <div className='w-32 h-32 rounded-full vivid-gradient' style={{ padding: 3, boxShadow: '0 8px 24px rgba(124, 77, 255, 0.25)' }}>
           <div className='w-full h-full rounded-full border-[3px] border-white overflow-hidden bg-surface-container flex items-center justify-center text-on-surface-variant'>
             {avatarUrl ? (
               <img className='w-full h-full object-cover' src={avatarUrl} alt={userName} />

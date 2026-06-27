@@ -1,4 +1,4 @@
-import type { LeaderSignupDto, LeaderSignupResponse } from '../types';
+import type { LeaderSignupDto, LeaderSignupResponse, LoginCredentialsDto, LoginResponse } from '../types';
 import { showResponseToast } from '@src/lib/toast';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -23,6 +23,38 @@ export const authService = {
         throw error;
       }
       showResponseToast(500, 'Erro de rede ao tentar cadastrar líder.');
+      throw error;
+    }
+  },
+
+  async login(credentials: LoginCredentialsDto): Promise<LoginResponse> {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      if (!response.ok) {
+        let errorMessage = `Erro ao fazer login (HTTP ${response.status})`;
+        try {
+          const errorData = await response.json() as LoginResponse;
+          if (errorData && errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // Ignora falha de parse
+        }
+        showResponseToast(response.status, errorMessage);
+        throw new Error(errorMessage);
+      }
+      const result = await response.json() as LoginResponse;
+      showResponseToast(200, result.message || 'Login realizado com sucesso!');
+      return result;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('HTTP')) {
+        throw error;
+      }
+      showResponseToast(500, 'Erro de rede ao tentar fazer login.');
       throw error;
     }
   },

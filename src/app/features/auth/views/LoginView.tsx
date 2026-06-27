@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth, type UserRole } from '@shared/hooks';
+import { useAuth } from '@shared/hooks';
 import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
+import authService from '../services/authService';
 
 interface LoginViewProps {
   onBack: () => void;
@@ -12,24 +13,54 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
     if (password.length < 6) {
-      alert('A senha deve conter pelo menos 6 caracteres.');
+      setError('A senha deve conter pelo menos 6 caracteres.');
       return;
     }
+    setIsLoading(true);
+    try {
+      console.log('[LoginView] Enviando login para:', email);
+      const response = await authService.login({ email, password });
+      console.log('[LoginView] Resposta recebida do login:', response);
+      setIsLoading(false);
+      
+      if (response.success) {
+        console.log('[LoginView] Login bem-sucedido. Mapeando dados do usuário...');
+        const role = response.user?.role || (email.toLowerCase().includes('lider') ? 'Líder de Louvor' : 'Integrante');
+        const inferredName = email.split('@')[0]
+          .split(/[._-]/)
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+        const name = response.user?.name || inferredName;
+        const userEmail = response.user?.email || email;
+        const ministryName = response.user?.ministryName;
 
-    // Inferência de papel com base no e-mail digitado
-    const role: UserRole = email.toLowerCase().includes('lider') ? 'Líder de Louvor' : 'Integrante';
-    
-    // Inferência inteligente do nome de exibição do usuário a partir do e-mail
-    const inferredName = email.split('@')[0]
-      .split(/[._-]/)
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' ');
-
-    login(role, inferredName || undefined, email);
+        console.log('[LoginView] Executando login do contexto com:', { role, name, userEmail, token: response.token, ministryName });
+        login(
+          role,
+          name,
+          userEmail,
+          response.token,
+          ministryName
+        );
+        console.log('[LoginView] Contexto de login atualizado!');
+        return;
+      }
+      console.warn('[LoginView] Login não foi bem-sucedido de acordo com a resposta:', response.message);
+      setError(response.message || 'Ocorreu um problema ao tentar entrar.');
+    } catch (apiError) {
+      console.error('[LoginView] Erro capturado no catch de login:', apiError);
+      setIsLoading(false);
+      if (apiError instanceof Error) {
+        setError(apiError.message);
+      }
+    }
   };
 
   return (
@@ -62,6 +93,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
         {/* Login Form (Glassmorphic Card) */}
         <AuthCard delay={0.2}>
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg p-3 text-center">
+                {error}
+              </div>
+            )}
             
             {/* Input Group: Email */}
             <InputGroup
@@ -73,6 +109,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Input Group: Password */}
@@ -85,12 +122,25 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Submit Button */}
-            <SubmitButton type="submit" className="mt-4">
-              <span>Entrar</span>
-              <span className="material-symbols-outlined text-sm font-normal">login</span>
+            <SubmitButton type="submit" className="mt-4" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <span>Entrando...</span>
+                  <svg className="animate-spin h-5 w-5 text-[#cdbdff]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>Entrar</span>
+                  <span className="material-symbols-outlined text-sm font-normal">login</span>
+                </>
+              )}
             </SubmitButton>
             
           </form>
@@ -108,6 +158,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
             <button 
               onClick={onSignup}
               className="text-[#cdbdff] hover:text-[#e8deff] transition-colors font-bold uppercase tracking-wider ml-1 underline-offset-4 hover:underline focus:outline-none"
+              disabled={isLoading}
             >
               Cadastre-se
             </button>
