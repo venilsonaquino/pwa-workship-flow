@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from '@shared/components/ui/button';
-import { useAuth } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 
 export interface HeaderProps {
   userName?: string;

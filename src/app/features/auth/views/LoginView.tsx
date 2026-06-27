@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
 import authService from '../services/authService';
 

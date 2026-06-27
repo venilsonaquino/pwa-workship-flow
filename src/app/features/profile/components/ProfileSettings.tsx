@@ -1,5 +1,5 @@
-import React from 'react';
-import { useThemeStore, useAuth } from '@shared/hooks';
+import { useThemeStore } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 
 interface ProfileSettingsProps {
   onNavigateToTeam?: () => void;

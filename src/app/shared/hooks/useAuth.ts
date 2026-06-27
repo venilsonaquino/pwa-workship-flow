@@ -87,6 +87,8 @@ export function useAuth() {
 
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem('worshipflow_mock_profile');
+    localStorage.removeItem('worshipflow_mock_ministry');
     _authStore = {
       isAuthenticated: false,
       userName: '',

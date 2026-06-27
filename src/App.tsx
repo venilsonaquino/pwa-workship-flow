@@ -1,8 +1,8 @@
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { AuthFlow } from '@features/auth';
 import { Layout } from '@shared/components';
-import { useAuth } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 import AppRoutes from '@core/routes/AppRoutes';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
@@ -21,6 +21,12 @@ function App() {
   const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
   const [showNavigation, setShowNavigation] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setActiveTab('scales');
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (

@@ -5,7 +5,7 @@ import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
 import { RankingView } from '@features/ranking';
-import { useAuth } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 
 interface AppRoutesProps {
   activeTab: string;

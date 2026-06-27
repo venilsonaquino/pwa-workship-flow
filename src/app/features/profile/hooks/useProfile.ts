@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserProfile, UpdateProfileDto } from '../types';
 import { profileService } from '../services/profileService';
-import { useAuth } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
 
 interface UseProfileState {
   profile: UserProfile | null;
