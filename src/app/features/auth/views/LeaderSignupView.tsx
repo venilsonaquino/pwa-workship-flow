@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
+import authService from '../services/authService';
 
 interface LeaderSignupViewProps {
   onBack: () => void;
@@ -13,15 +14,32 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
   const [email, setEmail] = useState('');
   const [band, setBand] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
     if (password.length < 8) {
-      alert('A senha deve conter pelo menos 8 caracteres.');
+      setError('A senha deve conter pelo menos 8 caracteres.');
       return;
     }
-    // Redireciona para a tela de aprovação pendente
-    onSuccess();
+    setIsLoading(true);
+    try {
+      await authService.registerLeader({
+        name,
+        email,
+        bandName: band,
+        password,
+      });
+      setIsLoading(false);
+      onSuccess();
+    } catch (apiError) {
+      setIsLoading(false);
+      if (apiError instanceof Error) {
+        setError(apiError.message);
+      }
+    }
   };
 
   return (
@@ -54,6 +72,11 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
         {/* Registration Form (Glassmorphic Card) */}
         <AuthCard delay={0.2}>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg p-3 text-center">
+                {error}
+              </div>
+            )}
             
             {/* Input Group: Name */}
             <InputGroup
@@ -65,6 +88,7 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Input Group: Email */}
@@ -77,6 +101,7 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Input Group: Band Name */}
@@ -89,6 +114,7 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
               type="text"
               value={band}
               onChange={(e) => setBand(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Input Group: Password */}
@@ -101,12 +127,25 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
 
             {/* Submit Button */}
-            <SubmitButton type="submit" className="mt-4">
-              <span>Criar Conta</span>
-              <span className="material-symbols-outlined text-sm font-normal">arrow_forward</span>
+            <SubmitButton type="submit" className="mt-4" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <span>Criando conta...</span>
+                  <svg className="animate-spin h-5 w-5 text-[#cdbdff]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>Criar Conta</span>
+                  <span className="material-symbols-outlined text-sm font-normal">arrow_forward</span>
+                </>
+              )}
             </SubmitButton>
             
           </form>
@@ -124,6 +163,7 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
             <button 
               onClick={onLogin}
               className="text-[#cdbdff] hover:text-[#e8deff] transition-colors font-bold uppercase tracking-wider ml-1 underline-offset-4 hover:underline focus:outline-none"
+              disabled={isLoading}
             >
               Fazer Login
             </button>
@@ -136,3 +176,4 @@ export const LeaderSignupView: React.FC<LeaderSignupViewProps> = ({ onBack, onSu
 };
 
 export default LeaderSignupView;
+

@@ -118,9 +118,7 @@ export default defineConfig(({ mode }) => {
     },
 
     // ── Environment Variables ──────────────────────────────────────────────────
-    define: {
-      'import.meta.env': { ...env },
-    },
+    envDir: path.resolve(__dirname, '../environment'),
 
     // ── Dev Server ─────────────────────────────────────────────────────────────
     server: {
