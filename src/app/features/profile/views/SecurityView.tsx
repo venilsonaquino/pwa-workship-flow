@@ -13,7 +13,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({ onBack }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // Estados para alternar a visibilidade da senha
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -82,7 +82,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({ onBack }) => {
 
 
   return (
-    <div className="w-full flex-1 max-w-[600px] mx-auto py-4 px-4 space-y-8">
+    <div className="w-full flex-1 max-w-[600px] mx-auto">
       <PageHeader title="Segurança" onBack={onBack} />
 
       {/* Formulário de Alteração de Senha */}

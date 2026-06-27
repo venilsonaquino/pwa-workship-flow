@@ -31,7 +31,7 @@ export interface LeaderSignupResponse {
 export interface LoginCredentialsDto {
   /** Endereço de e-mail cadastrado */
   email: string;
-  
+
   /** Senha de acesso do usuário */
   password: string;
 }
@@ -39,21 +39,21 @@ export interface LoginCredentialsDto {
 export interface LoginResponse {
   /** Indica se a operação foi realizada com sucesso */
   success: boolean;
-  
+
   /** Mensagem descritiva retornada pelo servidor */
   message: string;
-  
+
   /** Código de status HTTP */
   status: number;
-  
+
   /** Token de sessão JWT */
   token?: string;
-  
+
   /** Dados resumidos do usuário autenticado */
   user?: {
     name: string;
     email: string;
-    role: 'Líder de Louvor' | 'Integrante';
+    role: string;
     avatarUrl?: string;
     ministryName?: string;
   };

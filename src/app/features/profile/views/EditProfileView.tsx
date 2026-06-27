@@ -132,7 +132,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
   };
 
   return (
-    <div className="w-full flex-1 max-w-[600px] mx-auto py-4 space-y-6">
+    <div className="w-full flex-1 max-w-[600px] mx-auto pb-4">
       <PageHeader title="Editar Perfil" onBack={onBack} />
 
       <form onSubmit={handleSubmit} className="space-y-6 text-left pb-24">

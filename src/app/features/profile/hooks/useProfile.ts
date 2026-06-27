@@ -11,22 +11,56 @@ interface UseProfileState {
 }
 
 /**
+ * Recupera os dados do usuário autenticado a partir da sessão ativa (Cache-First).
+ * Evita telas de carregamento bloqueantes se o usuário já estiver logado.
+ */
+const getSessionCachedProfile = (): UserProfile | null => {
+  const storedAuth = localStorage.getItem('worshipflow_auth_profile');
+  if (storedAuth) {
+    try {
+      const auth = JSON.parse(storedAuth);
+      if (auth.isAuthenticated) {
+        return {
+          id: auth.id || '',
+          name: auth.userName || '',
+          email: auth.userEmail || '',
+          role: auth.userRole,
+          avatarUrl: auth.avatarUrl || '',
+          phone: '',
+          memberCount: 0,
+        };
+      }
+    } catch {
+      // Ignora erro de parse
+    }
+  }
+  return null;
+};
+
+/**
  * Hook customizado useProfile.
  * Gerencia o estado de carregamento e atualização do perfil do usuário logado,
  * integrando a camada de serviços com a interface de usuário.
  */
 export function useProfile() {
   const { updateAuthProfile } = useAuth();
-  
+
+  const initialProfile = getSessionCachedProfile();
+
   const [state, setState] = useState<UseProfileState>({
-    profile: null,
-    isLoading: true,
+    profile: initialProfile,
+    isLoading: !initialProfile, // Só exibe loading se não houver sessão ativa em cache
     isUpdating: false,
     error: null,
   });
 
   const fetchProfile = useCallback(async () => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    setState((prev) => ({
+      ...prev,
+      isLoading: !prev.profile,
+      error: null
+    }));
+
     try {
       const data = await profileService.getProfile();
       setState((prev) => ({
@@ -39,7 +73,7 @@ export function useProfile() {
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: message,
+        error: prev.profile ? null : message,
       }));
     }
   }, []);
@@ -48,7 +82,7 @@ export function useProfile() {
     setState((prev) => ({ ...prev, isUpdating: true, error: null }));
     try {
       const updated = await profileService.updateProfile(data);
-      
+
       setState((prev) => ({
         ...prev,
         profile: updated,

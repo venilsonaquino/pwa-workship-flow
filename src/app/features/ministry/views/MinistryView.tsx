@@ -162,7 +162,7 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="w-full flex-1 max-w-[1200px] mx-auto py-4 space-y-8">
+    <div className="w-full flex-1 max-w-[1200px] mx-auto">
       {onBack && (
         <PageHeader title="Gestão da Banda" onBack={onBack} />
       )}
@@ -194,7 +194,7 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
       {/* Team Management Section */}
       <section className="space-y-4">
         <div className="flex justify-between items-end px-1">
-          <h2 className="text-on-surface-variant text-[14px] font-semibold uppercase tracking-wider">
+          <h2 className="text-on-surface-variant text-[14px] font-semibold uppercase tracking-wider pt-4">
             Integrantes Ativos
           </h2>
           <span className="text-on-surface-variant text-[12px] font-medium">

@@ -2,34 +2,41 @@ import type { UserProfile, UpdateProfileDto, ChangePasswordDto } from '../types'
 import { showResponseToast } from '@src/lib/toast';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const MOCK_PROFILE_KEY = 'worshipflow_mock_profile';
-
-const DEFAULT_AVATAR = '';
 
 /**
- * Obtém os dados mockados locais salvos no localStorage.
- * Utilizado como estado simulado off-line.
+ * Obtém os cabeçalhos de requisição com o token de autorização se disponível.
  */
-const getMockProfile = (): UserProfile => {
-  const stored = localStorage.getItem(MOCK_PROFILE_KEY);
+const getAuthHeaders = (): HeadersInit => {
+  const stored = localStorage.getItem('worshipflow_auth_profile');
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const auth = JSON.parse(stored);
+      if (auth?.token) {
+        headers['Authorization'] = `Bearer ${auth.token}`;
+      }
     } catch {
       // Ignora erro de parse
     }
   }
-  return {
-    id: '1',
-    name: 'Manu Silveira',
-    email: 'manusilveira@worshipflow.com',
-    role: 'Líder de Louvor',
-    avatarUrl: DEFAULT_AVATAR,
-    phone: '(11) 98765-4321',
-    ministryName: 'Banda da Colina',
-    memberCount: 24,
-  };
+  return headers;
 };
+
+interface ApiUserMeResponse {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    avatarUrl: string;
+    roleName: string;
+    membersCount: number;
+  };
+  error: string | null;
+}
 
 /**
  * Serviço de comunicação com a API de Perfil.
@@ -38,40 +45,56 @@ const getMockProfile = (): UserProfile => {
 export const profileService = {
   /**
    * Obtém o perfil do usuário atualmente autenticado.
-   * Contrato API: GET /profile
+   * Contrato API: GET /users/me
    * 
    * @returns {Promise<UserProfile>}
    */
   async getProfile(): Promise<UserProfile> {
     try {
-      const response = await fetch(`${BASE_URL}/profile`);
+      const response = await fetch(`${BASE_URL}/users/me`, {
+        headers: getAuthHeaders(),
+      });
       if (!response.ok) {
         showResponseToast(response.status, `Erro ao buscar perfil (HTTP ${response.status})`);
         throw new Error(`Erro na API de perfil: HTTP ${response.status}`);
       }
-      const data = await response.json() as UserProfile;
-      return data;
-    } catch (error) {
-      // Fallback off-line em ambiente de desenvolvimento
-      if (!(error instanceof Error && error.message.includes('HTTP'))) {
-        showResponseToast(500, 'Erro de rede: Carregando perfil offline.');
+      const responseData = await response.json() as ApiUserMeResponse;
+      if (!responseData.success || !responseData.data) {
+        throw new Error(responseData.error || 'Falha ao processar dados de perfil da API');
       }
-      return getMockProfile();
+
+      const apiUser = responseData.data;
+      return {
+        id: apiUser.id,
+        name: apiUser.name,
+        email: apiUser.email,
+        role: apiUser.roleName || 'Líder de Louvor',
+        avatarUrl: apiUser.avatarUrl || '',
+        phone: apiUser.phone || '',
+        memberCount: apiUser.membersCount || 0,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('HTTP')) {
+        throw error;
+      }
+      showResponseToast(500, 'Erro de rede: Não foi possível obter o perfil.');
+      throw error;
     }
   },
 
   /**
    * Atualiza as informações pessoais do usuário atualmente autenticado.
-   * Contrato API: PUT /profile
+   * Contrato API: PUT /users/me
    * 
    * @param {UpdateProfileDto} data - Dados a serem atualizados
    * @returns {Promise<UserProfile>}
    */
   async updateProfile(data: UpdateProfileDto): Promise<UserProfile> {
     try {
-      const response = await fetch(`${BASE_URL}/profile`, {
+      const response = await fetch(`${BASE_URL}/users/me`, {
         method: 'PUT',
         headers: {
+          ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -80,22 +103,28 @@ export const profileService = {
         showResponseToast(response.status, `Erro ao salvar perfil (HTTP ${response.status})`);
         throw new Error(`Erro na atualização do perfil: HTTP ${response.status}`);
       }
-      const updated = await response.json() as UserProfile;
-      showResponseToast(200, 'Perfil atualizado com sucesso!');
-      return updated;
-    } catch (error) {
-      // Fallback off-line em ambiente de desenvolvimento: persiste a atualização localmente
-      if (!(error instanceof Error && error.message.includes('HTTP'))) {
-        showResponseToast(500, 'Erro de rede: Salvo localmente (offline).');
+      const responseData = await response.json() as ApiUserMeResponse;
+      if (!responseData.success || !responseData.data) {
+        throw new Error(responseData.error || 'Falha ao processar dados de perfil da API');
       }
-      const current = getMockProfile();
-      const updated: UserProfile = {
-        ...current,
-        ...data,
+
+      const apiUser = responseData.data;
+      showResponseToast(200, 'Perfil atualizado com sucesso!');
+      return {
+        id: apiUser.id,
+        name: apiUser.name,
+        email: apiUser.email,
+        role: apiUser.roleName || 'Líder de Louvor',
+        avatarUrl: apiUser.avatarUrl || '',
+        phone: apiUser.phone || '',
+        memberCount: apiUser.membersCount || 0,
       };
-      localStorage.setItem(MOCK_PROFILE_KEY, JSON.stringify(updated));
-      showResponseToast(200, 'Perfil atualizado localmente!');
-      return updated;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('HTTP')) {
+        throw error;
+      }
+      showResponseToast(500, 'Erro de rede: Não foi possível atualizar o perfil.');
+      throw error;
     }
   },
 
@@ -111,6 +140,7 @@ export const profileService = {
       const response = await fetch(`${BASE_URL}/profile/password`, {
         method: 'PUT',
         headers: {
+          ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -121,13 +151,11 @@ export const profileService = {
       }
       showResponseToast(200, 'Senha atualizada com sucesso!');
     } catch (error) {
-      // Fallback off-line em ambiente de desenvolvimento
       if (error instanceof Error && error.message.includes('HTTP')) {
         throw error;
       }
-      showResponseToast(500, 'Erro de rede: Simulando sucesso (offline).');
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      showResponseToast(200, 'Senha alterada com sucesso (offline)!');
+      showResponseToast(500, 'Erro de rede: Não foi possível alterar a senha.');
+      throw error;
     }
   },
 };
