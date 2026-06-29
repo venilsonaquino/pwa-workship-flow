@@ -148,14 +148,31 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
             <div className="px-6 pb-8 space-y-8">
               {/* Member Profile Header */}
               <div className="flex items-center gap-4">
-                <img
-                  alt={member.name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-secondary-container"
-                  src={member.avatarUrl}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(member.name)}`;
-                  }}
-                />
+                <div className="relative w-16 h-16 shrink-0">
+                  {member.avatarUrl ? (
+                    <img
+                      alt={member.name}
+                      className="w-full h-full rounded-full object-cover border-2 border-secondary-container"
+                      src={member.avatarUrl}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        const parent = (e.target as HTMLImageElement).parentElement;
+                        if (parent) {
+                          const fallback = parent.querySelector('.fallback-profile');
+                          if (fallback) {
+                            (fallback as HTMLElement).style.display = 'flex';
+                          }
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className="fallback-profile w-full h-full rounded-full border-2 border-secondary-container bg-surface-container flex items-center justify-center text-on-surface-variant"
+                    style={{ display: member.avatarUrl ? 'none' : 'flex' }}
+                  >
+                    <span className="material-symbols-outlined text-[32px]">person</span>
+                  </div>
+                </div>
                 <div>
                   <h3 className="font-bold text-on-surface text-[20px]">{member.name}</h3>
                   <div className="flex items-center gap-1.5 mt-1">

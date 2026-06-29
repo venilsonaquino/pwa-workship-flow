@@ -59,6 +59,7 @@ export const SecurityView: React.FC<SecurityViewProps> = ({ onBack }) => {
       await profileService.changePassword({
         currentPassword,
         newPassword,
+        confirmNewPassword: confirmPassword,
       });
 
       // Limpa os campos

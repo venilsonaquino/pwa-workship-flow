@@ -62,5 +62,8 @@ export interface ChangePasswordDto {
   
   /** Nova senha desejada */
   newPassword?: string;
+
+  /** Confirmação da nova senha desejada */
+  confirmNewPassword?: string;
 }
 

@@ -8,71 +8,14 @@ import MemberManagementDrawer from '../components/MemberManagementDrawer';
 import { PageHeader } from '@shared/components';
 import { ministryService } from '../services/ministryService';
 
+const MOCK_BAND_KEY = 'worshipflow_mock_band';
+
 interface MinistryViewProps {
   onBack?: () => void;
 }
 
-const INITIAL_MEMBERS: Member[] = [
-  {
-    id: '1',
-    name: 'Manu',
-    avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBCXYJNNKuhoDyFI9BTBymtVaEkIbRUZ1TfBB8z5YU6H7KPKO_a_DkzOwGqZlzbDwv8qJ8ERZh8MpjVcr1C59Pb_cFbRt4s9DTYf4XFwX_JOwW3ngf7gO1HbT9oHxJ0lwsZ0vY6RK5JDTceJWAVewGTOensFh1V8usc3o0MRlpcgTRt1E8wxwh6imMkuzQRMlFEnFjvRjzRl38ZtALHqbIZq1Psz3lWkUEauxpBV_HFkuSyg1el8SN--LY4bwH6mAZ-TRlc0V2Jbhk',
-    isActive: true,
-    roles: 'Teclado',
-    role: 'admin',
-    permissions: {
-      accountStatus: true,
-      editScales: true,
-      manageRepertoire: true,
-      adminAccess: true,
-    },
-  },
-  {
-    id: '2',
-    name: 'Gabriel Santos',
-    avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCSGg0mmloY-d7T33mlOZCS2iesLfM-e1BxnLDzWNL0pu894-KtPAnfAI3KvChVC2TepR9SYeNB3kW7hhw-Dm67X2Mm3cgGa2UmKtU1ynoWUIVdxRwEKl1cGhywSIkvAjuVxYXBS-zhkIdgK1miT4US3QLUaJz0u2GUu4Nlw4nMeuu0uaOAKh7ldYjXwLKk2PJYUvlEAG8LqaxdBEJJjN3KUz2mM2ZwY59CGfoYBXL1YpzvbEjizKH7FC1chbsMqFulfq2eA9ajAgg',
-    isActive: true,
-    roles: 'Vocal',
-    role: 'member',
-    permissions: {
-      accountStatus: true,
-      editScales: true,
-      manageRepertoire: true,
-      adminAccess: false,
-    },
-  },
-  {
-    id: '3',
-    name: 'Ana Oliveira',
-    avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACFKCT4bt7XNtLM3R3Ly-KLrL2H1g_PccJgPBNiP0B-oAJfovTjI22jTISrhWo91NfrJJJ2GPu0Tscmwp7-su7O639Rfw1I8zdQ5jhxt2NELaFlUi7PL5LUS-VTFVe7OT6ctS7ZqridTjAY3DP3jDv0MMWT3vZyp9odPUDwJAZtdMscZCBG123CRFF21fFXF1U6ceFuH8XviFscbB60Qts5pZx5znGoBK40eMXVsmwF-t0_3SZLwbzOzMNPnbz1VRLwAdag2a-U5A',
-    isActive: true,
-    roles: 'Vocal ',
-    role: 'member',
-    permissions: {
-      accountStatus: true,
-      editScales: false,
-      manageRepertoire: false,
-      adminAccess: false,
-    },
-  },
-  {
-    id: '4',
-    name: 'Lucas Ferreira',
-    avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDj5u1l8jP1ckX0ZprgnAMKYzpdG5pA1tYnhf06qdn0muADvmaAZ5ATtcSWT1mw3gULL22Lmof1C2Q71foYn2mauOv1Qu76o5JXi7RSqmaJaFhA5KUoDoCWwPR-uCVLMyI5M5XhxW6UmlylkufqWqNhZKWxP6FuNJ9QlXUqU8bY4HVvZhdNLAFsH9fxa6-fa_E3_Uq2jgLd5nVDcTDVom6NYPAQAmUPnrLpJVKeDuDEvctLaV2yursRf83tIP1mv1KLT34UYMF74nY',
-    isActive: false,
-    roles: 'Bateria',
-    role: 'member',
-    permissions: {
-      accountStatus: false,
-      editScales: false,
-      manageRepertoire: false,
-      adminAccess: false,
-    },
-  },
-];
-
 export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
-  const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
+  const [members, setMembers] = useState<Member[]>([]);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -81,7 +24,6 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   const [bandName, setBandName] = useState('Banda da Colina');
   const [inviteCode, setInviteCode] = useState('WORSHIP-X7K2');
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdatingCode, setIsUpdatingCode] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -91,9 +33,10 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
         if (active) {
           setBandName(data.name);
           setInviteCode(data.inviteCode);
+          setMembers(data.members);
         }
       } catch (err) {
-        console.error('Erro ao buscar dados do ministério', err);
+        console.error('Erro ao buscar dados do ministério/banda', err);
       } finally {
         if (active) {
           setIsLoading(false);
@@ -110,30 +53,12 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
     try {
       const updated = await ministryService.updateMinistryName(newName);
       setBandName(updated.name);
+      setMembers(updated.members);
     } catch (err) {
       console.error('Erro ao salvar nome da banda', err);
     }
   };
 
-  const handleRegenerateCode = async () => {
-    setIsUpdatingCode(true);
-    try {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let suffix = '';
-      let suffix2 = '';
-      for (let i = 0; i < 4; i++) {
-        suffix += chars.charAt(Math.floor(Math.random() * chars.length));
-        suffix2 += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      const newCode = `${suffix}-${suffix2}`;
-      const updated = await ministryService.updateInviteCode(newCode);
-      setInviteCode(updated.inviteCode);
-    } catch (err) {
-      console.error('Erro ao regenerar código de convite', err);
-    } finally {
-      setIsUpdatingCode(false);
-    }
-  };
 
   const handleCopyCode = () => {
     setShowToast(true);
@@ -148,15 +73,45 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   };
 
   const handleSaveMember = (updatedMember: Member) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === updatedMember.id ? updatedMember : m))
-    );
+    setMembers((prev) => {
+      const nextMembers = prev.map((m) => (m.id === updatedMember.id ? updatedMember : m));
+      
+      // Persiste as alterações no fallback local
+      const stored = localStorage.getItem(MOCK_BAND_KEY);
+      if (stored) {
+        try {
+          const band = JSON.parse(stored);
+          band.members = nextMembers;
+          localStorage.setItem(MOCK_BAND_KEY, JSON.stringify(band));
+        } catch {
+          // Ignora erro
+        }
+      }
+      
+      return nextMembers;
+    });
     setIsDrawerOpen(false);
     setSelectedMember(null);
   };
 
   const handleRemoveMember = (memberId: string) => {
-    setMembers((prev) => prev.filter((m) => m.id !== memberId));
+    setMembers((prev) => {
+      const nextMembers = prev.filter((m) => m.id !== memberId);
+      
+      // Persiste as alterações no fallback local
+      const stored = localStorage.getItem(MOCK_BAND_KEY);
+      if (stored) {
+        try {
+          const band = JSON.parse(stored);
+          band.members = nextMembers;
+          localStorage.setItem(MOCK_BAND_KEY, JSON.stringify(band));
+        } catch {
+          // Ignora erro
+        }
+      }
+      
+      return nextMembers;
+    });
     setIsDrawerOpen(false);
     setSelectedMember(null);
   };
@@ -184,8 +139,6 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
             <InviteCodeCard
               code={inviteCode}
               onCopy={handleCopyCode}
-              onRegenerate={handleRegenerateCode}
-              isUpdating={isUpdatingCode}
             />
           )}
         </div>
@@ -248,4 +201,3 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
 };
 
 export default MinistryView;
-

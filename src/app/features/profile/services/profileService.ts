@@ -130,14 +130,14 @@ export const profileService = {
 
   /**
    * Altera a senha do usuário autenticado.
-   * Contrato API: PUT /profile/password
+   * Contrato API: PUT /users/me/password
    * 
    * @param {ChangePasswordDto} data - Dados contendo senha atual e nova
    * @returns {Promise<void>}
    */
   async changePassword(data: ChangePasswordDto): Promise<void> {
     try {
-      const response = await fetch(`${BASE_URL}/profile/password`, {
+      const response = await fetch(`${BASE_URL}/users/me/password`, {
         method: 'PUT',
         headers: {
           ...getAuthHeaders(),
@@ -146,8 +146,16 @@ export const profileService = {
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        showResponseToast(response.status, `Erro ao alterar senha (HTTP ${response.status})`);
-        throw new Error(`Erro ao alterar senha: HTTP ${response.status}`);
+        let errorMessage = `Erro ao alterar senha (HTTP ${response.status})`;
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) {
+            errorMessage = errData.error;
+          }
+        } catch {
+        }
+        showResponseToast(response.status, errorMessage);
+        throw new Error(errorMessage);
       }
       showResponseToast(200, 'Senha atualizada com sucesso!');
     } catch (error) {

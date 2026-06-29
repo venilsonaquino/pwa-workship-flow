@@ -40,15 +40,29 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
     >
       <div className="flex items-center gap-4">
         <div className="relative w-12 h-12 shrink-0">
-          <img
-            alt={name}
-            className="w-full h-full rounded-full object-cover border-2 border-primary-container"
-            src={avatarUrl}
-            onError={(e) => {
-              // Fallback default avatar icon
-              (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
-            }}
-          />
+          {avatarUrl ? (
+            <img
+              alt={name}
+              className="w-full h-full rounded-full object-cover border-2 border-primary-container"
+              src={avatarUrl}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+                const parent = (e.target as HTMLImageElement).parentElement;
+                if (parent) {
+                  const fallback = parent.querySelector('.fallback-profile');
+                  if (fallback) {
+                    (fallback as HTMLElement).style.display = 'flex';
+                  }
+                }
+              }}
+            />
+          ) : null}
+          <div
+            className="fallback-profile w-full h-full rounded-full border-2 border-primary-container bg-surface-container flex items-center justify-center text-on-surface-variant"
+            style={{ display: avatarUrl ? 'none' : 'flex' }}
+          >
+            <span className="material-symbols-outlined text-[24px]">person</span>
+          </div>
         </div>
         <div>
           <h3 className="font-bold text-on-surface text-[16px]">
