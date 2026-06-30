@@ -11,7 +11,7 @@ export interface ApiBandMember {
   avatarUrl: string;
   isActive: boolean;
   roleName: string;
-  instruments: string[];
+  instruments: (string | Instrument)[];
   permissions: string[];
 }
 
@@ -72,13 +72,18 @@ const getAuthHeaders = (): HeadersInit => {
  * Converte um integrante no padrão do backend para o formato do frontend.
  */
 const mapApiMemberToMember = (apiMember: ApiBandMember): Member => {
+  const mappedInstruments = (apiMember.instruments || [])
+    .map((inst) => (typeof inst === 'string' ? inst : inst?.code))
+    .filter((code): code is string => typeof code === 'string');
 
   return {
     id: apiMember.id,
     name: apiMember.name,
+    email: apiMember.email,
+    phone: apiMember.phone,
     avatarUrl: apiMember.avatarUrl || '',
     isActive: apiMember.isActive,
-    instruments: apiMember.instruments || [],
+    instruments: mappedInstruments,
     role: apiMember.roleName as 'admin' | 'member',
     permissions: {
       accountStatus: apiMember.isActive,
@@ -232,6 +237,43 @@ export const ministryService = {
       }
 
       showResponseToast(500, 'Erro de rede ao atualizar código de convite.');
+      throw error;
+    }
+  },
+
+  /**
+   * Atualiza os dados de um integrante.
+   * Contrato API: PUT /band/members/${memberId}
+   */
+  async updateMember(
+    memberId: string,
+    data: { isActive: boolean; instrumentIds: string[]; permissions: string[] }
+  ): Promise<BandData> {
+    try {
+      const response = await fetch(`${BASE_URL}/band/members/${memberId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        showResponseToast(response.status, `Erro ao atualizar integrante (HTTP ${response.status})`);
+        throw new Error(`Erro ao atualizar integrante: HTTP ${response.status}`);
+      }
+
+      const responseData = (await response.json()) as { success: boolean; data: boolean; error: string | null };
+      if (!responseData.success) {
+        throw new Error(responseData.error || 'Falha ao atualizar integrante');
+      }
+
+      showResponseToast(200, 'Integrante atualizado com sucesso!');
+      return await ministryService.getMinistry();
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('HTTP')) {
+        throw error;
+      }
+
+      showResponseToast(500, 'Erro de rede ao atualizar integrante.');
       throw error;
     }
   },

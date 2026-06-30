@@ -9,8 +9,6 @@ import { PageHeader } from '@shared/components';
 import { ministryService } from '../services/ministryService';
 import type { Instrument } from '../services/ministryService';
 
-const MOCK_BAND_KEY = 'worshipflow_mock_band';
-
 interface MinistryViewProps {
   onBack?: () => void;
 }
@@ -78,46 +76,43 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
     setIsDrawerOpen(true);
   };
 
-  const handleSaveMember = (updatedMember: Member) => {
-    setMembers((prev) => {
-      const nextMembers = prev.map((m) => (m.id === updatedMember.id ? updatedMember : m));
-      
-      // Persiste as alterações no fallback local
-      const stored = localStorage.getItem(MOCK_BAND_KEY);
-      if (stored) {
-        try {
-          const band = JSON.parse(stored);
-          band.members = nextMembers;
-          localStorage.setItem(MOCK_BAND_KEY, JSON.stringify(band));
-        } catch {
-          // Ignora erro
-        }
+  const handleSaveMember = async (updatedMember: Member) => {
+    try {
+      // Mapeia códigos de instrumento para seus IDs correspondentes
+      const instrumentIds = updatedMember.instruments.map((code) => {
+        const match = instruments.find((i) => i.code === code);
+        return match ? match.id : code;
+      });
+
+      // Mapeia as permissões booleanas para o array de strings esperado pelo backend
+      const apiPermissions: string[] = [];
+      if (updatedMember.permissions.editScales) {
+        apiPermissions.push('EditScales');
       }
-      
-      return nextMembers;
-    });
-    setIsDrawerOpen(false);
-    setSelectedMember(null);
+      if (updatedMember.permissions.adminAccess) {
+        apiPermissions.push('AdminAccess');
+      }
+      if (updatedMember.permissions.manageRepertoire) {
+        apiPermissions.push('ManageRepertoire');
+      }
+
+      const updatedBand = await ministryService.updateMember(updatedMember.id, {
+        isActive: updatedMember.isActive,
+        instrumentIds,
+        permissions: apiPermissions,
+      });
+
+      setBandName(updatedBand.name);
+      setMembers(updatedBand.members);
+      setIsDrawerOpen(false);
+      setSelectedMember(null);
+    } catch (err) {
+      console.error('Erro ao atualizar integrante', err);
+    }
   };
 
   const handleRemoveMember = (memberId: string) => {
-    setMembers((prev) => {
-      const nextMembers = prev.filter((m) => m.id !== memberId);
-      
-      // Persiste as alterações no fallback local
-      const stored = localStorage.getItem(MOCK_BAND_KEY);
-      if (stored) {
-        try {
-          const band = JSON.parse(stored);
-          band.members = nextMembers;
-          localStorage.setItem(MOCK_BAND_KEY, JSON.stringify(band));
-        } catch {
-          // Ignora erro
-        }
-      }
-      
-      return nextMembers;
-    });
+    setMembers((prev) => prev.filter((m) => m.id !== memberId));
     setIsDrawerOpen(false);
     setSelectedMember(null);
   };
