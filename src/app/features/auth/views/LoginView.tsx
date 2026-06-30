@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth, type UserRole } from '@shared/hooks/useAuth';
 import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
 import authService from '../services/authService';
 
@@ -29,16 +29,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
       const response = await authService.login({ email, password });
       console.log('[LoginView] Resposta recebida do login:', response);
       setIsLoading(false);
-      
+
       if (response.success) {
         console.log('[LoginView] Login bem-sucedido. Mapeando dados do usuário...');
-        const role = response.user?.role || (email.toLowerCase().includes('lider') ? 'Líder de Louvor' : 'Integrante');
-        const inferredName = email.split('@')[0]
-          .split(/[._-]/)
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(' ');
-        const name = response.user?.name || inferredName;
-        const userEmail = response.user?.email || email;
+        const role = response.user?.role as UserRole;
+        const name = response.user?.name || '';
+        const userEmail = response.user?.email;
         const ministryName = response.user?.ministryName;
 
         console.log('[LoginView] Executando login do contexto com:', { role, name, userEmail, token: response.token, ministryName });
@@ -69,9 +65,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
 
       {/* Main Content Canvas */}
       <main className="flex-1 flex flex-col justify-center px-6 py-10 relative z-10 w-full max-w-lg mx-auto my-auto">
-        
+
         {/* Header Section */}
-        <motion.header 
+        <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -98,7 +94,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
                 {error}
               </div>
             )}
-            
+
             {/* Input Group: Email */}
             <InputGroup
               id="email"
@@ -142,12 +138,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
                 </>
               )}
             </SubmitButton>
-            
+
           </form>
         </AuthCard>
 
         {/* Footer Link */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -155,7 +151,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
         >
           <p className="text-xs text-[#cac3d8]">
             Não possui uma conta?{' '}
-            <button 
+            <button
               onClick={onSignup}
               className="text-[#cdbdff] hover:text-[#e8deff] transition-colors font-bold uppercase tracking-wider ml-1 underline-offset-4 hover:underline focus:outline-none"
               disabled={isLoading}

@@ -7,6 +7,7 @@ import type { Member } from '../components/MemberRow';
 import MemberManagementDrawer from '../components/MemberManagementDrawer';
 import { PageHeader } from '@shared/components';
 import { ministryService } from '../services/ministryService';
+import type { Instrument } from '../services/ministryService';
 
 const MOCK_BAND_KEY = 'worshipflow_mock_band';
 
@@ -23,27 +24,32 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   // Estados para nome da banda e código de convite
   const [bandName, setBandName] = useState('Banda da Colina');
   const [inviteCode, setInviteCode] = useState('WORSHIP-X7K2');
+  const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    const fetchMinistry = async () => {
+    const fetchMinistryAndInstruments = async () => {
       try {
-        const data = await ministryService.getMinistry();
+        const [data, instrumentsList] = await Promise.all([
+          ministryService.getMinistry(),
+          ministryService.getInstruments(),
+        ]);
         if (active) {
           setBandName(data.name);
           setInviteCode(data.inviteCode);
           setMembers(data.members);
+          setInstruments(instrumentsList);
         }
       } catch (err) {
-        console.error('Erro ao buscar dados do ministério/banda', err);
+        console.error('Erro ao buscar dados do ministério/banda ou instrumentos', err);
       } finally {
         if (active) {
           setIsLoading(false);
         }
       }
     };
-    fetchMinistry();
+    fetchMinistryAndInstruments();
     return () => {
       active = false;
     };
@@ -162,6 +168,7 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
               <MemberRow
                 key={member.id}
                 member={member}
+                instruments={instruments}
                 onAction={handleMemberAction}
               />
             ))}
@@ -177,6 +184,7 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
           setSelectedMember(null);
         }}
         member={selectedMember}
+        instruments={instruments}
         onSave={handleSaveMember}
         onRemove={handleRemoveMember}
       />

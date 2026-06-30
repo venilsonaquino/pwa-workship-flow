@@ -5,20 +5,22 @@ import { cn } from '@src/lib/utils';
 import type { Member } from './MemberRow';
 import Button from '@shared/components/ui/button';
 
+import type { Instrument } from '../services/ministryService';
+
 interface MemberManagementDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   member: Member | null;
+  instruments: Instrument[];
   onSave: (updatedMember: Member) => void;
   onRemove: (memberId: string) => void;
 }
-
-import instrumentsData from '@app/data/instruments.json';
 
 export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
   isOpen,
   onClose,
   member,
+  instruments = [],
   onSave,
   onRemove,
 }) => {
@@ -30,17 +32,12 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
     adminAccess: false,
   });
 
-  // Load values whenever member changes
+  // Carrega os valores sempre que o integrante selecionado ou drawer mudar
   useEffect(() => {
     if (member) {
-      // Parse instruments from roles string
-      const parsed = member.roles
-        .split(',')
-        .map((r) => r.trim().toLowerCase())
-        .filter((r) => r && r !== 'nenhum');
-      setSelectedInstruments(parsed);
+      setSelectedInstruments(member.instruments || []);
 
-      // Set permissions
+      // Define permissões de acordo com o integrante
       setPermissions({
         accountStatus: member.isActive,
         editScales: member.permissions?.editScales ?? false,
@@ -50,26 +47,29 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
     }
   }, [member, isOpen]);
 
-
-
-  const toggleInstrument = (instrument: string) => {
-    const lowerInst = instrument.toLowerCase();
+  const toggleInstrument = (code: string) => {
     setSelectedInstruments((prev) =>
-      prev.includes(lowerInst)
-        ? prev.filter((i) => i !== lowerInst)
-        : [...prev, lowerInst]
+      prev.includes(code)
+        ? prev.filter((i) => i !== code)
+        : [...prev, code]
     );
   };
 
   const togglePermission = (key: keyof typeof permissions) => {
+    const isAdmin = permissions.adminAccess || member?.role === 'admin';
+    if (isAdmin && (key === 'accountStatus' || key === 'editScales' || key === 'manageRepertoire')) {
+      return;
+    }
+
     setPermissions((prev) => {
       const nextVal = !prev[key];
       const updated = { ...prev, [key]: nextVal };
 
-      // If granting admin access, auto-grant other capabilities to stay consistent
+      // Se conceder acesso de admin, auto-concede as outras permissões e ativa a conta
       if (key === 'adminAccess' && nextVal) {
         updated.editScales = true;
         updated.manageRepertoire = true;
+        updated.accountStatus = true;
       }
       return updated;
     });
@@ -78,17 +78,10 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
   const handleSave = () => {
     if (!member) return;
 
-    // Join instruments list or set to 'Nenhum' if empty
-    const rolesString = selectedInstruments.length > 0
-      ? selectedInstruments
-        .map((i) => i.charAt(0).toUpperCase() + i.slice(1))
-        .join(', ')
-      : 'Nenhum';
-
     const updated: Member = {
       ...member,
       isActive: permissions.accountStatus,
-      roles: rolesString,
+      instruments: selectedInstruments,
       role: permissions.adminAccess ? 'admin' : 'member',
       permissions: {
         accountStatus: permissions.accountStatus,
@@ -100,12 +93,13 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
     onSave(updated);
   };
 
-  const renderSwitch = (isOn: boolean, onClick: () => void) => {
+  const renderSwitch = (isOn: boolean, onClick: () => void, disabled?: boolean) => {
     return (
       <div
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
         className={cn(
-          "w-12 h-6 rounded-full relative cursor-pointer transition-colors duration-200 shrink-0",
+          "w-12 h-6 rounded-full relative transition-colors duration-200 shrink-0",
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
           isOn ? "bg-primary" : "bg-outline-variant"
         )}
       >
@@ -196,12 +190,12 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                   Instrumentos
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {instrumentsData.map((inst) => {
-                    const isSelected = selectedInstruments.includes(inst.name);
+                  {instruments.map((inst) => {
+                    const isSelected = selectedInstruments.includes(inst.code);
                     return (
                       <button
-                        key={inst.name}
-                        onClick={() => toggleInstrument(inst.name)}
+                        key={inst.id}
+                        onClick={() => toggleInstrument(inst.code)}
                         className={cn(
                           "flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-medium transition-all active:scale-95 duration-200",
                           isSelected
@@ -223,33 +217,61 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                   Permissões
                 </h4>
                 <div className="space-y-4">
+
+                  {/* Admin Access */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Acesso administrador</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Controle total sobre o ministério e integrantes
+                      </span>
+                    </div>
+                    {renderSwitch(permissions.adminAccess, () => togglePermission('adminAccess'))}
+                  </div>
+
                   {/* Account Status */}
                   <div className="flex items-center justify-between pb-2 border-b border-surface-container">
                     <div className="flex flex-col">
-                      <span className="text-on-surface font-bold text-[16px]">Status da Conta</span>
+                      <span className="text-on-surface font-bold text-[16px]">Status da conta</span>
                       <span className="text-on-surface-variant text-[12px]">
                         Membro pode acessar o sistema
                       </span>
                     </div>
-                    {renderSwitch(permissions.accountStatus, () => togglePermission('accountStatus'))}
+                    {renderSwitch(
+                      permissions.accountStatus,
+                      () => togglePermission('accountStatus'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
                   </div>
 
                   {/* Edit Scales */}
                   <div className="flex items-center justify-between">
-                    <span className="text-on-surface text-[16px]">Editar Escalas</span>
-                    {renderSwitch(permissions.editScales, () => togglePermission('editScales'))}
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Gerenciar escalas</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Criar e editar escalas de eventos
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.editScales,
+                      () => togglePermission('editScales'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
                   </div>
 
                   {/* Manage Repertoire */}
                   <div className="flex items-center justify-between">
-                    <span className="text-on-surface text-[16px]">Gerenciar Repertório</span>
-                    {renderSwitch(permissions.manageRepertoire, () => togglePermission('manageRepertoire'))}
-                  </div>
-
-                  {/* Admin Access */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-on-surface text-[16px]">Acesso Admin</span>
-                    {renderSwitch(permissions.adminAccess, () => togglePermission('adminAccess'))}
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Gerenciar repertório</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Acesso e edição do catálogo de músicas
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.manageRepertoire,
+                      () => togglePermission('manageRepertoire'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
                   </div>
                 </div>
               </div>

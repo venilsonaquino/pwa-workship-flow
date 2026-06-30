@@ -1,12 +1,15 @@
 import React from 'react';
+import type { Instrument } from '../services/ministryService';
 
 export interface Member {
   id: string;
   name: string;
+  email?: string | null;
+  phone?: string | null;
   avatarUrl: string;
   isActive: boolean;
-  roles: string;
   role: 'admin' | 'member';
+  instruments: string[];
   permissions: {
     accountStatus: boolean;
     editScales: boolean;
@@ -17,21 +20,12 @@ export interface Member {
 
 interface MemberRowProps {
   member: Member;
+  instruments: Instrument[];
   onAction?: (member: Member) => void;
 }
 
-import instrumentsData from '@app/data/instruments.json';
-
-const getInstrumentIcon = (instrumentName: string) => {
-  const clean = instrumentName.trim().toLowerCase();
-  const matched = (instrumentsData as Array<{ name: string; icon: string }>).find(
-    (item) => clean.includes(item.name.toLowerCase())
-  );
-  return matched ? matched.icon : 'music_note';
-};
-
-export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
-  const { name, avatarUrl, roles } = member;
+export const MemberRow: React.FC<MemberRowProps> = ({ member, instruments = [], onAction }) => {
+  const { name, avatarUrl, instruments: memberInstruments } = member;
 
   return (
     <div
@@ -69,18 +63,28 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, onAction }) => {
             {name}
           </h3>
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
-            {roles && roles.split(',').map((role, idx) => {
-              const trimmed = role.trim();
-              if (!trimmed) return null;
-              return (
-                <span key={idx} className="text-on-surface-variant text-[12px] flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">
-                    {getInstrumentIcon(trimmed)}
+            {memberInstruments && memberInstruments.length > 0 ? (
+              memberInstruments.map((instCode, idx) => {
+                const match = instruments.find((i) => i.code === instCode);
+                const displayName = match ? match.name : (instCode.charAt(0).toUpperCase() + instCode.slice(1));
+                const icon = match ? match.icon : 'music_note';
+                return (
+                  <span key={idx} className="text-on-surface-variant text-[12px] flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">
+                      {icon}
+                    </span>
+                    {displayName}
                   </span>
-                  {trimmed}
+                );
+              })
+            ) : (
+              <span className="text-on-surface-variant text-[12px] flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px]">
+                  music_note
                 </span>
-              );
-            })}
+                Nenhum
+              </span>
+            )}
           </div>
         </div>
       </div>
