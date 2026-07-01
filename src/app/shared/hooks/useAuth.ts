@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getAbsoluteAvatarUrl } from '@src/lib/utils';
 
 export type UserRole = 'Líder de Louvor' | 'Integrante';
 
@@ -66,14 +67,15 @@ export function useAuth() {
     customName?: string,
     customEmail?: string,
     token?: string,
-    ministryName?: string
+    ministryName?: string,
+    avatarUrl?: string
   ) => {
     const mockUser: UserProfile = {
       isAuthenticated: true,
       userName: customName || (role === 'Líder de Louvor' ? 'Manu Silveira' : 'Gabriel Lima'),
       userEmail: customEmail || (role === 'Líder de Louvor' ? 'manusilveira@worshipflow.com' : 'gabriellima@worshipflow.com'),
       userRole: role,
-      avatarUrl: DEFAULT_AVATAR,
+      avatarUrl: getAbsoluteAvatarUrl(avatarUrl || DEFAULT_AVATAR),
       token,
       ministryName,
     };

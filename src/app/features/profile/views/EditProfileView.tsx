@@ -3,6 +3,7 @@ import { cn } from '@src/lib/utils';
 import Button from '@shared/components/ui/button';
 import { PageHeader } from '@shared/components';
 import type { UserProfile, UpdateProfileDto } from '../types';
+import { compressImage } from '@src/lib/image';
 
 interface EditProfileViewProps {
   profile: UserProfile | null;
@@ -24,6 +25,46 @@ const formatPhoneNumber = (value: string): string => {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
 };
 
+const validateName = (nameValue: string): string | undefined => {
+  const trimmed = nameValue.trim();
+  if (!trimmed) {
+    return 'O nome completo é obrigatório.';
+  }
+  if (trimmed.length < 2) {
+    return 'O nome deve ter pelo menos 2 caracteres.';
+  }
+  if (trimmed.length > 255) {
+    return 'O nome deve ter no máximo 255 caracteres.';
+  }
+  return undefined;
+};
+
+const validateEmail = (emailValue: string): string | undefined => {
+  const trimmed = emailValue.trim();
+  if (!trimmed) {
+    return 'O e-mail é obrigatório.';
+  }
+  if (trimmed.length > 255) {
+    return 'O e-mail deve ter no máximo 255 caracteres.';
+  }
+  if (!EMAIL_REGEX.test(trimmed)) {
+    return 'Insira um e-mail válido (exemplo@dominio.com).';
+  }
+  return undefined;
+};
+
+const validatePhone = (phoneValue: string): string | undefined => {
+  const trimmed = phoneValue.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length < 10 || digits.length > 11) {
+    return 'O telefone deve conter o DDD e 8 ou 9 dígitos.';
+  }
+  return undefined;
+};
+
 export const EditProfileView: React.FC<EditProfileViewProps> = ({
   profile,
   onSave,
@@ -34,6 +75,8 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
 
   // Estados de erro de validação
   const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
@@ -43,16 +86,20 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
   // Inicializa os campos com os dados atuais do perfil
   useEffect(() => {
     if (profile) {
-      setName(profile.name || '');
-      setEmail(profile.email || '');
-      setPhone(profile.phone ? formatPhoneNumber(profile.phone) : '');
-      setAvatarUrl(profile.avatarUrl || '');
-      setErrors({});
+      Promise.resolve().then(() => {
+        setName(profile.name || '');
+        setEmail(profile.email || '');
+        setPhone(profile.phone ? formatPhoneNumber(profile.phone) : '');
+        setAvatarUrl(profile.avatarUrl || '');
+        setSelectedFile(null);
+        setIsCompressing(false);
+        setErrors({});
+      });
     }
   }, [profile]);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(event.target.value);
     setPhone(formatted);
   };
 
@@ -60,20 +107,22 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validação simples de tamanho (ex: max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        alert('A imagem é muito grande. Escolha uma imagem de até 2MB.');
-        return;
-      }
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
 
-      // Validação de tipo de arquivo
-      if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione um arquivo de imagem válido (PNG, JPG, etc).');
-        return;
-      }
+    const isNotImage = !file.type.startsWith('image/');
+    if (isNotImage) {
+      alert('Por favor, selecione um arquivo de imagem válido (PNG, JPG, etc).');
+      return;
+    }
+
+    setIsCompressing(true);
+    try {
+      const compressedFile = await compressImage(file, 16 * 1024 * 1024);
+      setSelectedFile(compressedFile);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -81,49 +130,44 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
           setAvatarUrl(reader.result);
         }
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error('Erro ao processar imagem:', error);
+      alert('Ocorreu um erro ao processar a imagem.');
+    } finally {
+      setIsCompressing(false);
     }
   };
 
   const validate = (): boolean => {
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const phoneError = validatePhone(phone);
+
     const newErrors: typeof errors = {};
-
-    if (!name.trim()) {
-      newErrors.name = 'O nome completo é obrigatório.';
-    } else if (name.trim().length < 2) {
-      newErrors.name = 'O nome deve ter pelo menos 2 caracteres.';
-    } else if (name.trim().length > 255) {
-      newErrors.name = 'O nome deve ter no máximo 255 caracteres.';
+    if (nameError) {
+      newErrors.name = nameError;
     }
-
-    if (!email.trim()) {
-      newErrors.email = 'O e-mail é obrigatório.';
-    } else if (email.trim().length > 255) {
-      newErrors.email = 'O e-mail deve ter no máximo 255 caracteres.';
-    } else if (!EMAIL_REGEX.test(email.trim())) {
-      newErrors.email = 'Insira um e-mail válido (exemplo@dominio.com).';
+    if (emailError) {
+      newErrors.email = emailError;
     }
-
-    if (phone.trim()) {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length < 10 || digits.length > 11) {
-        newErrors.phone = 'O telefone deve conter o DDD e 8 ou 9 dígitos.';
-      }
+    if (phoneError) {
+      newErrors.phone = phoneError;
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!validate() || isSaving) return;
 
     const result = await onSave({
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim() || undefined,
-      avatarUrl: avatarUrl || undefined,
+      avatarFile: selectedFile || undefined,
     });
 
     if (result) {
@@ -183,7 +227,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
               Alterar foto de perfil
             </button>
             <p className="text-body-sm text-on-surface-variant mt-1">
-              PNG ou JPG de até 2MB
+              {isCompressing ? 'Processando imagem...' : 'Suporta arquivos grandes (comprimidos no envio)'}
             </p>
           </div>
         </div>
@@ -275,7 +319,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
             type="submit"
             variant="primary"
             className="flex-1 py-3"
-            disabled={isSaving}
+            disabled={isSaving || isCompressing}
           >
             {isSaving ? 'Salvando...' : 'Salvar Alterações'}
           </Button>
@@ -284,7 +328,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
             onClick={onBack}
             variant="secondary"
             className="flex-1 py-3"
-            disabled={isSaving}
+            disabled={isSaving || isCompressing}
           >
             Cancelar
           </Button>

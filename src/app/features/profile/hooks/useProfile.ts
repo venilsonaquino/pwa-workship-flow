@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserProfile, UpdateProfileDto } from '../types';
 import { profileService } from '../services/profileService';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth, type UserRole } from '@shared/hooks/useAuth';
 
 interface UseProfileState {
   profile: UserProfile | null;
@@ -68,6 +68,13 @@ export function useProfile() {
         profile: data,
         isLoading: false,
       }));
+      // Sincroniza as informações de autenticação com os dados reais/mais recentes do perfil
+      updateAuthProfile({
+        userName: data.name,
+        userEmail: data.email,
+        avatarUrl: data.avatarUrl,
+        userRole: data.role as UserRole,
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao carregar perfil';
       setState((prev) => ({
@@ -76,12 +83,28 @@ export function useProfile() {
         error: prev.profile ? null : message,
       }));
     }
-  }, []);
+  }, [updateAuthProfile]);
 
   const updateProfile = useCallback(async (data: UpdateProfileDto): Promise<UserProfile | null> => {
     setState((prev) => ({ ...prev, isUpdating: true, error: null }));
     try {
-      const updated = await profileService.updateProfile(data);
+      let avatarUrl = data.avatarUrl;
+
+      if (data.avatarFile) {
+        avatarUrl = await profileService.updateAvatar(data.avatarFile);
+      }
+
+      const profilePayload: UpdateProfileDto = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+      };
+
+      if (avatarUrl) {
+        profilePayload.avatarUrl = avatarUrl;
+      }
+
+      const updated = await profileService.updateProfile(profilePayload);
 
       setState((prev) => ({
         ...prev,
@@ -94,7 +117,7 @@ export function useProfile() {
         userName: updated.name,
         userEmail: updated.email,
         avatarUrl: updated.avatarUrl,
-        userRole: updated.role as any,
+        userRole: updated.role as UserRole,
       });
 
       return updated;
@@ -111,7 +134,9 @@ export function useProfile() {
 
   // Carrega o perfil automaticamente ao montar o componente
   useEffect(() => {
-    fetchProfile();
+    Promise.resolve().then(() => {
+      fetchProfile();
+    });
   }, [fetchProfile]);
 
   return {

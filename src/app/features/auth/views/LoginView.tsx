@@ -36,14 +36,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
         const name = response.user?.name || '';
         const userEmail = response.user?.email;
         const ministryName = response.user?.ministryName;
+        const avatarUrl = response.user?.avatarUrl;
 
-        console.log('[LoginView] Executando login do contexto com:', { role, name, userEmail, token: response.token, ministryName });
+        console.log('[LoginView] Executando login do contexto com:', { role, name, userEmail, token: response.token, ministryName, avatarUrl });
         login(
           role,
           name,
           userEmail,
           response.token,
-          ministryName
+          ministryName,
+          avatarUrl
         );
         console.log('[LoginView] Contexto de login atualizado!');
         return;

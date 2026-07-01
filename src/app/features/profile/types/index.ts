@@ -51,6 +51,9 @@ export interface UpdateProfileDto {
   
   /** Nova URL para imagem de avatar (opcional) */
   avatarUrl?: string;
+
+  /** Novo arquivo de imagem de avatar a ser enviado (opcional) */
+  avatarFile?: File;
 }
 
 /**

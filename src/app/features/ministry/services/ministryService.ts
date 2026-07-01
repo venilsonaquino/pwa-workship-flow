@@ -1,5 +1,6 @@
 import { showResponseToast } from '@src/lib/toast';
 import type { Member } from '../components/MemberRow';
+import { getAbsoluteAvatarUrl } from '@src/lib/utils';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -81,7 +82,7 @@ const mapApiMemberToMember = (apiMember: ApiBandMember): Member => {
     name: apiMember.name,
     email: apiMember.email,
     phone: apiMember.phone,
-    avatarUrl: apiMember.avatarUrl || '',
+    avatarUrl: getAbsoluteAvatarUrl(apiMember.avatarUrl),
     isActive: apiMember.isActive,
     instruments: mappedInstruments,
     role: apiMember.roleName as 'admin' | 'member',
