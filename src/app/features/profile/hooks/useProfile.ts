@@ -91,7 +91,9 @@ export function useProfile() {
       let avatarUrl = data.avatarUrl;
 
       if (data.avatarFile) {
-        avatarUrl = await profileService.updateAvatar(data.avatarFile);
+        const uploadedUrl = await profileService.updateAvatar(data.avatarFile);
+        // Adiciona um parâmetro de tempo para evitar cache do navegador (cache-busting)
+        avatarUrl = `${uploadedUrl}?t=${Date.now()}`;
       }
 
       const profilePayload: UpdateProfileDto = {
@@ -105,6 +107,13 @@ export function useProfile() {
       }
 
       const updated = await profileService.updateProfile(profilePayload);
+
+      // Preserva a URL do avatar (com o cache-busting) no estado local e de autenticação,
+      // pois o endpoint genérico de atualização de perfil (PUT /users/me) pode não retornar
+      // ou retornar de forma desatualizada a imagem modificada no PATCH.
+      if (avatarUrl) {
+        updated.avatarUrl = avatarUrl;
+      }
 
       setState((prev) => ({
         ...prev,

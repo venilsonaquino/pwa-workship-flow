@@ -227,7 +227,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
               Alterar foto de perfil
             </button>
             <p className="text-body-sm text-on-surface-variant mt-1">
-              {isCompressing ? 'Processando imagem...' : 'Suporta arquivos grandes (comprimidos no envio)'}
+              {isCompressing ? 'Processando imagem...' : ''}
             </p>
           </div>
         </div>
