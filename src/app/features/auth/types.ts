@@ -59,3 +59,31 @@ export interface LoginResponse {
   };
 }
 
+/**
+ * DTO para o cadastro de um novo Integrante.
+ */
+export interface MemberSignupDto {
+  /** Nome completo do integrante */
+  name: string;
+
+  /** Endereço de e-mail */
+  email: string;
+
+  /** Senha de acesso do usuário */
+  password: string;
+
+  /** Código de acesso da banda/ministério (sem hífen) */
+  bandCode: string;
+}
+
+/**
+ * Representa o contrato de resposta de sucesso após o cadastro do integrante.
+ */
+export interface MemberSignupResponse {
+  /** Indica se a operação foi realizada com sucesso */
+  success: boolean;
+  message: string;
+  status: number;
+}
+
+

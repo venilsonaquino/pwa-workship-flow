@@ -9,6 +9,8 @@ export { default as Card, CardHeader, CardTitle, CardDescription, CardContent, C
 
 export { default as DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 
+export { default as AlertDialog } from './ui/alert-dialog';
+
 export { default as FloatingActionButton } from './ui/FloatingActionButton';
 export type { FloatingActionButtonProps } from './ui/FloatingActionButton';
 

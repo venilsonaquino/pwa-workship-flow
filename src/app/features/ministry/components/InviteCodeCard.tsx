@@ -8,7 +8,7 @@ interface InviteCodeCardProps {
 }
 
 export const InviteCodeCard: React.FC<InviteCodeCardProps> = ({
-  code = 'WORSHIP-X7K2',
+  code = '',
   onCopy,
   onRegenerate,
   isUpdating = false,

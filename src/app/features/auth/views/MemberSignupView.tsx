@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@shared/hooks/useAuth';
 import { AuthLayout, AuthCard, BackButton, InputGroup, SubmitButton } from '../components';
+import authService from '../services/authService';
 
 interface MemberSignupViewProps {
   onBack: () => void;
@@ -9,11 +9,12 @@ interface MemberSignupViewProps {
 }
 
 export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLogin }) => {
-  const { login } = useAuth();
   const [bandCode, setBandCode] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleBandCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -29,18 +30,34 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
     setBandCode(formattedValue.substring(0, 9));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (!bandCode || bandCode.length < 9) {
-      alert('Por favor, informe um código de banda válido no formato XXXX-XXXX.');
+      setError('Por favor, informe um código de banda válido no formato XXXX-XXXX.');
       return;
     }
     if (password.length < 6) {
-      alert('A senha deve conter pelo menos 6 caracteres.');
+      setError('A senha deve conter pelo menos 6 caracteres.');
       return;
     }
-    // Efetua login direto para Integrantes
-    login('Integrante', fullName, email);
+    setIsLoading(true);
+    try {
+      const cleanBandCode = bandCode.replace('-', '');
+      await authService.registerMember({
+        name: fullName,
+        email,
+        password,
+        bandCode: cleanBandCode,
+      });
+      setIsLoading(false);
+      onLogin();
+    } catch (apiError) {
+      setIsLoading(false);
+      if (apiError instanceof Error) {
+        setError(apiError.message);
+      }
+    }
   };
 
   return (
@@ -74,6 +91,11 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
           </motion.header>
 
           <form className="flex flex-col gap-6 w-full" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg p-3 text-center">
+                {error}
+              </div>
+            )}
             
             {/* Highlighted Band Code Field */}
             <motion.div 
@@ -100,6 +122,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
                   value={bandCode}
                   onChange={handleBandCodeChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
               
@@ -134,6 +157,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                disabled={isLoading}
               />
 
               {/* E-MAIL */}
@@ -146,6 +170,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
 
               {/* SENHA DE ACESSO */}
@@ -158,6 +183,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </motion.div>
 
@@ -168,11 +194,23 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
               transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
               className="mt-2"
             >
-              <SubmitButton type="submit">
-                Entrar na Equipe
-                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform font-normal">
-                  arrow_forward
-                </span>
+              <SubmitButton type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <span>Entrando na Equipe...</span>
+                    <svg className="animate-spin h-5 w-5 text-[#cdbdff]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <span>Entrar na Equipe</span>
+                    <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform font-normal">
+                      arrow_forward
+                    </span>
+                  </>
+                )}
               </SubmitButton>
             </motion.div>
 
@@ -187,6 +225,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
                 onClick={onLogin}
                 type="button"
                 className="text-xs text-[#cac3d8] hover:text-[#cdbdff] transition-colors focus:outline-none"
+                disabled={isLoading}
               >
                 Já faz parte de uma equipe? <span className="text-[#cdbdff] font-bold underline decoration-[#cdbdff]/30 underline-offset-4 font-sans">Entrar</span>
               </button>

@@ -20,8 +20,8 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
   const [showToast, setShowToast] = useState(false);
 
   // Estados para nome da banda e código de convite
-  const [bandName, setBandName] = useState('Banda da Colina');
-  const [inviteCode, setInviteCode] = useState('WORSHIP-X7K2');
+  const [bandName, setBandName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

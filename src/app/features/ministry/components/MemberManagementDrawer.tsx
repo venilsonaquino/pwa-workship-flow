@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@src/lib/utils';
 import type { Member } from './MemberRow';
 import Button from '@shared/components/ui/button';
+import AlertDialog from '@shared/components/ui/alert-dialog';
 
 import type { Instrument } from '../services/ministryService';
 
@@ -31,6 +32,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
     manageRepertoire: false,
     adminAccess: false,
   });
+  const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
 
   // Carrega os valores sempre que o integrante selecionado ou drawer mudar
   useEffect(() => {
@@ -279,11 +281,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
               {member.role === 'member' && (
                 <div className="pt-4 border-t border-surface-container">
                   <div
-                    onClick={() => {
-                      if (confirm(`Tem certeza que deseja remover ${member.name} do time?`)) {
-                        onRemove(member.id);
-                      }
-                    }}
+                    onClick={() => setIsRemoveConfirmOpen(true)}
                     className="bg-error-container/30 p-4 rounded-xl flex items-center justify-between group cursor-pointer hover:bg-error-container/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
@@ -326,6 +324,18 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
             </div>
           </motion.div>
         </div>
+      )}
+      {member && (
+        <AlertDialog
+          isOpen={isRemoveConfirmOpen}
+          onClose={() => setIsRemoveConfirmOpen(false)}
+          onConfirm={() => onRemove(member.id)}
+          title="Remover do Time"
+          description={`Tem certeza que deseja remover ${member.name} do time? Esta ação revogará o acesso deste integrante ao ministério.`}
+          confirmText="Remover"
+          variant="danger"
+          icon="person_remove"
+        />
       )}
     </AnimatePresence>,
     document.body
