@@ -33,6 +33,9 @@ export interface UserProfile {
   
   /** Quantidade total de integrantes do ministério (opcional) */
   memberCount?: number;
+
+  /** Permissões associadas ao usuário (opcional) */
+  permissions?: string[];
 }
 
 /**

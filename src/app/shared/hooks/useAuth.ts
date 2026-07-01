@@ -11,6 +11,7 @@ export interface UserProfile {
   avatarUrl: string;
   token?: string;
   ministryName?: string;
+  permissions?: string[];
 }
 
 const AUTH_KEY = 'worshipflow_auth_profile';
@@ -20,7 +21,7 @@ const getInitialState = (): UserProfile => {
   const stored = localStorage.getItem(AUTH_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      return JSON.parse(stored) as UserProfile;
     } catch {
       // Ignore parse issues
     }
@@ -31,6 +32,7 @@ const getInitialState = (): UserProfile => {
     userEmail: '',
     userRole: null,
     avatarUrl: '',
+    permissions: [],
   };
 };
 
@@ -68,22 +70,24 @@ export function useAuth() {
     customEmail?: string,
     token?: string,
     ministryName?: string,
-    avatarUrl?: string
+    avatarUrl?: string,
+    permissions?: string[]
   ) => {
-    const mockUser: UserProfile = {
+    const userProfile: UserProfile = {
       isAuthenticated: true,
-      userName: customName || (role === 'Líder de Louvor' ? 'Manu Silveira' : 'Gabriel Lima'),
-      userEmail: customEmail || (role === 'Líder de Louvor' ? 'manusilveira@worshipflow.com' : 'gabriellima@worshipflow.com'),
+      userName: customName || '',
+      userEmail: customEmail || '',
       userRole: role,
       avatarUrl: getAbsoluteAvatarUrl(avatarUrl || DEFAULT_AVATAR),
       token,
       ministryName,
+      permissions: permissions || [],
     };
     
     // Nota: Armazenando apenas preferências fictícias não sensíveis localmente.
     // TODO(security): Implementar cookies HttpOnly e SameSite para gerenciar sessões reais no servidor.
-    localStorage.setItem(AUTH_KEY, JSON.stringify(mockUser));
-    _authStore = mockUser;
+    localStorage.setItem(AUTH_KEY, JSON.stringify(userProfile));
+    _authStore = userProfile;
     notifySubscribers();
   }, []);
 
@@ -97,6 +101,7 @@ export function useAuth() {
       userEmail: '',
       userRole: null,
       avatarUrl: '',
+      permissions: [],
     };
     notifySubscribers();
   }, []);

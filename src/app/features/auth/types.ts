@@ -56,6 +56,7 @@ export interface LoginResponse {
     role: string;
     avatarUrl?: string;
     ministryName?: string;
+    permissions?: string[];
   };
 }
 

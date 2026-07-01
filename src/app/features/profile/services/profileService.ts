@@ -41,6 +41,7 @@ interface ApiUserMeResponse {
     avatarUrl: string;
     roleName: string;
     membersCount: number;
+    permissions?: string[];
   };
   error: string | null;
 }
@@ -79,6 +80,7 @@ export const profileService = {
         avatarUrl: getAbsoluteAvatarUrl(apiUser.avatarUrl),
         phone: apiUser.phone || '',
         memberCount: apiUser.membersCount || 0,
+        permissions: apiUser.permissions || [],
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes('HTTP')) {
@@ -125,6 +127,7 @@ export const profileService = {
         avatarUrl: getAbsoluteAvatarUrl(apiUser.avatarUrl),
         phone: apiUser.phone || '',
         memberCount: apiUser.membersCount || 0,
+        permissions: apiUser.permissions || [],
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes('HTTP')) {

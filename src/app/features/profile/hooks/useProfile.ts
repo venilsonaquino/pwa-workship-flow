@@ -28,6 +28,7 @@ const getSessionCachedProfile = (): UserProfile | null => {
           avatarUrl: auth.avatarUrl || '',
           phone: '',
           memberCount: 0,
+          permissions: auth.permissions || [],
         };
       }
     } catch {
@@ -74,6 +75,7 @@ export function useProfile() {
         userEmail: data.email,
         avatarUrl: data.avatarUrl,
         userRole: data.role as UserRole,
+        permissions: data.permissions,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao carregar perfil';
@@ -127,6 +129,7 @@ export function useProfile() {
         userEmail: updated.email,
         avatarUrl: updated.avatarUrl,
         userRole: updated.role as UserRole,
+        permissions: updated.permissions,
       });
 
       return updated;

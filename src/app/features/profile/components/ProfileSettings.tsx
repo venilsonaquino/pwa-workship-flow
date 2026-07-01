@@ -15,8 +15,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   memberCount = 24,
 }) => {
   const { theme, toggleTheme } = useThemeStore();
-  const { logout } = useAuth();
+  const { logout, permissions } = useAuth();
   const isDarkMode = theme === 'dark';
+
+  const hasManageMinistry = permissions?.includes('ManageMinistry') ?? false;
 
   return (
     <div className="w-full" style={{ marginTop: 24 }}>
@@ -72,35 +74,37 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
       </section>
 
       {/* ── Gestão do Ministério ── */}
-      <section style={{ marginBottom: 24 }}>
-        <h3
-          className="text-label-sm font-semibold text-primary uppercase tracking-wider"
-          style={{ paddingLeft: 4, paddingRight: 4, marginBottom: 12 }}
-        >
-          Gestão do Ministério
-        </h3>
-        <div className="grid" style={{ gap: 12 }}>
-          {/* Banda */}
-          <div
-            onClick={onNavigateToTeam}
-            className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
-            style={{ padding: 16 }}
+      {hasManageMinistry && (
+        <section style={{ marginBottom: 24 }}>
+          <h3
+            className="text-label-sm font-semibold text-primary uppercase tracking-wider"
+            style={{ paddingLeft: 4, paddingRight: 4, marginBottom: 12 }}
           >
-            <div className="flex items-center" style={{ gap: 16 }}>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined">groups</span>
+            Gestão do Ministério
+          </h3>
+          <div className="grid" style={{ gap: 12 }}>
+            {/* Banda */}
+            <div
+              onClick={onNavigateToTeam}
+              className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
+              style={{ padding: 16 }}
+            >
+              <div className="flex items-center" style={{ gap: 16 }}>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined">groups</span>
+                </div>
+                <div className="text-left">
+                  <p className="text-label-lg font-semibold text-on-surface">Banda</p>
+                  <p className="text-body-md text-on-surface-variant">{memberCount} Integrantes</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-label-lg font-semibold text-on-surface">Banda</p>
-                <p className="text-body-md text-on-surface-variant">{memberCount} Integrantes</p>
-              </div>
+              <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">
+                chevron_right
+              </span>
             </div>
-            <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">
-              chevron_right
-            </span>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Configurações do App ── */}
       <section style={{ marginBottom: 56 }}>
