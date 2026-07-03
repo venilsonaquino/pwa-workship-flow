@@ -1,3 +1,5 @@
+import { Permission } from '@shared/hooks/useAuth';
+
 /**
  * DTO para o cadastro de um novo Líder de Louvor.
  */
@@ -53,10 +55,10 @@ export interface LoginResponse {
   user?: {
     name: string;
     email: string;
-    role: string;
+    roleName?: string;
     avatarUrl?: string;
     ministryName?: string;
-    permissions?: string[];
+    permissions?: Permission[];
   };
 }
 

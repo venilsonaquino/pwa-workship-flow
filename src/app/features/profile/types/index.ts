@@ -5,6 +5,8 @@
  * para o recurso de Perfil do Usuário Autenticado (/profile ou /users/me).
  */
 
+import { Permission } from '@shared/hooks/useAuth';
+
 /**
  * Representa o recurso completo de Perfil de Usuário.
  * Retornado por: GET /profile
@@ -35,7 +37,7 @@ export interface UserProfile {
   memberCount?: number;
 
   /** Permissões associadas ao usuário (opcional) */
-  permissions?: string[];
+  permissions?: Permission[];
 }
 
 /**

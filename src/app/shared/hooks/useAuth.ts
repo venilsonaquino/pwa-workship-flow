@@ -1,7 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getAbsoluteAvatarUrl } from '@src/lib/utils';
 
-export type UserRole = 'Líder de Louvor' | 'Integrante';
+export type UserRole = 'Admin' | 'Member';
+
+export const Permission = {
+  AdminAccess: 'AdminAccess',
+  EditScales: 'EditScales',
+  ManageMinistry: 'ManageMinistry',
+  ManageRepertoire: 'ManageRepertoire',
+} as const;
+
+export type Permission = typeof Permission[keyof typeof Permission];
 
 export interface UserProfile {
   isAuthenticated: boolean;
@@ -11,7 +20,7 @@ export interface UserProfile {
   avatarUrl: string;
   token?: string;
   ministryName?: string;
-  permissions?: string[];
+  permissions?: Permission[];
 }
 
 const AUTH_KEY = 'worshipflow_auth_profile';
@@ -65,25 +74,25 @@ export function useAuth() {
   }, []);
 
   const login = useCallback((
-    role: UserRole,
+    roleName: UserRole,
     customName?: string,
     customEmail?: string,
     token?: string,
     ministryName?: string,
     avatarUrl?: string,
-    permissions?: string[]
+    permissions?: Permission[]
   ) => {
     const userProfile: UserProfile = {
       isAuthenticated: true,
       userName: customName || '',
       userEmail: customEmail || '',
-      userRole: role,
+      userRole: roleName,
       avatarUrl: getAbsoluteAvatarUrl(avatarUrl || DEFAULT_AVATAR),
       token,
       ministryName,
       permissions: permissions || [],
     };
-    
+
     // Nota: Armazenando apenas preferências fictícias não sensíveis localmente.
     // TODO(security): Implementar cookies HttpOnly e SameSite para gerenciar sessões reais no servidor.
     localStorage.setItem(AUTH_KEY, JSON.stringify(userProfile));

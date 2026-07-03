@@ -1,5 +1,5 @@
 import { useThemeStore } from '@shared/hooks';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth, Permission } from '@shared/hooks/useAuth';
 
 interface ProfileSettingsProps {
   onNavigateToTeam?: () => void;
@@ -18,7 +18,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   const { logout, permissions } = useAuth();
   const isDarkMode = theme === 'dark';
 
-  const hasManageMinistry = permissions?.includes('ManageMinistry') ?? false;
+  const hasManageMinistry = permissions?.includes(Permission.ManageMinistry) ?? false;
 
   return (
     <div className="w-full" style={{ marginTop: 24 }}>

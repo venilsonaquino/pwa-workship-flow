@@ -1,6 +1,7 @@
 import type { UserProfile, UpdateProfileDto, ChangePasswordDto } from '../types';
 import { showResponseToast } from '@src/lib/toast';
 import { getAbsoluteAvatarUrl } from '@src/lib/utils';
+import { Permission } from '@shared/hooks/useAuth';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -41,7 +42,8 @@ interface ApiUserMeResponse {
     avatarUrl: string;
     roleName: string;
     membersCount: number;
-    permissions?: string[];
+    permissions?: Permission[];
+    permission?: Permission[];
   };
   error: string | null;
 }
@@ -76,11 +78,11 @@ export const profileService = {
         id: apiUser.id,
         name: apiUser.name,
         email: apiUser.email,
-        role: apiUser.roleName || 'Líder de Louvor',
+        role: apiUser.roleName || 'Admin',
         avatarUrl: getAbsoluteAvatarUrl(apiUser.avatarUrl),
         phone: apiUser.phone || '',
         memberCount: apiUser.membersCount || 0,
-        permissions: apiUser.permissions || [],
+        permissions: apiUser.permissions || apiUser.permission,
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes('HTTP')) {
@@ -123,11 +125,11 @@ export const profileService = {
         id: apiUser.id,
         name: apiUser.name,
         email: apiUser.email,
-        role: apiUser.roleName || 'Líder de Louvor',
+        role: apiUser.roleName || 'Admin',
         avatarUrl: getAbsoluteAvatarUrl(apiUser.avatarUrl),
         phone: apiUser.phone || '',
         memberCount: apiUser.membersCount || 0,
-        permissions: apiUser.permissions || [],
+        permissions: apiUser.permissions || apiUser.permission,
       };
     } catch (error) {
       if (error instanceof Error && error.message.includes('HTTP')) {

@@ -12,7 +12,7 @@ export const AuthFlow: React.FC = () => {
   const [step, setStep] = useState<AuthStep>('welcome');
 
   const handleSelectRole = (role: UserRole) => {
-    if (role === 'Líder de Louvor') {
+    if (role === 'Admin') {
       setStep('signup-leader');
     } else {
       setStep('signup-member');

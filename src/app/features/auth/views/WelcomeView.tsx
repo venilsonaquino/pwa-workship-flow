@@ -48,7 +48,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole, onLogin 
         >
           {/* Option 1: Leader */}
           <button
-            onClick={() => handleSelectRole('Líder de Louvor')}
+            onClick={() => handleSelectRole('Admin')}
             className="group bg-[rgba(32,31,31,0.4)] backdrop-blur-xl border border-[rgba(255,255,255,0.1)] rounded-xl p-6 flex items-center w-full text-left transition-all duration-300 hover:bg-[#201f1f] hover:border-[#cdbdff]/40 focus:outline-none focus:ring-2 focus:ring-[#cdbdff] focus:border-transparent active:scale-[0.98]"
           >
             <div className="w-12 h-12 rounded-full bg-[#2a2a2a] flex items-center justify-center mr-4 group-hover:bg-[#7c4dff]/20 transition-colors">
@@ -71,7 +71,7 @@ export const WelcomeView: React.FC<WelcomeViewProps> = ({ onSelectRole, onLogin 
 
           {/* Option 2: Member */}
           <button
-            onClick={() => handleSelectRole('Integrante')}
+            onClick={() => handleSelectRole('Member')}
             className="group bg-[rgba(32,31,31,0.4)] backdrop-blur-xl border border-[rgba(255,255,255,0.1)] rounded-xl p-6 flex items-center w-full text-left transition-all duration-300 hover:bg-[#201f1f] hover:border-[#cdbdff]/40 focus:outline-none focus:ring-2 focus:ring-[#cdbdff] focus:border-transparent active:scale-[0.98]"
           >
             <div className="w-12 h-12 rounded-full bg-[#2a2a2a] flex items-center justify-center mr-4 group-hover:bg-[#7c4dff]/20 transition-colors">

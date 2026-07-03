@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserProfile, UpdateProfileDto } from '../types';
 import { profileService } from '../services/profileService';
-import { useAuth, type UserRole } from '@shared/hooks/useAuth';
+import { useAuth, type UserRole, type UserProfile as AuthUserProfile } from '@shared/hooks/useAuth';
 
 interface UseProfileState {
   profile: UserProfile | null;
@@ -70,13 +70,16 @@ export function useProfile() {
         isLoading: false,
       }));
       // Sincroniza as informações de autenticação com os dados reais/mais recentes do perfil
-      updateAuthProfile({
+      const authUpdates: Partial<AuthUserProfile> = {
         userName: data.name,
         userEmail: data.email,
         avatarUrl: data.avatarUrl,
         userRole: data.role as UserRole,
-        permissions: data.permissions,
-      });
+      };
+      if (data.permissions) {
+        authUpdates.permissions = data.permissions;
+      }
+      updateAuthProfile(authUpdates);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao carregar perfil';
       setState((prev) => ({
@@ -124,13 +127,16 @@ export function useProfile() {
       }));
 
       // Sincroniza as informações de autenticação se nome, e-mail ou avatar mudarem
-      updateAuthProfile({
+      const authUpdates: Partial<AuthUserProfile> = {
         userName: updated.name,
         userEmail: updated.email,
         avatarUrl: updated.avatarUrl,
         userRole: updated.role as UserRole,
-        permissions: updated.permissions,
-      });
+      };
+      if (updated.permissions) {
+        authUpdates.permissions = updated.permissions;
+      }
+      updateAuthProfile(authUpdates);
 
       return updated;
     } catch (err) {

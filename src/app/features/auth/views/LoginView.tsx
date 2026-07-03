@@ -32,16 +32,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
 
       if (response.success) {
         console.log('[LoginView] Login bem-sucedido. Mapeando dados do usuário...');
-        const role = response.user?.role as UserRole;
+        const roleName = (response.user?.roleName) as UserRole;
         const name = response.user?.name || '';
         const userEmail = response.user?.email;
         const ministryName = response.user?.ministryName;
         const avatarUrl = response.user?.avatarUrl;
         const permissions = response.user?.permissions;
 
-        console.log('[LoginView] Executando login do contexto com:', { role, name, userEmail, token: response.token, ministryName, avatarUrl, permissions });
+        console.log('[LoginView] Executando login do contexto com:', { roleName, name, userEmail, token: response.token, ministryName, avatarUrl, permissions });
         login(
-          role,
+          roleName,
           name,
           userEmail,
           response.token,
