@@ -21,7 +21,7 @@ function isChordLine(line: string): boolean {
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
-export function transposeNote(note: string, semitones: number): string {
+function transposeNote(note: string, semitones: number): string {
   let idx = NOTES_SHARP.indexOf(note);
   if (idx === -1) {
     idx = NOTES_FLAT.indexOf(note);
@@ -33,7 +33,7 @@ export function transposeNote(note: string, semitones: number): string {
   return preferFlat ? NOTES_FLAT[newIdx] : NOTES_SHARP[newIdx];
 }
 
-export function transposeChordToken(token: string, semitones: number): string {
+function transposeChordToken(token: string, semitones: number): string {
   if (semitones === 0) return token;
   if (token.includes('/')) {
     return token.split('/').map(t => transposeChordToken(t, semitones)).join('/');
@@ -41,11 +41,11 @@ export function transposeChordToken(token: string, semitones: number): string {
 
   const match = token.match(/^([A-G][#b]?)(.*)$/);
   if (!match) return token;
-  const [_, root, suffix] = match;
+  const [, root, suffix] = match;
   return transposeNote(root, semitones) + suffix;
 }
 
-export function transposeChordLine(line: string, semitones: number): string {
+function transposeChordLine(line: string, semitones: number): string {
   if (semitones === 0) return line;
   const re = /[A-G][b#]?[0-9a-zA-Z()/#b]*/g;
   return line.replace(re, (match) => {
@@ -158,6 +158,22 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollAccumulatorRef = useRef(0);
 
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevSongId, setPrevSongId] = useState(song?.id);
+
+  if (isOpen !== prevIsOpen || song?.id !== prevSongId) {
+    setPrevIsOpen(isOpen);
+    setPrevSongId(song?.id);
+
+    setTransposeOffset(0);
+    setActiveControl('none');
+    setIsControlsVisible(true);
+    if (!isOpen) {
+      setIsScrolling(false);
+      setActiveTab('principal');
+    }
+  }
+
   // Find the active scrollable container (.scroll-container-native or window)
   const getScrollContainer = (): HTMLElement | Window => {
     const container = document.querySelector('.scroll-container-native');
@@ -171,22 +187,13 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
       hideTimeoutRef.current = null;
     }
     scrollAccumulatorRef.current = 0;
-    if (!isOpen) {
-      setIsScrolling(false);
-      setActiveTab('principal');
-      setTransposeOffset(0);
-      setActiveControl('none');
-      setIsControlsVisible(true);
-    } else {
+    if (isOpen) {
       const container = getScrollContainer();
       if (container instanceof Window) {
         window.scrollTo(0, 0);
       } else {
         container.scrollTop = 0;
       }
-      setTransposeOffset(0);
-      setActiveControl('none');
-      setIsControlsVisible(true);
     }
   }, [isOpen, song]);
 
@@ -222,8 +229,8 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
         accumScrollYRef.current += speedPixelsPerSecond * cappedDelta;
       }
 
-      let currentScrollY = 0;
-      let maxScroll = 0;
+      let currentScrollY: number;
+      let maxScroll: number;
 
       const integerScroll = Math.floor(accumScrollYRef.current);
       const fraction = accumScrollYRef.current - integerScroll;
@@ -252,11 +259,12 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
 
     rafId = requestAnimationFrame(tick);
 
+    const contentWrapper = contentWrapperRef.current;
     return () => {
       cancelAnimationFrame(rafId);
       // Reset transform on cleanup
-      if (contentWrapperRef.current) {
-        contentWrapperRef.current.style.transform = '';
+      if (contentWrapper) {
+        contentWrapper.style.transform = '';
       }
     };
   }, [isScrolling, scrollSpeedVal]);
@@ -485,7 +493,7 @@ export function SongCifraReader({ isOpen, song, onClose }: SongCifraReaderProps)
             <div key={idx} className="mt-2 mb-2 flex items-center gap-2">
               <div className="h-4 w-[3px] bg-primary rounded-full flex-shrink-0" />
               <span className="text-xs font-bold text-outline uppercase tracking-widest">
-                {seg.text.replace(/[\[\]]/g, '')}
+                {seg.text.replace(/\[/g, '').replace(/\]/g, '')}
               </span>
             </div>
           );

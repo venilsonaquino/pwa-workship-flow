@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import SongDistribution, { CARDS_DATA } from '../components/SongDistribution';
+import SongDistribution from '../components/SongDistribution';
+import { CARDS_DATA } from '../constants/cardsData';
 import { FloatingActionButton } from '@shared/components';
 
 // ── Animation Variants ────────────────────────────────────────────────────────

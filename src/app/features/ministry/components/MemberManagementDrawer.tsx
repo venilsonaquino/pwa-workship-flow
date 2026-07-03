@@ -34,12 +34,14 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
   });
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
 
-  // Carrega os valores sempre que o integrante selecionado ou drawer mudar
-  useEffect(() => {
+  const [prevMemberId, setPrevMemberId] = useState<string | null>(null);
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
+
+  if ((member?.id || null) !== prevMemberId || isOpen !== prevIsOpen) {
+    setPrevMemberId(member?.id || null);
+    setPrevIsOpen(isOpen);
     if (member) {
       setSelectedInstruments(member.instruments || []);
-
-      // Define permissões de acordo com o integrante
       setPermissions({
         accountStatus: member.isActive,
         editScales: member.permissions?.editScales ?? false,
@@ -47,7 +49,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
         adminAccess: member.permissions?.adminAccess ?? (member.role === 'admin'),
       });
     }
-  }, [member, isOpen]);
+  }
 
   const toggleInstrument = (code: string) => {
     setSelectedInstruments((prev) =>

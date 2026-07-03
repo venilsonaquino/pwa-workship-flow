@@ -1,9 +1,10 @@
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import { Toaster } from 'sonner';
 import { AuthFlow } from '@features/auth';
 import { Layout } from '@shared/components';
 import { useAuth } from '@shared/hooks/useAuth';
 import AppRoutes from '@core/routes/AppRoutes';
+import { useThemeStore } from '@shared/hooks/useThemeStore';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -18,15 +19,18 @@ function LoadingScreen() {
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function App() {
+  useThemeStore();
   const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
   const [showNavigation, setShowNavigation] = useState(true);
 
-  useEffect(() => {
+  const [wasAuthenticated, setWasAuthenticated] = useState(isAuthenticated);
+  if (isAuthenticated !== wasAuthenticated) {
+    setWasAuthenticated(isAuthenticated);
     if (!isAuthenticated) {
       setActiveTab('scales');
     }
-  }, [isAuthenticated]);
+  }
 
   if (!isAuthenticated) {
     return (

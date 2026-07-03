@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PageHeader, Button } from '@shared/components';
 import SuggestSongModal from '../components/SuggestSongModal';
 import type { Song } from '../types';
@@ -28,55 +28,65 @@ const LIBRARY_ITEMS: LibraryItem[] = [
   { title: 'Graves Into Gardens', artist: 'Elevation Worship', duration: '7:32', type: 'song', bgClass: 'bg-secondary-container text-on-secondary-container' },
   { title: 'Talking to Jesus', artist: 'Elevation Worship', duration: '5:10', type: 'song', bgClass: 'bg-tertiary-container text-on-tertiary-container' },
   { title: 'Todavia Me Alegrarei', artist: 'Samuel Messias', duration: '5:05', type: 'song', bgClass: 'bg-primary-container text-on-primary-container' },
-  { title: 'Caminho no Deserto', artist: 'Soraya Moraes', duration: '6:20', type: 'song', bgClass: 'bg-secondary-container text-on-secondary-container' },
-  { title: 'Lindo És', artist: 'Juliano Son', duration: '5:30', type: 'song', bgClass: 'bg-tertiary-container text-on-tertiary-container' },
-  { title: 'A Bênção', artist: 'Gabriel Guedes', duration: '7:00', type: 'song', bgClass: 'bg-primary-container text-on-primary-container' },
-  { title: 'Santo', artist: 'Gabriel Guedes', duration: '5:15', type: 'song', bgClass: 'bg-secondary-container text-on-secondary-container' },
-  { name: 'Elevation Worship', type: 'artist', songsCount: 45, bgClass: 'bg-tertiary-container text-on-tertiary-container' },
-  { name: 'Gabriel Guedes', type: 'artist', songsCount: 18, bgClass: 'bg-primary-container text-on-primary-container' },
-  { name: 'Hillsong United', type: 'artist', songsCount: 32, bgClass: 'bg-secondary-container text-on-secondary-container' },
+  { title: 'Oceans (Where Feet May Fail)', artist: 'Hillsong United', duration: '8:56', type: 'song', originalKey: 'D' },
+  { title: 'Elevation Worship', artist: 'Artist Profile', duration: '--', type: 'song', originalKey: 'A' },
+  { title: 'Me Atraiu', artist: 'Gabriela Rocha', duration: '6:12', type: 'song', originalKey: 'G' },
+  { title: 'Yeshua', artist: 'Alessandro Vilas Boas', duration: '5:43', type: 'song', originalKey: 'C' },
+  { title: 'A Casa É Sua', artist: 'Casa Worship', duration: '7:20', type: 'song', originalKey: 'G' },
+  { title: 'Porque Ele Vive', artist: 'Traditional Hymn', duration: '4:15', type: 'song', originalKey: 'G' },
+  { title: 'O Escudo', artist: 'Voz da Verdade', duration: '5:02', type: 'song', originalKey: 'Am' },
+  { title: 'Grandes Coisas', artist: 'Fernandinho', duration: '5:24', type: 'song', originalKey: 'A' },
+  { name: 'Hillsong United', songsCount: 42, type: 'artist' },
+  { name: 'Gabriela Rocha', songsCount: 28, type: 'artist' },
+  { name: 'Fernandinho', songsCount: 35, type: 'artist' },
+  { name: 'Morada', songsCount: 19, type: 'artist' },
 ];
 
-export interface SongSearchViewProps {
+interface SongSearchViewProps {
   onBack: () => void;
-  onSuggest: (title: string, artist: string) => void;
-  existingSongs: Song[];
+  onSelectSong: (song: Song) => void;
 }
 
-export const SongSearchView = ({
+export default ({
   onBack,
-  onSuggest,
-  existingSongs,
+  onSelectSong,
 }: SongSearchViewProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedQuery, setSearchedQuery] = useState('');
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    const saved = localStorage.getItem('recent_song_searches');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // Fall through
+      }
+    }
+    const presets = ['Elevation Worship', 'Oceans (Where Feet May Fail)', 'Gabriel Guedes'];
+    try {
+      localStorage.setItem('recent_song_searches', JSON.stringify(presets));
+    } catch {
+      // ignore storage errors
+    }
+    return presets;
+  });
   const [filteredResults, setFilteredResults] = useState<LibraryItem[]>([]);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [addedSongKeys, setAddedSongKeys] = useState<Record<string, boolean>>({});
 
-  // Initialize recent searches from localStorage or presets
-  useEffect(() => {
-    const saved = localStorage.getItem('recent_song_searches');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        setRecentSearches(['Elevation Worship', 'Oceans (Where Feet May Fail)', 'Gabriel Guedes']);
-      }
-    } else {
-      const presets = ['Elevation Worship', 'Oceans (Where Feet May Fail)', 'Gabriel Guedes'];
-      setRecentSearches(presets);
-      localStorage.setItem('recent_song_searches', JSON.stringify(presets));
-    }
-  }, []);
+  // Reset search results immediately when input is empty during render
+  const trimmedInput = searchQuery.trim();
+  if (!trimmedInput && (searchedQuery !== '' || filteredResults.length > 0)) {
+    setSearchedQuery('');
+    setFilteredResults([]);
+  }
 
-  const saveRecentSearches = (newSearches: string[]) => {
+  const saveRecentSearches = useCallback((newSearches: string[]) => {
     setRecentSearches(newSearches);
     localStorage.setItem('recent_song_searches', JSON.stringify(newSearches));
-  };
+  }, []);
 
-  const executeSearch = (query: string, addToRecent: boolean = false) => {
+  const executeSearch = useCallback((query: string, addToRecent: boolean = false) => {
     const trimmed = query.trim();
     if (!trimmed) {
       setSearchedQuery('');
@@ -102,20 +112,19 @@ export const SongSearchView = ({
 
     if (addToRecent) {
       // Add to recent searches (move to top, limit to 5)
-      const filteredRecent = recentSearches.filter((s) => s.toLowerCase() !== trimmed.toLowerCase());
-      const updated = [trimmed, ...filteredRecent].slice(0, 5);
-      saveRecentSearches(updated);
+      setRecentSearches((prev) => {
+        const filteredRecent = prev.filter((s) => s.toLowerCase() !== trimmed.toLowerCase());
+        const updated = [trimmed, ...filteredRecent].slice(0, 5);
+        localStorage.setItem('recent_song_searches', JSON.stringify(updated));
+        return updated;
+      });
     }
-  };
+  }, []);
 
   // Debounce search while typing (500ms)
   useEffect(() => {
     const trimmed = searchQuery.trim();
-    if (!trimmed) {
-      setSearchedQuery('');
-      setFilteredResults([]);
-      return;
-    }
+    if (!trimmed) return;
 
     // Skip debounce if we already have this exact search query active
     if (trimmed.toLowerCase() === searchedQuery.toLowerCase()) {
@@ -127,7 +136,7 @@ export const SongSearchView = ({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, searchedQuery]);
+  }, [searchQuery, searchedQuery, executeSearch]);
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

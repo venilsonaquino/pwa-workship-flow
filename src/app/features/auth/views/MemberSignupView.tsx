@@ -17,7 +17,7 @@ export const MemberSignupView: React.FC<MemberSignupViewProps> = ({ onBack, onLo
   const [error, setError] = useState<string | null>(null);
 
   const handleBandCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    const value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formattedValue = '';
     
     for (let i = 0; i < value.length; i++) {

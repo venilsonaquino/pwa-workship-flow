@@ -65,7 +65,7 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, instruments = [], 
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
             {memberInstruments && memberInstruments.length > 0 ? (
               memberInstruments.map((instCode, idx) => {
-                const code = typeof instCode === 'string' ? instCode : (instCode as any)?.code || '';
+                const code = typeof instCode === 'string' ? instCode : (instCode as unknown as { code?: string })?.code || '';
                 if (!code) return null;
                 const match = instruments.find((i) => i.code === code);
                 const displayName = match ? match.name : (code.charAt(0).toUpperCase() + code.slice(1));
