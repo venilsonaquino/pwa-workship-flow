@@ -1,8 +1,10 @@
 import { useState, Suspense } from 'react';
-import { UserListView } from '@features/user';
-import { ProfileView } from '@features/profile';
-import { ScalesPreviewView } from '@features/scales';
-import { Layout, PageHeader } from '@shared/components';
+import { Toaster } from 'sonner';
+import { AuthFlow } from '@features/auth';
+import { Layout } from '@shared/components';
+import { useAuth } from '@shared/hooks/useAuth';
+import AppRoutes from '@core/routes/AppRoutes';
+import { useThemeStore } from '@shared/hooks/useThemeStore';
 
 // ── Suspense Fallback ──────────────────────────────────────────────────────────
 
@@ -17,40 +19,50 @@ function LoadingScreen() {
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function App() {
+  useThemeStore();
+  const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
+  const [showNavigation, setShowNavigation] = useState(true);
 
-  const handleBack = () => {
-    setActiveTab('scales');
-  };
+  const [wasAuthenticated, setWasAuthenticated] = useState(isAuthenticated);
+  if (isAuthenticated !== wasAuthenticated) {
+    setWasAuthenticated(isAuthenticated);
+    if (!isAuthenticated) {
+      setActiveTab('scales');
+    }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <AuthFlow />
+      </Suspense>
+    );
+  }
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
-      <Layout
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        showHeader={activeTab !== 'profile'}
-        pageHeader={
-          activeTab === 'profile' ? (
-            <PageHeader title="Perfil" onBack={handleBack} />
-          ) : undefined
-        }
-        contentClassName={
-          activeTab === 'profile'
-            ? 'flex-1 scroll-container-native pb-24 scrollbar-hide overflow-x-hidden'
-            : undefined
-        }
-        onNotificationClick={() => console.info('[Header] Notifications clicked')}
-      >
-        {activeTab === 'profile' ? (
-          <ProfileView />
-        ) : activeTab === 'scales' ? (
-          <ScalesPreviewView />
-        ) : (
-          <UserListView />
-        )}
-      </Layout>
-    </Suspense>
+    <>
+      <Toaster richColors position="top-right" />
+      <Suspense fallback={<LoadingScreen />}>
+        {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
+        <Layout
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          showHeader={activeTab === 'scales'}
+          showNavigation={showNavigation}
+          userName={userName}
+          avatarUrl={avatarUrl}
+          contentClassName={
+            activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
+              ? `flex-1 scroll-container-native ${!showNavigation ? 'pb-0' : 'pb-24'} scrollbar-hide overflow-x-hidden`
+              : undefined
+          }
+          onNotificationClick={() => console.info('[Header] Notifications clicked')}
+        >
+          <AppRoutes activeTab={activeTab} onShowNavigationChange={setShowNavigation} />
+        </Layout>
+      </Suspense>
+    </>
   );
 }
 

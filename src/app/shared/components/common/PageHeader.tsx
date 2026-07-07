@@ -1,31 +1,52 @@
 import React from 'react';
+import Button from '@shared/components/ui/button';
 
 export interface PageHeaderProps {
   title: string;
   onBack?: () => void;
   showBackButton?: boolean;
+  rightAction?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   onBack,
   showBackButton = true,
+  rightAction,
+  children,
 }) => {
   return (
-    <header className="dark:bg-inverse-surface border-outline-variant dark:border-outline flex justify-between items-center w-full px-5 h-16 sticky top-0 z-40 bg-transparent">
+    <header
+      className="sticky top-0 z-[200] w-full h-16 bg-background flex items-center justify-between transition-colors duration-250"
+    >
       <div className="flex items-center w-full relative h-full">
-        {showBackButton && (
-          <button
-            onClick={onBack}
-            className="absolute left-0 p-2 hover:bg-surface-variant/30 rounded-full transition-colors cursor-pointer flex items-center justify-center"
-            aria-label="Voltar"
-          >
-            <span className="material-symbols-outlined text-on-surface">arrow_back</span>
-          </button>
+        {children ? (
+          children
+        ) : (
+          <>
+            {showBackButton && onBack && (
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                size="sm"
+                iconOnly
+                className="absolute left-0 text-primary"
+                aria-label="Voltar"
+              >
+                <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+              </Button>
+            )}
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-[18px] font-bold text-primary whitespace-nowrap">
+              {title}
+            </h1>
+            {rightAction && (
+              <div className="absolute right-0 flex items-center">
+                {rightAction}
+              </div>
+            )}
+          </>
         )}
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-headline-md font-headline-md text-on-surface whitespace-nowrap">
-          {title}
-        </h1>
       </div>
     </header>
   );

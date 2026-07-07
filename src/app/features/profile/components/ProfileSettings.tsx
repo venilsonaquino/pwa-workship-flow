@@ -1,12 +1,27 @@
-import React from 'react';
 import { useThemeStore } from '@shared/hooks';
+import { useAuth, Permission } from '@shared/hooks/useAuth';
 
-export const ProfileSettings: React.FC = () => {
+interface ProfileSettingsProps {
+  onNavigateToTeam?: () => void;
+  onEditPersonalData?: () => void;
+  onNavigateToSecurity?: () => void;
+  memberCount?: number;
+}
+
+export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
+  onNavigateToTeam,
+  onEditPersonalData,
+  onNavigateToSecurity,
+  memberCount = 24,
+}) => {
   const { theme, toggleTheme } = useThemeStore();
+  const { logout, permissions } = useAuth();
   const isDarkMode = theme === 'dark';
 
+  const hasManageMinistry = permissions?.includes(Permission.ManageMinistry) ?? false;
+
   return (
-    <div className="w-full" style={{ paddingLeft: 16, paddingRight: 16, marginTop: 24 }}>
+    <div className="w-full" style={{ marginTop: 24 }}>
       {/* ── Configurações da Conta ── */}
       <section style={{ marginBottom: 24 }}>
         <h3
@@ -18,6 +33,7 @@ export const ProfileSettings: React.FC = () => {
         <div className="grid grid-cols-1" style={{ gap: 12 }}>
           {/* Dados Pessoais */}
           <div
+            onClick={onEditPersonalData}
             className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
             style={{ padding: 16 }}
           >
@@ -37,6 +53,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Segurança */}
           <div
+            onClick={onNavigateToSecurity}
             className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
             style={{ padding: 16 }}
           >
@@ -57,49 +74,37 @@ export const ProfileSettings: React.FC = () => {
       </section>
 
       {/* ── Gestão do Ministério ── */}
-      <section style={{ marginBottom: 24 }}>
-        <h3
-          className="text-label-sm font-semibold text-primary uppercase tracking-wider"
-          style={{ paddingLeft: 4, paddingRight: 4, marginBottom: 12 }}
-        >
-          Gestão do Ministério
-        </h3>
-        <div className="grid grid-cols-2" style={{ gap: 12 }}>
-          {/* Equipe */}
-          <div
-            className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
-            style={{ padding: 20 }}
+      {hasManageMinistry && (
+        <section style={{ marginBottom: 24 }}>
+          <h3
+            className="text-label-sm font-semibold text-primary uppercase tracking-wider"
+            style={{ paddingLeft: 4, paddingRight: 4, marginBottom: 12 }}
           >
+            Gestão do Ministério
+          </h3>
+          <div className="grid" style={{ gap: 12 }}>
+            {/* Banda */}
             <div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white"
-              style={{ marginBottom: 12 }}
+              onClick={onNavigateToTeam}
+              className="bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between hover:bg-surface-container transition-all duration-150 cursor-pointer group active:scale-[0.98]"
+              style={{ padding: 16 }}
             >
-              <span className="material-symbols-outlined icon-fill">groups</span>
-            </div>
-            <div className="text-left">
-              <p className="text-label-lg font-semibold text-on-surface">Equipe</p>
-              <p className="text-label-sm text-on-surface-variant">24 Integrantes</p>
+              <div className="flex items-center" style={{ gap: 16 }}>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined">groups</span>
+                </div>
+                <div className="text-left">
+                  <p className="text-label-lg font-semibold text-on-surface">Banda</p>
+                  <p className="text-body-md text-on-surface-variant">{memberCount} Integrantes</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">
+                chevron_right
+              </span>
             </div>
           </div>
-
-          {/* Equipamento */}
-          <div
-            className="bg-surface-container-lowest rounded-2xl shadow-sm hover:shadow-md transition-all duration-150 cursor-pointer active:scale-[0.98]"
-            style={{ padding: 20 }}
-          >
-            <div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center text-white"
-              style={{ marginBottom: 12 }}
-            >
-              <span className="material-symbols-outlined icon-fill">inventory_2</span>
-            </div>
-            <div className="text-left">
-              <p className="text-label-lg font-semibold text-on-surface">Equipamento</p>
-              <p className="text-label-sm text-on-surface-variant">12 Ativos</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Configurações do App ── */}
       <section style={{ marginBottom: 56 }}>
@@ -149,6 +154,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Sair da Conta */}
           <div
+            onClick={logout}
             className="flex items-center justify-between hover:bg-error-container/10 cursor-pointer transition-colors duration-150 text-error"
             style={{ padding: 16 }}
           >

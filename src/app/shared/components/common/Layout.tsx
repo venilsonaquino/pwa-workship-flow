@@ -34,7 +34,7 @@ export const Layout: React.FC<LayoutProps> = ({
   contentClassName,
 }) => {
   return (
-    <main className="flex flex-col h-screen bg-background overflow-hidden" style={{ padding: '10px' }}>
+    <main className="flex flex-col h-screen bg-background overflow-hidden  px-2.5">
       {showHeader && !pageHeader && (
         <Header
           userName={userName}
@@ -46,7 +46,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {pageHeader}
 
-      <div className={contentClassName ?? 'flex-1 scroll-container-native p-4 flex flex-col gap-4 pb-24 scrollbar-hide overflow-x-hidden'}>
+      <div className={`relative ${contentClassName ?? 'flex-1 scroll-container-native flex flex-col gap-4 pb-24 scrollbar-hide overflow-x-hidden'}`}>
         {children}
       </div>
 

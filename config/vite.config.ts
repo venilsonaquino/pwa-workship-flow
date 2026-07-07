@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 // https://vitejs.dev/config/
@@ -13,16 +12,17 @@ export default defineConfig(({ mode }) => {
     // ── Plugins ────────────────────────────────────────────────────────────────
     plugins: [
       react(),
-      tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'splash-screen.png'],
+        // includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'splash-screen.png'],
+        includeAssets: ['favicon.svg', 'icons/icon-72x72.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png', 'screenshots/splash-screen.png'],
         devOptions: {
           enabled: true,
           suppressWarnings: true,
         },
         workbox: {
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           // Cache-first strategy for static assets
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           runtimeCaching: [
@@ -50,8 +50,8 @@ export default defineConfig(({ mode }) => {
           name: env.VITE_APP_NAME || 'PWA Workshop Flow',
           short_name: 'PWAFlow',
           description: 'A scalable mobile-first PWA boilerplate',
-          theme_color: 'hsl(258, 90%, 60%)',
-          background_color: 'hsl(222, 25%, 8%)',
+          theme_color: '#7c3aed',
+          background_color: '#0f121d',
           display: 'standalone',
           display_override: ['standalone', 'minimal-ui'],
           orientation: 'portrait',
@@ -64,25 +64,37 @@ export default defineConfig(({ mode }) => {
               src: '/icons/icon-72x72.png',
               sizes: '72x72',
               type: 'image/png',
-              purpose: 'any maskable',
+              purpose: 'any',
             },
             {
               src: '/icons/icon-192x192.png',
               sizes: '192x192',
               type: 'image/png',
-              purpose: 'any maskable',
+              purpose: 'any',
+            },
+            {
+              src: '/icons/icon-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable',
             },
             {
               src: '/icons/icon-512x512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable',
+              purpose: 'any',
+            },
+            {
+              src: '/icons/icon-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
             },
           ],
           screenshots: [
             {
               src: '/screenshots/splash-screen.png',
-              sizes: '1080x1920',
+              sizes: '360x640',
               type: 'image/png',
               form_factor: 'narrow',
               label: 'PWA Workshop Flow - Home',
@@ -106,9 +118,7 @@ export default defineConfig(({ mode }) => {
     },
 
     // ── Environment Variables ──────────────────────────────────────────────────
-    define: {
-      'import.meta.env': { ...env },
-    },
+    envDir: path.resolve(__dirname, '../environment'),
 
     // ── Dev Server ─────────────────────────────────────────────────────────────
     server: {
@@ -119,11 +129,11 @@ export default defineConfig(({ mode }) => {
 
     // ── Build ──────────────────────────────────────────────────────────────────
     build: {
-      outDir: '../dist',
+      outDir: path.resolve(__dirname, '../dist'),
       sourcemap: mode !== 'production',
     },
 
     // ── Public Assets ──────────────────────────────────────────────────────────
-    publicDir: '../assets',
+    publicDir: path.resolve(__dirname, '../assets'),
   };
 });

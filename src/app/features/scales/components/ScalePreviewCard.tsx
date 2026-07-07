@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardFooter, Button } from '@shared/components';
-import scaleBg from '@assets/ceia.png';
-
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardFooter } from '@shared/components';
 
 export interface BandMember {
   role: string;
@@ -26,14 +25,40 @@ const MEMBERS_DATA: BandMember[] = [
 ];
 
 const SONGS_DATA: SongItem[] = [
-  { number: '01', title: 'Ousado Amor', key: 'E Major' },
-  { number: '02', title: 'Tua Presença', key: 'G Major' },
-  { number: '03', title: 'Digno', key: 'A Major' },
-  { number: '04', title: 'Vim Para Adorar-te', key: 'D Major' },
-  { number: '05', title: 'Que Se Abram Os Céus', key: 'C Major' },
-  { number: '06', title: 'Lindo És', key: 'A Major' },
-  { number: '07', title: 'Aclame ao Senhor', key: 'G Major' },
+  { number: '01', title: 'Ousado Amor', key: 'E Maior' },
+  { number: '02', title: 'Tua Presença', key: 'G Maior' },
+  { number: '03', title: 'Digno', key: 'A Maior' },
+  { number: '04', title: 'Vim Para Adorar-te', key: 'D Maior' },
+  { number: '05', title: 'Que Se Abram Os Céus', key: 'C Maior' },
+  { number: '06', title: 'Lindo És', key: 'A Maior' },
+  { number: '07', title: 'Aclame ao Senhor', key: 'G Maior' },
 ];
+
+// ── Animation Variants ────────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+};
 
 interface BandMembersGridProps {
   members: BandMember[];
@@ -41,23 +66,27 @@ interface BandMembersGridProps {
 
 const BandMembersGrid: React.FC<BandMembersGridProps> = ({ members }) => {
   return (
-    <div
-      className="grid grid-cols-2 gap-4"
-      style={{ padding: 4 }}
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-50px' }}
+      className="grid grid-cols-2 gap-4 p-1"
     >
       {members.map((member, idx) => (
-        <div
+        <motion.div
           key={idx}
-          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10"
-          style={{ padding: '12px', gap: '12px' }}
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.02, boxShadow: '0 8px 16px rgba(0,0,0,0.04)' }}
+          whileTap={{ scale: 0.98 }}
+          className="flex items-center bg-surface-container-low rounded-2xl border border-outline-variant/10 p-3 gap-3 transition-shadow"
         >
           <span className="material-symbols-outlined text-primary text-[22px]">
             {member.icon}
           </span>
           <div>
             <p
-              className="text-label-sm font-label-sm"
-              style={{ color: 'var(--color-on-surface-variant)' }}
+              className="text-label-sm font-label-sm text-on-surface-variant"
             >
               {member.role}
             </p>
@@ -65,9 +94,9 @@ const BandMembersGrid: React.FC<BandMembersGridProps> = ({ members }) => {
               {member.name}
             </p>
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 
@@ -79,25 +108,27 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
   return (
     <div className='flex flex-col gap-3'>
       <p
-        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center"
-        style={{ paddingBottom: 8, borderBottom: '1px solid var(--border)' }}
+        className="text-label-lg font-label-lg text-primary uppercase tracking-widest text-center pb-2 border-b border-outline-variant"
       >
         Setlist
       </p>
-      <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <motion.ul
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-50px' }}
+        className="flex flex-col gap-3"
+      >
         {songs.map((song, idx) => (
-          <li
+          <motion.li
             key={idx}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+            variants={itemVariants}
+            whileHover={{ x: 4 }}
+            className="flex items-center justify-between py-1 rounded-lg hover:bg-surface-container-lowest/50 px-2 transition-all"
           >
-            <div className="flex items-center" style={{ gap: '12px' }}>
+            <div className="flex items-center gap-3">
               <span
-                className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
-                style={{ width: '24px', height: '24px' }}
+                className="rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold w-6 h-6"
               >
                 {song.number}
               </span>
@@ -106,14 +137,13 @@ const SetlistList: React.FC<SetlistListProps> = ({ songs }) => {
               </p>
             </div>
             <span
-              className="text-label-sm"
-              style={{ color: 'var(--color-on-surface-variant)' }}
+              className="text-label-sm text-on-surface-variant"
             >
               {song.key}
             </span>
-          </li>
+          </motion.li>
         ))}
-      </ul>
+      </motion.ul>
     </div>
   );
 };
@@ -126,7 +156,7 @@ export const ScalePreviewCard: React.FC = () => {
     const text = `📅 *Escala: Culto de Celebração (08/10)*\n\n` +
       `🎸 *Equipe:*\n` +
       MEMBERS_DATA.map(m => `- ${m.role}: ${m.name}`).join('\n') + `\n\n` +
-      `🎵 *Setlist:*\n` +
+      `🎵 *Louvores:*\n` +
       SONGS_DATA.map(s => `${s.number}. ${s.title} (${s.key})`).join('\n') + `\n\n` +
       `#WorshipFlow #EscalaDominical`;
 
@@ -142,49 +172,42 @@ export const ScalePreviewCard: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
-    const text = `📅 *Escala: Culto de Celebração (08/10)*\n\n` +
-      `🎸 *Equipe:*\n` +
-      MEMBERS_DATA.map(m => `- ${m.role}: ${m.name}`).join('\n') + `\n\n` +
-      `🎵 *Setlist:*\n` +
-      SONGS_DATA.map(s => `${s.number}. ${s.title} (${s.key})`).join('\n') + `\n\n` +
-      `#WorshipFlow #EscalaDominical`;
-
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
   return (
-    <section className="flex flex-col gap-4">
+    <motion.section
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-4"
+    >
       <div className="flex items-center justify-between">
         <h3 className="font-headline-md text-headline-md text-on-surface">
           Preview da Escala
         </h3>
-        <Button
-          variant="secondary"
-          size="sm"
+        <motion.button
+          type="button"
           onClick={handleShare}
-          style={{ padding: '8px' }}
-          className="rounded-xl border border-outline-variant/30 min-h-0 py-2"
-          leftIcon={<span className="material-symbols-outlined text-[20px]">share</span>}
-        />
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary/20 transition-all cursor-pointer"
+        >
+          <span className="material-symbols-outlined">share</span>
+        </motion.button>
       </div>
 
       <Card>
-        <div className="relative h-36" style={{ position: 'relative', height: '144px', marginBottom: '-1px', backgroundColor: 'var(--surface-container-lowest)' }}>
+        <div className="relative h-36 -mb-[1px] bg-surface-container-lowest">
           <img
             alt="Scale Background"
             className="w-full h-full object-cover"
-            src={scaleBg}
+            src={''}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />
           <div
-            className="absolute"
-            style={{ bottom: '16px', left: '24px', display: 'flex', flexDirection: 'column', gap: '4px' }}
+            className="absolute bottom-4 left-6 flex flex-col gap-1"
           >
             <div>
               <span
-                className="bg-primary text-white text-[10px] rounded-full font-bold uppercase tracking-widest inline-block"
-                style={{ padding: '2px 8px', marginBottom: '4px' }}
+                className="bg-primary text-white text-[10px] rounded-full font-bold uppercase tracking-widest inline-block px-2 py-0.5 mb-1"
               >
                 Culto de Celebração
               </span>
@@ -195,13 +218,12 @@ export const ScalePreviewCard: React.FC = () => {
           </div>
         </div>
 
-        <CardContent className="flex flex-col gap-6" style={{ padding: 24 }}>
+        <CardContent className="flex flex-col gap-6 p-6 pt-2">
           <BandMembersGrid members={MEMBERS_DATA} />
           <SetlistList songs={SONGS_DATA} />
         </CardContent>
 
-        <CardFooter className="bg-surface-container-high border-t border-outline-variant/10 flex justify-between items-center"
-          style={{ padding: '12px 24px' }}>
+        <CardFooter className="bg-surface-container-high border-t border-outline-variant/10 flex justify-between items-center py-3 px-6">
           <p
             className="text-label-sm font-medium italic text-on-surface-variant"
           >
@@ -209,8 +231,7 @@ export const ScalePreviewCard: React.FC = () => {
           </p>
           <div className="flex items-center gap-1">
             <span
-              className="material-symbols-outlined text-primary text-[16px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+              className="material-symbols-outlined text-primary text-[16px] icon-fill"
             >
               favorite
             </span>
@@ -219,35 +240,18 @@ export const ScalePreviewCard: React.FC = () => {
         </CardFooter>
       </Card>
 
-      <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className="relative h-36" style={{ position: 'relative', height: '156px' }}>
-          <Button
-            onClick={handleExport}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #7c3aed 0%, #630ed4 100%)',
-              color: '#ffffff',
-              padding: '16px 24px',
-              borderRadius: '16px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            size="lg"
-            leftIcon={<span className="material-symbols-outlined text-[20px]">download</span>}
-          >
-            Exportar para WhatsApp
-          </Button>
-        </div>
-      </section>
-
-    </section>
+      {/* Export Button */}
+      <motion.button
+        type="button"
+        onClick={handleShare}
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        className="w-full gradient-brand text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+      >
+        <span className="material-symbols-outlined">download</span>
+        Exportar para WhatsApp
+      </motion.button>
+    </motion.section>
   );
 };
 
