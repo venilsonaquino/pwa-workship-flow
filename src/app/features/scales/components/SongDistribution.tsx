@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
 } from '@shared/components';
 
-import { EventCard, CARDS_DATA } from '../constants/cardsData';
+import { CARDS_DATA } from '../constants/cardsData';
 
 const MONTHS: MonthOption[] = [
   { value: '2023-09', label: 'Set 2023', titleMonth: 'Setembro' },

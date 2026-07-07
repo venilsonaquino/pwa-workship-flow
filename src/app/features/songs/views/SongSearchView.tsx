@@ -8,14 +8,15 @@ interface LibrarySong {
   artist: string;
   duration: string;
   type: 'song';
-  bgClass: string;
+  bgClass?: string;
+  originalKey?: string;
 }
 
 interface LibraryArtist {
   name: string;
   type: 'artist';
   songsCount: number;
-  bgClass: string;
+  bgClass?: string;
 }
 
 type LibraryItem = LibrarySong | LibraryArtist;
@@ -44,12 +45,14 @@ const LIBRARY_ITEMS: LibraryItem[] = [
 
 interface SongSearchViewProps {
   onBack: () => void;
-  onSelectSong: (song: Song) => void;
+  onSuggest: (title: string, artist: string) => void;
+  existingSongs: Song[];
 }
 
-export default ({
+const SongSearchView = ({
   onBack,
-  onSelectSong,
+  onSuggest,
+  existingSongs,
 }: SongSearchViewProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedQuery, setSearchedQuery] = useState('');
