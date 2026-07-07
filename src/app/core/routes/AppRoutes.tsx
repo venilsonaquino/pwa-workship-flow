@@ -5,14 +5,15 @@ import { ProfileView } from '@features/profile';
 import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
 import { RankingView } from '@features/ranking';
+import { NotificationsView } from '@features/notifications';
 import { useAuth } from '@shared/hooks/useAuth';
 
 interface AppRoutesProps {
   activeTab: string;
   onShowNavigationChange?: (show: boolean) => void;
+  onNotificationClick?: (prevTab?: string) => void;
+  onBack?: () => void;
 }
-
-const handleNotificationClick = () => console.info('[Header] Notifications clicked');
 
 const TAB_FADE = {
   initial: { opacity: 0 },
@@ -29,8 +30,19 @@ const TAB_STYLE: React.CSSProperties = {
   minHeight: '100%',
 };
 
-export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab, onShowNavigationChange }) => {
+export const AppRoutes: React.FC<AppRoutesProps> = ({
+  activeTab,
+  onShowNavigationChange,
+  onNotificationClick,
+  onBack,
+}) => {
   const { userName, userEmail, userRole, avatarUrl } = useAuth();
+
+  const handleNotificationClickWithTab = (tab: string) => {
+    if (onNotificationClick) {
+      onNotificationClick(tab);
+    }
+  };
 
   const tabComponents: Record<string, React.ReactNode> = {
     profile: (
@@ -39,19 +51,26 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ activeTab, onShowNavigatio
         userEmail={userEmail}
         userRole={userRole ?? undefined}
         avatarUrl={avatarUrl}
-        onNotificationClick={handleNotificationClick}
-        hasUnreadNotifications={true}
+        onNotificationClick={() => handleNotificationClickWithTab('profile')}
       />
     ),
     songs: (
       <SongsView
-        onNotificationClick={handleNotificationClick}
-        hasUnreadNotifications={true}
+        onNotificationClick={() => handleNotificationClickWithTab('songs')}
         onShowNavigationChange={onShowNavigationChange}
       />
     ),
     scales: <ScalesPreviewView />,
-    ranking: <RankingView />,
+    ranking: (
+      <RankingView
+        onNotificationClick={() => handleNotificationClickWithTab('ranking')}
+      />
+    ),
+    notifications: (
+      <NotificationsView
+        onBack={onBack ?? (() => {})}
+      />
+    ),
   };
 
   const activeView = tabComponents[activeTab] ?? <UserListView />;

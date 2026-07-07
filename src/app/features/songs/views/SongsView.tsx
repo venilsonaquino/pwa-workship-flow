@@ -215,13 +215,11 @@ const INITIAL_SONGS: Song[] = [
 
 export interface SongsViewProps {
   onNotificationClick?: () => void;
-  hasUnreadNotifications?: boolean;
   onShowNavigationChange?: (show: boolean) => void;
 }
 
 export const SongsView = ({
   onNotificationClick,
-  hasUnreadNotifications = true,
   onShowNavigationChange,
 }: SongsViewProps) => {
   const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
@@ -419,7 +417,6 @@ export const SongsView = ({
               rightAction={searchButton}
               showNotification={true}
               onNotificationClick={onNotificationClick}
-              hasUnreadNotifications={hasUnreadNotifications}
             />
           )}
 
