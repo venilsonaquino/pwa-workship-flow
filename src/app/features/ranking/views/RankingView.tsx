@@ -67,12 +67,14 @@ const PERIODS = [
   { id: '1y', label: '1 ano', multiplier: 12.0 }
 ];
 
-export const RankingView: React.FC = () => {
+interface RankingViewProps {
+  onNotificationClick?: () => void;
+}
+
+export const RankingView: React.FC<RankingViewProps> = ({ onNotificationClick }) => {
   const [activeDay, setActiveDay] = useState('Todas');
   const [activePeriod, setActivePeriod] = useState('30d');
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
-
-  const handleNotificationClick = () => console.info('[Header] Notifications clicked');
 
   // Calculate executions based on active period and day filters
   const periodConfig = PERIODS.find(p => p.id === activePeriod) || PERIODS[1];
@@ -123,8 +125,7 @@ export const RankingView: React.FC = () => {
       <Header
         title="Ranking"
         showNotification={true}
-        onNotificationClick={handleNotificationClick}
-        hasUnreadNotifications={true}
+        onNotificationClick={onNotificationClick}
       />
 
       <main className="space-y-6 max-w-lg mx-auto w-full">

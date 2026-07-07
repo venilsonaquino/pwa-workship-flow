@@ -22,6 +22,7 @@ function App() {
   useThemeStore();
   const { isAuthenticated, userName, avatarUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('scales');
+  const [previousTab, setPreviousTab] = useState('scales');
   const [showNavigation, setShowNavigation] = useState(true);
 
   const [wasAuthenticated, setWasAuthenticated] = useState(isAuthenticated);
@@ -29,8 +30,16 @@ function App() {
     setWasAuthenticated(isAuthenticated);
     if (!isAuthenticated) {
       setActiveTab('scales');
+      setPreviousTab('scales');
     }
   }
+
+  const handleTabChange = (tab: string) => {
+    if (activeTab !== 'notifications') {
+      setPreviousTab(activeTab);
+    }
+    setActiveTab(tab);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -47,19 +56,32 @@ function App() {
         {/* Replace with a Router (e.g. react-router-dom) as the app grows */}
         <Layout
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           showHeader={activeTab === 'scales'}
           showNavigation={showNavigation}
           userName={userName}
           avatarUrl={avatarUrl}
           contentClassName={
-            activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking'
+            activeTab === 'profile' || activeTab === 'songs' || activeTab === 'ranking' || activeTab === 'notifications'
               ? `flex-1 scroll-container-native ${!showNavigation ? 'pb-0' : 'pb-24'} scrollbar-hide overflow-x-hidden`
               : undefined
           }
-          onNotificationClick={() => console.info('[Header] Notifications clicked')}
+          onNotificationClick={() => {
+            setPreviousTab(activeTab);
+            setActiveTab('notifications');
+          }}
         >
-          <AppRoutes activeTab={activeTab} onShowNavigationChange={setShowNavigation} />
+          <AppRoutes
+            activeTab={activeTab}
+            onShowNavigationChange={setShowNavigation}
+            onNotificationClick={(prevTab) => {
+              if (prevTab) setPreviousTab(prevTab);
+              setActiveTab('notifications');
+            }}
+            onBack={() => {
+              setActiveTab(previousTab);
+            }}
+          />
         </Layout>
       </Suspense>
     </>

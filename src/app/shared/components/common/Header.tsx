@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import Button from '@shared/components/ui/button';
 import { useAuth } from '@shared/hooks/useAuth';
+import { useNotificationsStore } from '@shared/hooks';
 
 export interface HeaderProps {
   userName?: string;
   avatarUrl?: string;
   onNotificationClick?: () => void;
-  hasUnreadNotifications?: boolean;
   title?: React.ReactNode;
   rightAction?: React.ReactNode;
   showNotification?: boolean;
@@ -18,12 +18,12 @@ export const Header = ({
   userName,
   avatarUrl,
   onNotificationClick,
-  hasUnreadNotifications = true,
   title,
   rightAction,
   showNotification = !title,
 }: HeaderProps) => {
   const { userName: authUserName, avatarUrl: authAvatarUrl } = useAuth();
+  const { unreadCount } = useNotificationsStore();
   const resolvedUserName = userName ?? authUserName ?? 'Admin';
   const resolvedAvatarUrl = avatarUrl ?? authAvatarUrl ?? DEFAULT_AVATAR;
 
@@ -123,10 +123,12 @@ export const Header = ({
             <span className="material-symbols-outlined text-[22px] select-none">
               notifications
             </span>
-            {hasUnreadNotifications && (
+            {unreadCount > 0 && (
               <span
-                className="absolute w-[9px] h-[9px] rounded-full bg-error border border-background animate-pulse top-1.5 right-1.5"
-              />
+                className="absolute min-w-[16px] h-[16px] px-1 rounded-full bg-error text-white font-bold text-[9px] flex items-center justify-center border border-background top-0.5 right-0.5"
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
             )}
           </Button>
         )}

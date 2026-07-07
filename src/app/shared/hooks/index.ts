@@ -6,6 +6,9 @@ export { usePWAInstall } from './usePWAInstall';
 export type { BeforeInstallPromptEvent } from './usePWAInstall';
 export { useAuth } from './useAuth';
 export type { UserRole, UserProfile } from './useAuth';
+export { useNotificationsStore } from './useNotificationsStore';
+export type { NotificationItem } from './useNotificationsStore';
+
 
 
 

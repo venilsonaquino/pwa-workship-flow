@@ -14,7 +14,6 @@ interface ProfileViewProps {
   userRole?: string;
   avatarUrl?: string;
   onNotificationClick?: () => void;
-  hasUnreadNotifications?: boolean;
 }
 
 const DEFAULT_AVATAR = '';
@@ -61,7 +60,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   userRole = '',
   avatarUrl = DEFAULT_AVATAR,
   onNotificationClick,
-  hasUnreadNotifications = true,
 }) => {
   const [showMinistryView, setShowMinistryView] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -150,7 +148,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             title="Perfil"
             showNotification={true}
             onNotificationClick={onNotificationClick}
-            hasUnreadNotifications={hasUnreadNotifications}
           />
           {renderContent()}
         </motion.div>

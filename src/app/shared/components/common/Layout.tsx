@@ -13,7 +13,6 @@ export interface LayoutProps {
   avatarUrl?: string;
   onSearchClick?: () => void;
   onNotificationClick?: () => void;
-  hasUnreadNotifications?: boolean;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
   contentClassName?: string;
@@ -28,7 +27,6 @@ export const Layout: React.FC<LayoutProps> = ({
   userName,
   avatarUrl,
   onNotificationClick,
-  hasUnreadNotifications,
   activeTab,
   onTabChange,
   contentClassName,
@@ -40,7 +38,6 @@ export const Layout: React.FC<LayoutProps> = ({
           userName={userName}
           avatarUrl={avatarUrl}
           onNotificationClick={onNotificationClick}
-          hasUnreadNotifications={hasUnreadNotifications}
         />
       )}
 

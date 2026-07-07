@@ -59,6 +59,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+      - name: Format API Base URL
+        id: format-api
+        run: |
+          API_URL="${{ vars.VITE_API_BASE_URL }}"
+          if [[ ! "$API_URL" =~ /api$ ]]; then
+            API_URL="${API_URL%/}/api"
+          fi
+          echo "API_URL=$API_URL" >> $GITHUB_OUTPUT
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -70,7 +79,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:prod
             ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:${{ github.sha }}
           build-args: |
-            VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+            VITE_API_BASE_URL=${{ steps.format-api.outputs.API_URL }}
             VITE_APP_NAME=${{ vars.VITE_APP_NAME }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -118,10 +127,10 @@ jobs:
             docker rm worshipflow-pwa || true
 
             echo "Efetuando pull da imagem da Stack..."
-            docker compose -p worshipflow-pwa pull
+            docker compose -p worshipflow pull
 
             echo "Iniciando/Atualizando a Stack..."
-            docker compose -p worshipflow-pwa up -d --remove-orphans
+            docker compose -p worshipflow up -d
 
             echo "Limpeza de imagens órfãs..."
             docker image prune -f
