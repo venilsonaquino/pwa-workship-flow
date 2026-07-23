@@ -65,7 +65,9 @@ export function useWebPush() {
   }, [isSupported]);
 
   useEffect(() => {
-    checkSubscription();
+    queueMicrotask(() => {
+      void checkSubscription();
+    });
   }, [checkSubscription, isAuthenticated]);
 
   /**
@@ -96,10 +98,12 @@ export function useWebPush() {
       // 2. Fetch VAPID Public Key from Backend
       const vapidResponse = await pushService.getVapidPublicKey(authToken);
 
+      const responseObj = vapidResponse as unknown as Record<string, unknown>;
       const rawPublicKey =
         typeof vapidResponse === 'string'
           ? vapidResponse
-          : (vapidResponse as any)?.publicKey || (vapidResponse as any)?.data?.publicKey;
+          : (responseObj?.publicKey as string) ||
+            ((responseObj?.data as Record<string, unknown>)?.publicKey as string);
 
       if (!rawPublicKey || typeof rawPublicKey !== 'string') {
         throw new Error('Chave pública VAPID inválida retornada do backend.');

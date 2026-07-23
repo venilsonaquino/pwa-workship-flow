@@ -16,7 +16,7 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 // ── Web Push Event Handler ───────────────────────────────────────────────────
 
 self.addEventListener('push', (event: PushEvent) => {
-  let data: Record<string, any> = {};
+  let data: Record<string, unknown> = {};
 
   if (event.data) {
     try {
@@ -26,14 +26,23 @@ self.addEventListener('push', (event: PushEvent) => {
     }
   }
 
-  const title = data.title || 'WorshipFlow';
+  const title = (typeof data.title === 'string' ? data.title : null) || 'WorshipFlow';
+  const body =
+    (typeof data.body === 'string' ? data.body : null) ||
+    (typeof data.message === 'string' ? data.message : null) ||
+    '';
+  const icon = (typeof data.icon === 'string' ? data.icon : null) || '/icons/icon-192x192.png';
+  const badge = (typeof data.badge === 'string' ? data.badge : null) || '/icons/icon-72x72.png';
+  const notificationData = data.data || { url: typeof data.url === 'string' ? data.url : '/' };
+  const tag = (typeof data.tag === 'string' ? data.tag : null) || 'worshipflow-notification';
+
   const options: NotificationOptions & { vibrate?: number[] } = {
-    body: data.body || data.message || '',
-    icon: data.icon || '/icons/icon-192x192.png',
-    badge: data.badge || '/icons/icon-72x72.png',
-    data: data.data || { url: data.url || '/' },
+    body,
+    icon,
+    badge,
+    data: notificationData,
     vibrate: [100, 50, 100],
-    tag: data.tag || 'worshipflow-notification',
+    tag,
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
