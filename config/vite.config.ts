@@ -13,38 +13,20 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        // includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'splash-screen.png'],
         includeAssets: ['favicon.svg', 'icons/icon-72x72.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png', 'screenshots/splash-screen.png'],
         devOptions: {
           enabled: true,
+          type: 'classic',
           suppressWarnings: true,
         },
-        workbox: {
+        injectManifest: {
           maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-          // Cache-first strategy for static assets
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-cache',
-                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
-                cacheableResponse: { statuses: [0, 200] },
-              },
-            },
-            {
-              urlPattern: new RegExp(`^${env.VITE_API_BASE_URL}`),
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'api-cache',
-                expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
-                networkTimeoutSeconds: 10,
-              },
-            },
-          ],
         },
         manifest: {
           name: env.VITE_APP_NAME || 'PWA Workshop Flow',

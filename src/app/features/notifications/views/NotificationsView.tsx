@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader, Button, Card } from '@shared/components';
-import { useNotificationsStore } from '@shared/hooks';
+import { useNotificationsStore, useWebPush } from '@shared/hooks';
 import { useAuth } from '@shared/hooks/useAuth';
 import type { Notification, NotificationType } from '../types';
 
@@ -91,6 +91,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, on
   const { token } = useAuth();
   const { notifications, totalUnread, isLoading, error, fetchNotifications, markAsRead, markAllAsRead } =
     useNotificationsStore();
+  const { isSupported: isPushSupported, isSubscribed: isPushSubscribed, permission: pushPermission, isLoading: isPushLoading, subscribe: subscribePush } =
+    useWebPush();
 
   const [activeFilter, setActiveFilter] = useState<FilterTab>('Todas');
 
@@ -162,6 +164,32 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, on
       />
 
       <main className="max-w-[1200px] mx-auto w-full px-4 flex flex-col gap-6">
+        {/* Web Push Banner */}
+        {isPushSupported && !isPushSubscribed && pushPermission !== 'denied' && (
+          <Card className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[20px]">notifications_active</span>
+              </div>
+              <div>
+                <h4 className="font-sans text-[14px] font-bold text-on-surface">Notificações no Celular</h4>
+                <p className="font-sans text-[12px] text-on-surface-variant">
+                  Receba avisos instantâneos quando seus áudios ou cifras ficarem prontos.
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => subscribePush()}
+              isLoading={isPushLoading}
+              variant="primary"
+              size="sm"
+              className="shrink-0 font-sans font-semibold text-[13px] w-full sm:w-auto"
+            >
+              Ativar Notificações
+            </Button>
+          </Card>
+        )}
+
         {/* Filter Tabs */}
         <section className="flex flex-col">
           <div className="relative flex w-full border-b border-outline-variant/20">
