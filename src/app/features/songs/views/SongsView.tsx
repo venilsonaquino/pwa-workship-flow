@@ -243,12 +243,14 @@ export const SongsView = ({
   // Auto-open and play a song when navigating from a notification
   useEffect(() => {
     if (!songIdToPlay) return;
-    const targetSong = songsList.find((song) => song.id === songIdToPlay);
-    if (targetSong) {
-      setSelectedSongForDrawer(targetSong);
-      setPlayingSongId(targetSong.id);
-    }
-    onSongIdConsumed?.();
+    queueMicrotask(() => {
+      const targetSong = songsList.find((song) => song.id === songIdToPlay);
+      if (targetSong) {
+        setSelectedSongForDrawer(targetSong);
+        setPlayingSongId(targetSong.id);
+      }
+      onSongIdConsumed?.();
+    });
   }, [songIdToPlay, songsList, onSongIdConsumed]);
 
   const handleViewCifra = (song: Song) => {
