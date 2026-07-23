@@ -13,6 +13,9 @@ interface AppRoutesProps {
   onShowNavigationChange?: (show: boolean) => void;
   onNotificationClick?: (prevTab?: string) => void;
   onBack?: () => void;
+  onSongNavigate?: (songId: string) => void;
+  songIdToPlay?: string | null;
+  onSongIdConsumed?: () => void;
 }
 
 const TAB_FADE = {
@@ -35,6 +38,9 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({
   onShowNavigationChange,
   onNotificationClick,
   onBack,
+  onSongNavigate,
+  songIdToPlay,
+  onSongIdConsumed,
 }) => {
   const { userName, userEmail, userRole, avatarUrl } = useAuth();
 
@@ -58,6 +64,8 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({
       <SongsView
         onNotificationClick={() => handleNotificationClickWithTab('songs')}
         onShowNavigationChange={onShowNavigationChange}
+        songIdToPlay={songIdToPlay ?? null}
+        onSongIdConsumed={onSongIdConsumed}
       />
     ),
     scales: <ScalesPreviewView />,
@@ -69,6 +77,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({
     notifications: (
       <NotificationsView
         onBack={onBack ?? (() => {})}
+        onSongNavigate={onSongNavigate}
       />
     ),
   };

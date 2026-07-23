@@ -1,61 +1,145 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader, Button, Card } from '@shared/components';
-import { toast } from 'sonner';
 import { useNotificationsStore } from '@shared/hooks';
-import type { NotificationItem } from '@shared/hooks';
+import { useAuth } from '@shared/hooks/useAuth';
+import type { Notification, NotificationType } from '../types';
+
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 interface NotificationsViewProps {
   onBack: () => void;
+  onSongNavigate?: (songId: string) => void;
 }
 
-export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
-  const { notifications, markAsRead } = useNotificationsStore();
-  const [activeFilter, setActiveFilter] = useState<'Todas' | 'Escalas' | 'Músicas'>('Todas');
+type FilterTab = 'Todas' | 'Músicas' | 'Cifras' | 'Status';
 
-  const handleNotificationClick = (id: string) => {
-    markAsRead(id);
-  };
+// ── Constants ──────────────────────────────────────────────────────────────────
 
-  const handleActionClick = (e: React.MouseEvent, item: NotificationItem) => {
-    e.stopPropagation();
-    handleNotificationClick(item.id);
-    if (item.type === 'escala') {
-      toast.success('Abrindo detalhes da escala do Culto de Domingo...');
-    } else if (item.type === 'musica') {
-      toast.success('Reproduzindo e avaliando a música sugerida...');
+const FILTER_TABS: FilterTab[] = ['Todas', 'Músicas', 'Cifras', 'Status'];
+
+
+const TYPE_TO_FILTER: Record<NotificationType, FilterTab> = {
+  MusicSuggestion: 'Músicas',
+  AudioReady: 'Músicas',
+  AudioError: 'Músicas',
+  CifraReady: 'Cifras',
+  CifraNotFound: 'Cifras',
+  CifraError: 'Cifras',
+  SongStatusChanged: 'Status',
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function classifyDateGroup(createdAt: string): 'Hoje' | 'Ontem' | 'Anteriores' {
+  const notificationDate = new Date(createdAt);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isSameDay = (dateA: Date, dateB: Date) =>
+    dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate();
+
+  if (isSameDay(notificationDate, today)) return 'Hoje';
+  if (isSameDay(notificationDate, yesterday)) return 'Ontem';
+  return 'Anteriores';
+}
+
+function formatTime(createdAt: string): string {
+  return new Date(createdAt).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function getTypeIcon(type: NotificationType): { icon: string; colorClass: string } {
+  switch (type) {
+    case 'AudioReady':
+    case 'CifraReady':
+      return { icon: 'check_circle', colorClass: 'bg-[#1a4a2e] text-[#4ade80]' };
+    case 'AudioError':
+    case 'CifraError':
+      return { icon: 'error', colorClass: 'bg-[#4a1a1a] text-error' };
+    case 'CifraNotFound':
+      return { icon: 'warning', colorClass: 'bg-[#4a3a1a] text-[#fbbf24]' };
+    case 'MusicSuggestion':
+      return { icon: 'music_note', colorClass: 'bg-primary-fixed text-on-primary-fixed' };
+    case 'SongStatusChanged':
+      return { icon: 'sync', colorClass: 'bg-surface-container-highest text-primary' };
+    default:
+      return { icon: 'notifications', colorClass: 'bg-surface-container-highest text-on-surface-variant' };
+  }
+}
+
+// ── Animation variants ─────────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 100, damping: 15 } },
+};
+
+// ── Main View ──────────────────────────────────────────────────────────────────
+
+export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, onSongNavigate }) => {
+  const { token } = useAuth();
+  const { notifications, totalUnread, isLoading, error, fetchNotifications, markAsRead, markAllAsRead } =
+    useNotificationsStore();
+
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('Todas');
+
+  const loadNotifications = useCallback(() => {
+    if (!token) return;
+    fetchNotifications(token);
+  }, [token, fetchNotifications]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  const handleCardClick = async (notification: Notification) => {
+    if (!token) return;
+    if (!notification.isRead) {
+      await markAsRead(token, notification.id);
     }
   };
 
-  const handleSettingsClick = () => {
-    toast.info('Configurações de notificações em breve.');
+  const handleSongNavigate = (event: React.MouseEvent, notification: Notification) => {
+    event.stopPropagation();
+    if (!token) return;
+    if (!notification.isRead) {
+      markAsRead(token, notification.id);
+    }
+    if (notification.referenceId) {
+      onSongNavigate?.(notification.referenceId);
+    }
   };
 
-  // Filter notifications
-  const filteredNotifications = notifications.filter(item => {
+  const handleMarkAllAsRead = async () => {
+    if (!token) return;
+    await markAllAsRead(token);
+  };
+
+  const filteredNotifications = notifications.filter((notification) => {
     if (activeFilter === 'Todas') return true;
-    if (activeFilter === 'Escalas') return item.category === 'escalas';
-    if (activeFilter === 'Músicas') return item.category === 'musicas';
-    return true;
+    return TYPE_TO_FILTER[notification.type] === activeFilter;
   });
 
-  const todayNotifications = filteredNotifications.filter(n => n.dateGroup === 'Hoje');
-  const yesterdayNotifications = filteredNotifications.filter(n => n.dateGroup === 'Ontem');
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 100, damping: 15 } },
-  };
+  const todayNotifications = filteredNotifications.filter(
+    (notification) => classifyDateGroup(notification.createdAt) === 'Hoje'
+  );
+  const yesterdayNotifications = filteredNotifications.filter(
+    (notification) => classifyDateGroup(notification.createdAt) === 'Ontem'
+  );
+  const olderNotifications = filteredNotifications.filter(
+    (notification) => classifyDateGroup(notification.createdAt) === 'Anteriores'
+  );
 
   return (
     <div className="flex flex-col w-full bg-background text-on-background pb-32">
@@ -63,96 +147,95 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) 
         title="Notificações"
         onBack={onBack}
         rightAction={
-          <Button
-            onClick={handleSettingsClick}
-            variant="ghost"
-            size="sm"
-            iconOnly
-            className="text-primary hover:bg-surface-container-high transition-colors"
-            aria-label="Configurações"
-          >
-            <span className="material-symbols-outlined text-[24px]">settings</span>
-          </Button>
+          totalUnread > 0 ? (
+            <Button
+              onClick={handleMarkAllAsRead}
+              variant="ghost"
+              size="sm"
+              className="text-primary hover:bg-surface-container-high transition-colors text-[12px] font-semibold font-sans"
+              aria-label="Marcar todas como lidas"
+            >
+              Marcar todas
+            </Button>
+          ) : undefined
         }
       />
 
       <main className="max-w-[1200px] mx-auto w-full px-4 flex flex-col gap-6">
-        {/* Fast Filters */}
-        <section className="flex items-center justify-between py-2 border-b border-divider/30 gap-4">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
-            {(['Todas', 'Escalas', 'Músicas'] as const).map(filter => {
+        {/* Filter Tabs */}
+        <section className="flex flex-col">
+          <div className="relative flex w-full border-b border-outline-variant/20">
+            {FILTER_TABS.map((filter) => {
               const isActive = activeFilter === filter;
               return (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`px-5 py-2.5 rounded-full font-sans text-[14px] font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 ${
+                  className={`flex-1 text-center font-label-lg whitespace-nowrap select-none cursor-pointer py-3 transition-colors duration-200 focus:outline-none active:scale-[0.98] ${
                     isActive
-                      ? 'bg-primary text-on-primary shadow-md shadow-primary/20'
-                      : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant'
+                      ? 'text-primary font-bold'
+                      : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
                   {filter}
                 </button>
               );
             })}
+            <div
+              className="absolute bottom-0 h-0.5 bg-primary"
+              style={{
+                width: `${100 / FILTER_TABS.length}%`,
+                left: 0,
+                transform: `translateX(${FILTER_TABS.indexOf(activeFilter) * 100}%)`,
+                transition: 'transform 200ms ease-in-out',
+              }}
+            />
           </div>
         </section>
 
-        {filteredNotifications.length === 0 ? (
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex flex-col gap-3">
+            {[1, 2, 3].map((skeleton) => (
+              <div
+                key={skeleton}
+                className="h-[88px] rounded-2xl bg-surface-container animate-pulse"
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Error State */}
+        {!isLoading && error && (
+          <div className="flex flex-col items-center justify-center text-center py-16 gap-4">
+            <span className="material-symbols-outlined text-[48px] text-error/60">wifi_off</span>
+            <p className="text-[15px] font-medium font-sans text-on-surface/70">{error}</p>
+            <Button onClick={loadNotifications} variant="outline" size="sm">
+              Tentar novamente
+            </Button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && filteredNotifications.length === 0 && (
           <div className="flex flex-col items-center justify-center text-center py-20 opacity-60 gap-3">
             <span className="material-symbols-outlined text-[48px] text-outline">notifications_off</span>
             <p className="text-[16px] font-medium font-sans">Nenhuma notificação por aqui</p>
             <p className="text-[12px] font-sans">Você está em dia com todas as novidades.</p>
           </div>
-        ) : (
+        )}
+
+        {/* Notifications List */}
+        {!isLoading && !error && filteredNotifications.length > 0 && (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
             className="flex flex-col gap-6"
           >
-            {/* Timeline: Hoje */}
-            {todayNotifications.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-[12px] font-bold text-primary uppercase tracking-wider font-sans">Hoje</span>
-                  <div className="h-[1px] flex-grow bg-divider/30"></div>
-                </div>
-                <div className="grid gap-3">
-                  {todayNotifications.map(item => (
-                    <NotificationCard
-                      key={item.id}
-                      item={item}
-                      onCardClick={handleNotificationClick}
-                      onActionClick={handleActionClick}
-                      variants={itemVariants}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Timeline: Ontem */}
-            {yesterdayNotifications.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-[12px] font-bold text-on-surface-variant/80 uppercase tracking-wider font-sans">Ontem</span>
-                  <div className="h-[1px] flex-grow bg-divider/30"></div>
-                </div>
-                <div className="grid gap-3">
-                  {yesterdayNotifications.map(item => (
-                    <NotificationCard
-                      key={item.id}
-                      item={item}
-                      onCardClick={handleNotificationClick}
-                      onActionClick={handleActionClick}
-                      variants={itemVariants}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
+            <NotificationGroup label="Hoje" labelColorClass="text-primary" notifications={todayNotifications} onCardClick={handleCardClick} onSongNavigate={handleSongNavigate} />
+            <NotificationGroup label="Ontem" labelColorClass="text-on-surface-variant/80" notifications={yesterdayNotifications} onCardClick={handleCardClick} onSongNavigate={handleSongNavigate} />
+            <NotificationGroup label="Anteriores" labelColorClass="text-on-surface-variant/60" notifications={olderNotifications} onCardClick={handleCardClick} onSongNavigate={handleSongNavigate} />
           </motion.div>
         )}
       </main>
@@ -160,102 +243,119 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) 
   );
 };
 
+// ── Notification Group ─────────────────────────────────────────────────────────
+
+interface NotificationGroupProps {
+  label: string;
+  labelColorClass: string;
+  notifications: Notification[];
+  onCardClick: (notification: Notification) => void;
+  onSongNavigate: (event: React.MouseEvent, notification: Notification) => void;
+}
+
+const NotificationGroup: React.FC<NotificationGroupProps> = ({
+  label,
+  labelColorClass,
+  notifications,
+  onCardClick,
+  onSongNavigate,
+}) => {
+  if (notifications.length === 0) return null;
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <span className={`text-[12px] font-bold uppercase tracking-wider font-sans ${labelColorClass}`}>
+          {label}
+        </span>
+        <div className="h-[1px] flex-grow bg-divider/30" />
+      </div>
+      <div className="grid gap-3">
+        {notifications.map((notification) => (
+          <NotificationCard
+            key={notification.id}
+            notification={notification}
+            onCardClick={onCardClick}
+            onSongNavigate={onSongNavigate}
+            variants={itemVariants}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+// ── Notification Card ──────────────────────────────────────────────────────────
+
 interface NotificationCardProps {
-  item: NotificationItem;
-  onCardClick: (id: string) => void;
-  onActionClick: (e: React.MouseEvent, item: NotificationItem) => void;
+  notification: Notification;
+  onCardClick: (notification: Notification) => void;
+  onSongNavigate: (event: React.MouseEvent, notification: Notification) => void;
   variants: import('framer-motion').Variants;
 }
 
-const NotificationCard: React.FC<NotificationCardProps> = ({
-  item,
-  onCardClick,
-  onActionClick,
-  variants,
-}) => {
+const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onCardClick, onSongNavigate, variants }) => {
+  const { icon, colorClass } = getTypeIcon(notification.type);
+  const isUnread = !notification.isRead;
+
   return (
     <motion.div variants={variants}>
       <Card
-        onClick={() => onCardClick(item.id)}
+        onClick={() => onCardClick(notification)}
         className={`relative p-5 rounded-2xl flex gap-4 transition-all hover:shadow-md cursor-pointer active:scale-[0.99] select-none border-outline-variant/10 ${
-          item.read
-            ? 'bg-surface-container-lowest opacity-85'
-            : 'bg-surface-container-low border-l-4 border-l-primary'
+          isUnread
+            ? 'bg-surface-container-low border-l-4 border-l-primary'
+            : 'bg-surface-container-lowest opacity-85'
         }`}
       >
-        {/* Icon / Avatar Container */}
+        {/* Type Icon */}
         <div className="shrink-0 flex items-center justify-center">
-          {item.type === 'confirmacao' && item.avatarUrl ? (
-            <div className="relative">
-              <div
-                className="w-12 h-12 rounded-full bg-cover bg-center overflow-hidden border border-border/20"
-                style={{ backgroundImage: `url('${item.avatarUrl}')` }}
-              />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-secondary rounded-full flex items-center justify-center border-2 border-surface-container-lowest">
-                <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  check_circle
-                </span>
-              </div>
-            </div>
-          ) : item.type === 'lembrete' && item.initials ? (
-            <div className="w-12 h-12 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-[14px] font-sans">
-              {item.initials}
-            </div>
-          ) : (
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-              item.type === 'escala' ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-container-highest text-primary'
-            }`}>
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                {item.type === 'escala' ? 'event_note' : 'music_note'}
-              </span>
-            </div>
-          )}
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${colorClass}`}>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              {icon}
+            </span>
+          </div>
         </div>
 
         {/* Content */}
         <div className="flex-grow flex flex-col justify-between">
           <div className="flex justify-between items-start gap-2 mb-1">
-            <h3 className={`font-sans text-[14px] font-bold ${item.read ? 'text-on-surface/80' : 'text-on-surface'}`}>
-              {item.title}
+            <h3
+              className={`font-sans text-[14px] font-bold ${
+                isUnread ? 'text-on-surface' : 'text-on-surface/80'
+              }`}
+            >
+              {notification.title}
             </h3>
             <span className="text-[12px] font-medium text-on-surface-variant whitespace-nowrap">
-              {item.time}
+              {formatTime(notification.createdAt)}
             </span>
           </div>
-          <p className={`font-sans text-[13px] leading-relaxed mb-3 ${item.read ? 'text-on-surface-variant/80' : 'text-on-surface-variant'}`}>
-            {item.message}
+          <p
+            className={`font-sans text-[13px] leading-relaxed ${
+              isUnread ? 'text-on-surface-variant' : 'text-on-surface-variant/80'
+            }`}
+          >
+            {notification.message}
           </p>
 
-          {/* Conditional Action Buttons */}
-          {item.type === 'escala' && (
-            <div>
-              <Button
-                onClick={(e) => onActionClick(e, item)}
-                variant="outline"
-                size="sm"
-                className="font-sans font-bold w-full sm:w-auto text-center"
-              >
-                Ver Detalhes
-              </Button>
-            </div>
-          )}
-          {item.type === 'musica' && (
-            <div>
-              <Button
-                onClick={(e) => onActionClick(e, item)}
-                variant="primary"
-                size="sm"
-                leftIcon={<span className="material-symbols-outlined text-[16px]">play_arrow</span>}
-                className="font-sans font-bold w-full sm:w-auto text-center"
-              >
-                Ouvir e Avaliar
-              </Button>
-            </div>
+          {/* Navigate link — only for notifications with a referenceId */}
+          {notification.referenceId && (
+            <button
+              onClick={(event) => onSongNavigate(event, notification)}
+              className="mt-2 self-start flex items-center gap-1 text-[11px] font-semibold text-primary font-sans hover:underline active:opacity-70 transition-opacity"
+            >
+              <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+              Ver música
+            </button>
           )}
         </div>
 
-        {/* Unread badge indicator */}
-        {!item.read && (
+        {/* Unread dot */}
+        {isUnread && (
           <span className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-primary" />
         )}
       </Card>

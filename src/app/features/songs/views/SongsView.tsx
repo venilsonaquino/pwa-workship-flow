@@ -216,11 +216,15 @@ const INITIAL_SONGS: Song[] = [
 export interface SongsViewProps {
   onNotificationClick?: () => void;
   onShowNavigationChange?: (show: boolean) => void;
+  songIdToPlay?: string | null;
+  onSongIdConsumed?: () => void;
 }
 
 export const SongsView = ({
   onNotificationClick,
   onShowNavigationChange,
+  songIdToPlay,
+  onSongIdConsumed,
 }: SongsViewProps) => {
   const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
@@ -235,6 +239,17 @@ export const SongsView = ({
   useEffect(() => {
     onShowNavigationChange?.(!selectedSongForCifra);
   }, [selectedSongForCifra, onShowNavigationChange]);
+
+  // Auto-open and play a song when navigating from a notification
+  useEffect(() => {
+    if (!songIdToPlay) return;
+    const targetSong = songsList.find((song) => song.id === songIdToPlay);
+    if (targetSong) {
+      setSelectedSongForDrawer(targetSong);
+      setPlayingSongId(targetSong.id);
+    }
+    onSongIdConsumed?.();
+  }, [songIdToPlay, songsList, onSongIdConsumed]);
 
   const handleViewCifra = (song: Song) => {
     setSelectedSongForDrawer(null);
