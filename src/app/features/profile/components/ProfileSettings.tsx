@@ -1,4 +1,4 @@
-import { useThemeStore } from '@shared/hooks';
+import { useThemeStore, useWebPush } from '@shared/hooks';
 import { useAuth, Permission } from '@shared/hooks/useAuth';
 
 interface ProfileSettingsProps {
@@ -16,6 +16,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 }) => {
   const { theme, toggleTheme } = useThemeStore();
   const { logout, permissions } = useAuth();
+  const { isSupported: isPushSupported, isSubscribed: isPushSubscribed, permission: pushPermission, isLoading: isPushLoading, subscribe: subscribePush, unsubscribe: unsubscribePush } = useWebPush();
   const isDarkMode = theme === 'dark';
 
   const hasManageMinistry = permissions?.includes(Permission.ManageMinistry) ?? false;
@@ -134,6 +135,34 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               />
             </button>
           </div>
+
+          {/* Notificações Push (VAPID) */}
+          {isPushSupported && (
+            <div className="flex items-center justify-between" style={{ padding: 16 }}>
+              <div className="flex items-center" style={{ gap: 16 }}>
+                <div className="w-10 h-10 rounded-lg bg-surface-variant/30 flex items-center justify-center text-on-surface-variant">
+                  <span className="material-symbols-outlined">notifications_active</span>
+                </div>
+                <div>
+                  <p className="text-label-lg font-semibold text-on-surface">Notificações Push</p>
+                  <p className="text-body-md text-on-surface-variant text-[12px]">Alertas no celular/desktop</p>
+                </div>
+              </div>
+              <button
+                disabled={isPushLoading || pushPermission === 'denied'}
+                onClick={() => (isPushSubscribed ? unsubscribePush() : subscribePush())}
+                className={`w-12 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${
+                  isPushSubscribed ? 'bg-primary' : 'bg-outline-variant'
+                } ${isPushLoading || pushPermission === 'denied' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow transition-transform duration-200 ${
+                    isPushSubscribed ? 'left-[26px]' : 'left-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+          )}
 
           {/* Idioma */}
           <div

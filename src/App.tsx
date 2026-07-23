@@ -24,6 +24,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('scales');
   const [previousTab, setPreviousTab] = useState('scales');
   const [showNavigation, setShowNavigation] = useState(true);
+  const [songIdToPlay, setSongIdToPlay] = useState<string | null>(null);
 
   const [wasAuthenticated, setWasAuthenticated] = useState(isAuthenticated);
   if (isAuthenticated !== wasAuthenticated) {
@@ -81,6 +82,12 @@ function App() {
             onBack={() => {
               setActiveTab(previousTab);
             }}
+            onSongNavigate={(songId) => {
+              setSongIdToPlay(songId);
+              setActiveTab('songs');
+            }}
+            songIdToPlay={songIdToPlay}
+            onSongIdConsumed={() => setSongIdToPlay(null)}
           />
         </Layout>
       </Suspense>

@@ -36,3 +36,19 @@ export function getAbsoluteAvatarUrl(url?: string | null): string {
     return url;
   }
 }
+
+/**
+ * Converts a URL-safe base64 string (like a VAPID public key) to a Uint8Array.
+ * Required for PushManager.subscribe({ applicationServerKey }).
+ */
+export function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const cleanStr = (base64String || '').trim();
+  const padding = '='.repeat((4 - (cleanStr.length % 4)) % 4);
+  const base64 = (cleanStr + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
