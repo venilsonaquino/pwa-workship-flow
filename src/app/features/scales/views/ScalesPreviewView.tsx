@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SongDistribution from '../components/SongDistribution';
 import { CARDS_DATA } from '../constants/cardsData';
-import { FloatingActionButton } from '@shared/components';
+import { FloatingActionButton, Header } from '@shared/components';
 
 // ── Animation Variants ────────────────────────────────────────────────────────
 
@@ -240,6 +240,9 @@ export const ScalesPreviewView: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col gap-6 pb-40">
+      {/* Header com avatar, saudação e notificações */}
+      <Header showNotification />
+
       {/* 1. Próxima Escala */}
       <ProximaEscalaBanner />
 

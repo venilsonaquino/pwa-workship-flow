@@ -1,55 +1,48 @@
 import React from 'react';
-import Header from './Header';
+import { useLocation } from 'react-router-dom';
 import NavigationMenu from './NavigationMenu';
 import PWAInstallPrompt from './PWAInstallPrompt';
 
+// ── Types ──────────────────────────────────────────────────────────────────────
+
 export interface LayoutProps {
   children: React.ReactNode;
-  showHeader?: boolean;
-  pageHeader?: React.ReactNode;
-  showNavigation?: boolean;
   showInstallPrompt?: boolean;
-  userName?: string;
-  avatarUrl?: string;
-  onSearchClick?: () => void;
-  onNotificationClick?: () => void;
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
-  contentClassName?: string;
 }
 
-export const Layout: React.FC<LayoutProps> = ({
-  children,
-  showHeader = true,
-  pageHeader,
-  showNavigation = true,
-  showInstallPrompt = true,
-  userName,
-  avatarUrl,
-  onNotificationClick,
-  activeTab,
-  onTabChange,
-  contentClassName,
-}) => {
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+const ROUTES_WITHOUT_NAV = ['/notifications'];
+
+function shouldShowNavigation(pathname: string): boolean {
+  return !ROUTES_WITHOUT_NAV.includes(pathname);
+}
+
+function resolveContentClassName(pathname: string, showNavigation: boolean): string {
+  const noNavPadding = showNavigation ? 'pb-24' : 'pb-0';
+  const isScrollable = ['/profile', '/songs', '/ranking', '/notifications'].some((path) =>
+    pathname.startsWith(path)
+  );
+
+  if (isScrollable) {
+    return `flex-1 scroll-container-native ${noNavPadding} scrollbar-hide overflow-x-hidden`;
+  }
+
+  return `relative flex-1 scroll-container-native flex flex-col gap-4 ${noNavPadding} scrollbar-hide overflow-x-hidden`;
+}
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
+
+export const Layout: React.FC<LayoutProps> = ({ children, showInstallPrompt = true }) => {
+  const { pathname } = useLocation();
+  const showNavigation = shouldShowNavigation(pathname);
+  const contentClassName = resolveContentClassName(pathname, showNavigation);
+
   return (
-    <main className="flex flex-col h-screen bg-background overflow-hidden  px-2.5">
-      {showHeader && !pageHeader && (
-        <Header
-          userName={userName}
-          avatarUrl={avatarUrl}
-          onNotificationClick={onNotificationClick}
-        />
-      )}
+    <main className="flex flex-col h-screen bg-background overflow-hidden px-2.5">
+      <div className={`relative ${contentClassName}`}>{children}</div>
 
-      {pageHeader}
-
-      <div className={`relative ${contentClassName ?? 'flex-1 scroll-container-native flex flex-col gap-4 pb-24 scrollbar-hide overflow-x-hidden'}`}>
-        {children}
-      </div>
-
-      {showNavigation && (
-        <NavigationMenu activeTab={activeTab} onChange={onTabChange} />
-      )}
+      {showNavigation && <NavigationMenu />}
       {showInstallPrompt && <PWAInstallPrompt />}
     </main>
   );

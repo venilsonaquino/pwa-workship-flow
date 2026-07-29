@@ -1,4 +1,5 @@
 import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { UserListView } from '@features/user';
 import { ProfileView } from '@features/profile';
@@ -6,17 +7,8 @@ import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
 import { RankingView } from '@features/ranking';
 import { NotificationsView } from '@features/notifications';
-import { useAuth } from '@shared/hooks/useAuth';
 
-interface AppRoutesProps {
-  activeTab: string;
-  onShowNavigationChange?: (show: boolean) => void;
-  onNotificationClick?: (prevTab?: string) => void;
-  onBack?: () => void;
-  onSongNavigate?: (songId: string) => void;
-  songIdToPlay?: string | null;
-  onSongIdConsumed?: () => void;
-}
+// ── Animation ──────────────────────────────────────────────────────────────────
 
 const TAB_FADE = {
   initial: { opacity: 0 },
@@ -33,65 +25,28 @@ const TAB_STYLE: React.CSSProperties = {
   minHeight: '100%',
 };
 
-export const AppRoutes: React.FC<AppRoutesProps> = ({
-  activeTab,
-  onShowNavigationChange,
-  onNotificationClick,
-  onBack,
-  onSongNavigate,
-  songIdToPlay,
-  onSongIdConsumed,
-}) => {
-  const { userName, userEmail, userRole, avatarUrl } = useAuth();
+// ── AppRoutes ──────────────────────────────────────────────────────────────────
 
-  const handleNotificationClickWithTab = (tab: string) => {
-    if (onNotificationClick) {
-      onNotificationClick(tab);
-    }
-  };
-
-  const tabComponents: Record<string, React.ReactNode> = {
-    profile: (
-      <ProfileView
-        userName={userName}
-        userEmail={userEmail}
-        userRole={userRole ?? undefined}
-        avatarUrl={avatarUrl}
-        onNotificationClick={() => handleNotificationClickWithTab('profile')}
-      />
-    ),
-    songs: (
-      <SongsView
-        onNotificationClick={() => handleNotificationClickWithTab('songs')}
-        onShowNavigationChange={onShowNavigationChange}
-        songIdToPlay={songIdToPlay ?? null}
-        onSongIdConsumed={onSongIdConsumed}
-      />
-    ),
-    scales: <ScalesPreviewView />,
-    ranking: (
-      <RankingView
-        onNotificationClick={() => handleNotificationClickWithTab('ranking')}
-      />
-    ),
-    notifications: (
-      <NotificationsView
-        onBack={onBack ?? (() => {})}
-        onSongNavigate={onSongNavigate}
-      />
-    ),
-  };
-
-  const activeView = tabComponents[activeTab] ?? <UserListView />;
+export const AppRoutes: React.FC = () => {
+  const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div key={activeTab} {...TAB_FADE} style={TAB_STYLE}>
-        {activeView}
+      <motion.div key={location.pathname} {...TAB_FADE} style={TAB_STYLE}>
+        <Routes location={location}>
+          <Route path="/" element={<Navigate to="/scales" replace />} />
+          <Route path="/scales" element={<ScalesPreviewView />} />
+          <Route path="/songs" element={<SongsView />} />
+          <Route path="/songs/:songId" element={<SongsView />} />
+          <Route path="/ranking" element={<RankingView />} />
+          <Route path="/profile" element={<ProfileView />} />
+          <Route path="/notifications" element={<NotificationsView />} />
+          <Route path="/users" element={<UserListView />} />
+          <Route path="*" element={<Navigate to="/scales" replace />} />
+        </Routes>
       </motion.div>
     </AnimatePresence>
   );
 };
 
 export default AppRoutes;
-

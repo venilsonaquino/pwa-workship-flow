@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
@@ -213,19 +214,8 @@ const INITIAL_SONGS: Song[] = [
   }
 ];
 
-export interface SongsViewProps {
-  onNotificationClick?: () => void;
-  onShowNavigationChange?: (show: boolean) => void;
-  songIdToPlay?: string | null;
-  onSongIdConsumed?: () => void;
-}
-
-export const SongsView = ({
-  onNotificationClick,
-  onShowNavigationChange,
-  songIdToPlay,
-  onSongIdConsumed,
-}: SongsViewProps) => {
+export const SongsView = () => {
+  const { songId } = useParams<{ songId: string }>();
   const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -235,23 +225,22 @@ export const SongsView = ({
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
   const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
 
-  // Notify parent component when cifra view changes
+  // Notify parent component when cifra view changes — now managed via CSS/layout
   useEffect(() => {
-    onShowNavigationChange?.(!selectedSongForCifra);
-  }, [selectedSongForCifra, onShowNavigationChange]);
+    // Navigation bar visibility handled by Layout via useLocation
+  }, [selectedSongForCifra]);
 
-  // Auto-open and play a song when navigating from a notification
+  // Auto-open and play a song when navigating from a deeplink (/songs/:songId)
   useEffect(() => {
-    if (!songIdToPlay) return;
+    if (!songId) return;
     queueMicrotask(() => {
-      const targetSong = songsList.find((song) => song.id === songIdToPlay);
+      const targetSong = songsList.find((song) => song.id === songId);
       if (targetSong) {
         setSelectedSongForDrawer(targetSong);
         setPlayingSongId(targetSong.id);
       }
-      onSongIdConsumed?.();
     });
-  }, [songIdToPlay, songsList, onSongIdConsumed]);
+  }, [songId, songsList]);
 
   const handleViewCifra = (song: Song) => {
     setSelectedSongForDrawer(null);
@@ -433,7 +422,6 @@ export const SongsView = ({
               title="Músicas"
               rightAction={searchButton}
               showNotification={true}
-              onNotificationClick={onNotificationClick}
             />
           )}
 
