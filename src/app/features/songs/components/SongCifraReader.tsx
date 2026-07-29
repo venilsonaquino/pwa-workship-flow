@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@shared/components';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Song } from '../types';
+import type { Song } from '../domain/entities/Song';
 
 type TabOption = 'principal' | 'letra';
 

@@ -1,8 +1,9 @@
 import { cn } from '@src/lib/utils';
+import type { SongCategory } from '../domain/entities/Song';
 
 export interface SongsFilterTabsProps {
-  activeTab: 'sugestao' | 'ensaiando' | 'repertorio';
-  onTabChange: (tab: 'sugestao' | 'ensaiando' | 'repertorio') => void;
+  activeTab: SongCategory;
+  onTabChange: (tab: SongCategory) => void;
 }
 
 export const SongsFilterTabs = ({

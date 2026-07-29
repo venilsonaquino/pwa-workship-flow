@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PageHeader, Button } from '@shared/components';
 import SuggestSongModal from '../components/SuggestSongModal';
-import type { Song } from '../types';
+import type { Song } from '../domain/entities/Song';
 
 interface LibrarySong {
   title: string;

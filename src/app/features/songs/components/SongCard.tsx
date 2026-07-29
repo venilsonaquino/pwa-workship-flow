@@ -1,7 +1,8 @@
 import { cn } from '@src/lib/utils';
 import Button from '@shared/components/ui/button';
 import { MarqueeText, useCelebration } from '@shared/components/effects';
-import type { Song } from '../types';
+import type { Song } from '../domain/entities/Song';
+import { formatDuration } from '../domain/entities/Song';
 
 export interface SongCardProps {
   song: Song;
@@ -10,6 +11,24 @@ export interface SongCardProps {
   onHeardToggle: () => void;
   onClick?: () => void;
   showCategoryBadge?: boolean;
+}
+
+function getCategoryLabel(category: string): string {
+  switch (category) {
+    case 'sugestao': return 'Sugestões';
+    case 'ensaiando': return 'Ensaiando';
+    case 'repertorio': return 'Repertório';
+    default: return category;
+  }
+}
+
+function getCategoryColorClass(category: string): string {
+  switch (category) {
+    case 'sugestao': return 'bg-primary/10 text-primary';
+    case 'ensaiando': return 'bg-secondary/10 text-secondary';
+    case 'repertorio': return 'bg-emerald-500/10 text-emerald-600';
+    default: return 'bg-surface-variant text-on-surface-variant';
+  }
 }
 
 export const SongCard = ({
@@ -24,36 +43,10 @@ export const SongCard = ({
 
   const handleHeardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!song.isHeard) {
+    if (!song.hasListened) {
       triggerCelebration();
     }
     onHeardToggle();
-  };
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'sugestao':
-        return 'Sugestões';
-      case 'ensaiando':
-        return 'Ensaiando';
-      case 'repertorio':
-        return 'Repertórios';
-      default:
-        return category;
-    }
-  };
-
-  const getCategoryColorClass = (category: string) => {
-    switch (category) {
-      case 'sugestao':
-        return 'bg-primary/10 text-primary';
-      case 'ensaiando':
-        return 'bg-secondary/10 text-secondary';
-      case 'repertorio':
-        return 'bg-emerald-500/10 text-emerald-600';
-      default:
-        return 'bg-surface-variant text-on-surface-variant';
-    }
   };
 
   return (
@@ -65,9 +58,9 @@ export const SongCard = ({
       {renderParticles('50%', '85%')}
       <div className="flex gap-4">
         <img
-          alt="Thumbnail"
+          alt={song.title}
           className="w-20 h-20 rounded-lg object-cover shadow-sm"
-          src={song.image}
+          src={song.thumbnailUrl}
         />
         <div className="flex-1 flex flex-col justify-center min-w-0 overflow-hidden">
           <div className="flex items-center gap-2 overflow-hidden w-full">
@@ -104,43 +97,32 @@ export const SongCard = ({
         </Button>
       </div>
 
-      {/* Player Progress */}
+      {/* Duration */}
       <div className="space-y-1">
         <div className="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full vivid-gradient"
-            style={{
-              width: `${song.progressPct}%`
-            }}
-          />
+          <div className="h-full rounded-full vivid-gradient" style={{ width: '0%' }} />
         </div>
-        <div
-          className="flex justify-between text-[10px] text-outline font-semibold mt-[2px]"
-        >
-          <span>{song.progress}</span>
-          <span>{song.duration}</span>
+        <div className="flex justify-between text-[10px] text-outline font-semibold mt-[2px]">
+          <span>0:00</span>
+          <span>{formatDuration(song.durationSeconds)}</span>
         </div>
       </div>
 
       {/* Band Engagement */}
-      <div
-        className="border-t border-outline-variant/30 pt-2 mt-1 px-2 -mx-2"
-      >
-        <div
-          className="flex items-center justify-between mb-1.5"
-        >
+      <div className="border-t border-outline-variant/30 pt-2 mt-1 px-2 -mx-2">
+        <div className="flex items-center justify-between mb-1.5">
           <span className="text-label-sm text-on-surface-variant flex items-center gap-1">
             <span className="material-symbols-outlined text-[16px]">groups</span>
             Engajamento da banda
           </span>
           <span className="text-label-sm font-bold text-primary">
-            {song.engagement}%
+            {song.bandEngagementPercentage}%
           </span>
         </div>
         <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
           <div
             className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(124,58,237,0.4)]"
-            style={{ width: `${song.engagement}%` }}
+            style={{ width: `${song.bandEngagementPercentage}%` }}
           />
         </div>
       </div>
@@ -150,19 +132,17 @@ export const SongCard = ({
           onClick={handleHeardClick}
           className={cn(
             "text-[11px] font-semibold transition-all duration-200 flex items-center gap-1.5 select-none cursor-pointer hover:opacity-85 active:scale-95",
-            song.isHeard ? "text-success font-bold" : "text-on-surface-variant/70"
+            song.hasListened ? "text-success font-bold" : "text-on-surface-variant/70"
           )}
         >
-          <span className={cn("material-symbols-outlined text-[20px]", song.isHeard && "icon-fill")}>
-            {song.isHeard ? 'check_circle' : 'radio_button_unchecked'}
+          <span className={cn("material-symbols-outlined text-[20px]", song.hasListened && "icon-fill")}>
+            {song.hasListened ? 'check_circle' : 'radio_button_unchecked'}
           </span>
-          {song.isHeard ? 'Ouvida' : 'Marcar como ouvida'}
+          {song.hasListened ? 'Ouvida' : 'Marcar como ouvida'}
         </button>
-        {song.suggestedBy && (
-          <span className="text-[11px] font-medium text-on-surface-variant/70">
-            Sugerida por <span className="text-on-surface font-semibold">{song.suggestedBy}</span>
-          </span>
-        )}
+        <span className="text-[11px] font-medium text-on-surface-variant/70">
+          Sugerida por <span className="text-on-surface font-semibold">{song.suggestedByName}</span>
+        </span>
       </div>
     </div>
   );

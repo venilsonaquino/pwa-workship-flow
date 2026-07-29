@@ -7,251 +7,80 @@ import SongSearchView from './SongSearchView';
 import EngagementDrawer from '../components/EngagementDrawer';
 import SongCifraReader from '../components/SongCifraReader';
 import { PageHeader, Button, FloatingActionButton, Header } from '@shared/components';
-import type { Song } from '../types';
+import { useSongsStore } from '../hooks/useSongsStore';
+import type { Song, SongCategory } from '../domain/entities/Song';
 
-const INITIAL_SONGS: Song[] = [
-  {
-    id: '1',
-    title: 'Elevando a Alma',
-    artist: 'Ministério de Louvor Central',
-    category: 'sugestao',
-    duration: '3:55',
-    progress: '1:42',
-    progressPct: 45,
-    engagement: 85,
-    isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
-    suggestedBy: 'Ana'
-  },
-  {
-    id: '2',
-    title: 'Caminho da Fé',
-    artist: 'Banda Aliança Divina',
-    category: 'ensaiando',
-    duration: '4:20',
-    progress: '0:00',
-    progressPct: 0,
-    engagement: 32,
-    isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
-    suggestedBy: 'Carlos'
-  },
-  {
-    id: '3',
-    title: 'Novo Horizonte',
-    artist: 'Lucas Silva & Coral',
-    category: 'repertorio',
-    duration: '5:10',
-    progress: '0:45',
-    progressPct: 15,
-    engagement: 60,
-    isHeard: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q',
-    suggestedBy: 'você'
-  },
-  {
-    id: '4',
-    title: 'Oceanos',
-    artist: 'Ana Nóbrega',
-    category: 'ensaiando',
-    duration: '8:30',
-    progress: '3:15',
-    progressPct: 38,
-    engagement: 75,
-    isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
-    suggestedBy: 'Mariana'
-  },
-  {
-    id: '5',
-    title: 'Ruínas',
-    artist: 'Alessandro Vilas Boas',
-    category: 'sugestao',
-    duration: '6:10',
-    progress: '0:00',
-    progressPct: 0,
-    engagement: 18,
-    isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
-    suggestedBy: 'você'
-  },
-  {
-    id: '6',
-    title: 'Promessas',
-    artist: 'Ministério Zoe',
-    category: 'repertorio',
-    duration: '5:50',
-    progress: '5:50',
-    progressPct: 100,
-    engagement: 95,
-    isHeard: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALCrNCLEQ5NjxCGUxaWSq9OAKXIaem26b92DCKQkogAxGq1WWxTGHBZwjsYFxkVimhW8VQQDocI6y0UKPCqb2GxjoacqjLWcMSNYzocqHMmujXNj5s5pklgmJNzqmjwDFrdbq4QDt0fpM1LpY8-eAqjkGF7Q5zo-RgDvGbvamsL7I-oE-WwBqj0xez8rwxLNDzYhhufYthY9Nq-7q80uLAf7sE7UN3TDFdaL9hLqt81Pccd5o5czdRezuQJV5cbTAWIx_Aaiq-Q2Q',
-    suggestedBy: 'Pedro'
-  },
-  {
-    id: '7',
-    title: 'The Scientist',
-    artist: 'Coldplay',
-    category: 'repertorio',
-    duration: '5:09',
-    progress: '0:00',
-    progressPct: 0,
-    engagement: 88,
-    isHeard: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkho2CSAxgcg1CqdSQr4Csgzx81ZOvAoJMHn36m9a24RntZJ0JFtMfYLXIW-_kk1EDqhViu6zyeDFTRF6kvX9RCYmcE8vnokek8ZH_Q30EofVUFfPYSsymIqrPAv6mQaQGl-gW-SohcXpw-4bNKknxgwLRdHMJ9p22go6l-mG4_qTWYrYMqUnhdF-uRCRZC_ehoGBYZwvWJFWi1QVTVJQ2918bNK10Yruc0ZTbT1itty4j33ClUnm2KmwisFif_O2oQOAGYLFsdkE',
-    suggestedBy: 'Pedro',
-    tom: 'F',
-    cifra: [
-      'Afinação: E A D G C F',
-      '',
-      '[Primeira Parte]',
-      '',
-      'Dm7             Bb9',
-      '    Come up to meet you',
-      '              F',
-      'Tell you I\'m sorry',
-      '                    F2',
-      'You don\'t know how lovely you are',
-      '',
-      'Dm7                Bb9',
-      '    I had to find you',
-      '            F',
-      'Tell you I need you',
-      '               F2',
-      'Tell you I\'ll set you apart',
-      '',
-      'Dm7               Bb9',
-      '    Tell me your secrets',
-      '                  F',
-      'And ask me your questions',
-      '             F2',
-      'Oh, lets go back to the start',
-      '',
-      'Dm7             Bb9',
-      '    Running in circles',
-      '           F',
-      'Coming up tails',
-      '             F2',
-      'Heads on a science apart',
-      '',
-      '[Refrão]',
-      '',
-      'Bb9                         F',
-      '    Nobody said it was easy',
-      '              F2',
-      'It\'s such a shame for us to part',
-      'Bb9                         F',
-      '    Nobody said it was easy',
-      '             F7M(9)',
-      'No one ever said',
-      '          F6      C4',
-      'It would be this hard',
-      '',
-      'Oh take me back to the start',
-      '',
-      '( F  Bb9  F  F2 )',
-      '',
-      '[Segunda Parte]',
-      '',
-      'Dm7              Bb9',
-      '    I was just guessing',
-      '                F',
-      'At numbers and figures',
-      '              F2',
-      'Pulling your puzzles apart',
-      '',
-      'Dm7                Bb9',
-      '    Questions of science',
-      '              F',
-      'Science and progress',
-      '                 F2',
-      'Do not speak as loud as my heart',
-      '',
-      'Dm7              Bb9',
-      '    Tell me you love me',
-      '               F',
-      'Come back and haunt me',
-      '          F2',
-      'Oh and I rush to the start',
-      '',
-      'Dm7             Bb9',
-      '    Running in circles',
-      '             F',
-      'Chasing our tails',
-      '        F2        C11/E',
-      'Coming back as we are',
-      '',
-      '[Refrão]',
-      '',
-      'Bb9                         F',
-      '    Nobody said it was easy',
-      '              F2',
-      'It\'s such a shame for us to part',
-      'Bb9                         F',
-      '    Nobody said it was easy',
-      '             F7M',
-      'No one ever said',
-      '          F6    C4',
-      'It would be so hard',
-      '                        F',
-      'I\'m going back to the start',
-      '',
-      '( Bb9  F  F2 )',
-      '',
-      '[Final]',
-      '',
-      '( Dm7  Bb9  F  F2 )',
-      '',
-      'Dm7    Bb9           F  F2',
-      '    Oh uhhh uh uh uh uh',
-      'Dm7    Bb9           F  F2',
-      '    Oh uhhh uh uh uh uh',
-      'Dm7    Bb9           F  F2',
-      '    Oh uhhh uh uh uh uh',
-      'Dm7    Bb9           F',
-      '    Oh uhhh uh uh uh uh'
-    ]
-  }
-];
+// ── Skeleton ───────────────────────────────────────────────────────────────────
+
+const SongCardSkeleton = () => (
+  <div className="bg-surface-container-lowest rounded-[32px] border border-outline-variant/30 p-5 flex flex-col gap-4 animate-pulse">
+    <div className="flex gap-4">
+      <div className="w-20 h-20 rounded-lg bg-surface-container-high shrink-0" />
+      <div className="flex-1 flex flex-col justify-center gap-2">
+        <div className="h-4 bg-surface-container-high rounded-full w-3/4" />
+        <div className="h-3 bg-surface-container-high rounded-full w-1/2" />
+      </div>
+      <div className="w-10 h-10 rounded-full bg-surface-container-high shrink-0" />
+    </div>
+    <div className="h-1 bg-surface-container-high rounded-full" />
+    <div className="h-8 bg-surface-container-high rounded-full" />
+  </div>
+);
+
+// ── Empty State ────────────────────────────────────────────────────────────────
+
+const EmptyState = ({ searchQuery }: { searchQuery: string }) => (
+  <div className="flex flex-col items-center justify-center text-center opacity-60 py-12 gap-2">
+    <span className="material-symbols-outlined text-[48px] text-outline">
+      {searchQuery ? 'search_off' : 'music_off'}
+    </span>
+    <p className="text-body-lg font-medium">
+      {searchQuery ? 'Nenhuma música encontrada' : 'Nenhuma música aqui ainda'}
+    </p>
+    <p className="text-label-sm">
+      {searchQuery ? 'Tente buscar por outro termo.' : 'Que tal sugerir uma música?'}
+    </p>
+  </div>
+);
+
+// ── SongsView ──────────────────────────────────────────────────────────────────
 
 export const SongsView = () => {
   const { songId } = useParams<{ songId: string }>();
-  const [activeCategoryTab, setActiveCategoryTab] = useState<'sugestao' | 'ensaiando' | 'repertorio'>('sugestao');
+  const { suggestions, evaluating, repertoire, isLoading, error, fetchSongs, markAsListened, getSongsByCategory } = useSongsStore();
+
+  const [activeCategoryTab, setActiveCategoryTab] = useState<SongCategory>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [songsList, setSongsList] = useState<Song[]>(INITIAL_SONGS);
   const [showSearchView, setShowSearchView] = useState(false);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
   const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
 
-  // Notify parent component when cifra view changes — now managed via CSS/layout
-  useEffect(() => {
-    // Navigation bar visibility handled by Layout via useLocation
-  }, [selectedSongForCifra]);
-
-  // Auto-open and play a song when navigating from a deeplink (/songs/:songId)
+  // Auto-open player when arriving via deeplink /songs/:songId
   useEffect(() => {
     if (!songId) return;
-    queueMicrotask(() => {
-      const targetSong = songsList.find((song) => song.id === songId);
-      if (targetSong) {
-        setSelectedSongForDrawer(targetSong);
-        setPlayingSongId(targetSong.id);
-      }
-    });
-  }, [songId, songsList]);
+    const allSongs = [...suggestions, ...evaluating, ...repertoire];
+    const target = allSongs.find((song) => song.id === songId);
+    if (target) {
+      setSelectedSongForDrawer(target);
+      setPlayingSongId(target.id);
+    }
+  }, [songId, suggestions, evaluating, repertoire]);
+
+  // Keep selectedSongForDrawer in sync with latest store data
+  useEffect(() => {
+    if (!selectedSongForDrawer) return;
+    const allSongs = [...suggestions, ...evaluating, ...repertoire];
+    const updated = allSongs.find((song) => song.id === selectedSongForDrawer.id);
+    if (updated && (updated.hasListened !== selectedSongForDrawer.hasListened || updated.bandEngagementPercentage !== selectedSongForDrawer.bandEngagementPercentage)) {
+      setSelectedSongForDrawer(updated);
+    }
+  }, [suggestions, evaluating, repertoire, selectedSongForDrawer]);
 
   const handleViewCifra = (song: Song) => {
     setSelectedSongForDrawer(null);
     setSelectedSongForCifra(song);
-  };
-
-  const handleSearchToggle = () => {
-    setIsSearchExpanded(!isSearchExpanded);
-    if (isSearchExpanded) {
-      setSearchQuery('');
-    }
   };
 
   const handleSearchClose = () => {
@@ -260,66 +89,27 @@ export const SongsView = () => {
   };
 
   const togglePlaySong = (songId: string) => {
-    setPlayingSongId(prev => prev === songId ? null : songId);
+    setPlayingSongId((prev) => (prev === songId ? null : songId));
   };
 
-  const toggleHeardStatus = (songId: string) => {
-    setSongsList(prev =>
-      prev.map(song => {
-        if (song.id === songId) {
-          const nextIsHeard = !song.isHeard;
-          const nextEngagement = nextIsHeard
-            ? Math.min(100, song.engagement + 15)
-            : Math.max(0, song.engagement - 15);
-
-          const updatedSong = {
-            ...song,
-            isHeard: nextIsHeard,
-            engagement: nextEngagement,
-          };
-
-          // Also update the drawer state if this song is currently open in the drawer
-          setSelectedSongForDrawer(current =>
-            current?.id === songId ? updatedSong : current
-          );
-
-          return updatedSong;
-        }
-        return song;
-      })
-    );
+  const handleHeardToggle = (song: Song) => {
+    markAsListened(song.id);
   };
 
-  const handleSuggestSubmit = (title: string, artist: string) => {
-    const newSong: Song = {
-      id: Math.random().toString(36).slice(2, 9),
-      title,
-      artist,
-      category: 'sugestao',
-      duration: '4:15',
-      progress: '0:00',
-      progressPct: 0,
-      engagement: 0,
-      isHeard: false,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Oeg-HSsmOqqLbpXgax9esSSi_MT7jCbWXIcl7AKDitPkcl1sG5jC0_zSzrx5k6nSMIyV8xuWKB5Ua02xSOK7LkgP8eOvmp22rAfvPPoUCKB5odE6VYp22xX2KQwWv7iYo0YEMBUP96E8GoKghcgzPEpqy9NKJU_bXrvZT7Zr95Ag9WohKbseD0AFxTTBWrcFbFGE3gEg-lw0nkd5EwyQAxE3N3AZfzVhxqBLTS1yNmCz2Pq0mD5VGcJ4z8Rkfyy-GeuFbS4j_Wc',
-      suggestedBy: 'você'
-    };
-
-    setSongsList(prev => [newSong, ...prev]);
-  };
-
-  // Filter songs based on search and active tab
-  const filteredSongs = songsList.filter((song) => {
-    const matchesSearch =
-      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      song.artist.toLowerCase().includes(searchQuery.toLowerCase());
-
+  // Filter songs: search across all categories, or show active tab
+  const visibleSongs = (): Song[] => {
     if (searchQuery) {
-      return matchesSearch;
+      const query = searchQuery.toLowerCase();
+      return [...suggestions, ...evaluating, ...repertoire].filter(
+        (song) =>
+          song.title.toLowerCase().includes(query) ||
+          song.artist.toLowerCase().includes(query)
+      );
     }
+    return getSongsByCategory(activeCategoryTab);
+  };
 
-    return song.category === activeCategoryTab;
-  });
+  const filteredSongs = visibleSongs();
 
   const searchBar = (
     <div className="flex items-center w-full gap-2">
@@ -358,7 +148,7 @@ export const SongsView = () => {
 
   const searchButton = (
     <Button
-      onClick={handleSearchToggle}
+      onClick={() => setIsSearchExpanded(!isSearchExpanded)}
       variant="ghost"
       size="sm"
       className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors active:scale-95 duration-200 p-0"
@@ -370,137 +160,136 @@ export const SongsView = () => {
 
   return (
     <>
-    <AnimatePresence mode="wait" initial={false}>
-      {selectedSongForCifra ? (
-        <motion.div
-          key="cifra-reader"
-          initial={{ x: '100%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '100%' }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
-          className="bg-background"
-        >
-          <SongCifraReader
-            isOpen={!!selectedSongForCifra}
-            song={selectedSongForCifra}
-            onClose={() => setSelectedSongForCifra(null)}
-          />
-        </motion.div>
-      ) : showSearchView ? (
-        <motion.div
-          key="search-view"
-          initial={{ x: '100%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '100%' }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
-        >
-          <SongSearchView
-            onBack={() => setShowSearchView(false)}
-            onSuggest={handleSuggestSubmit}
-            existingSongs={songsList}
-          />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="songs-list"
-          initial={{ x: '-30%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '-30%' }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
-          className="flex flex-col w-full bg-background text-on-background pb-32"
-        >
-          {/* Top AppBar */}
-          {isSearchExpanded ? (
-            <PageHeader title="Buscar">
-              {searchBar}
-            </PageHeader>
-          ) : (
-            <Header
-              title="Músicas"
-              rightAction={searchButton}
-              showNotification={true}
+      <AnimatePresence mode="wait" initial={false}>
+        {selectedSongForCifra ? (
+          <motion.div
+            key="cifra-reader"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+            className="bg-background"
+          >
+            <SongCifraReader
+              isOpen={!!selectedSongForCifra}
+              song={selectedSongForCifra}
+              onClose={() => setSelectedSongForCifra(null)}
             />
-          )}
-
-          {/* Main Body */}
-          <main className="flex flex-col gap-6">
-            {/* Quick Filters / Segmented Tabs Row */}
-            {!searchQuery && (
-              <SongsFilterTabs
-                activeTab={activeCategoryTab}
-                onTabChange={setActiveCategoryTab}
+          </motion.div>
+        ) : showSearchView ? (
+          <motion.div
+            key="search-view"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+          >
+            <SongSearchView
+              onBack={() => setShowSearchView(false)}
+              onSuggest={() => { fetchSongs(); setShowSearchView(false); }}
+              existingSongs={[...suggestions, ...evaluating, ...repertoire]}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="songs-list"
+            initial={{ x: '-30%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-30%' }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
+            className="flex flex-col w-full bg-background text-on-background pb-32"
+          >
+            {/* Top AppBar */}
+            {isSearchExpanded ? (
+              <PageHeader title="Buscar">{searchBar}</PageHeader>
+            ) : (
+              <Header
+                title="Músicas"
+                rightAction={searchButton}
+                showNotification={true}
               />
             )}
 
+            {/* Main Body */}
+            <main className="flex flex-col gap-6">
+              {!searchQuery && (
+                <SongsFilterTabs
+                  activeTab={activeCategoryTab}
+                  onTabChange={setActiveCategoryTab}
+                />
+              )}
 
-            {/* Music List Section */}
-            <section
-              className="flex flex-col gap-4"
-            >
-              {searchQuery && (
-                <div
-                  className="flex justify-between items-center mb-2"
-                >
-                  <h2 className="text-label-lg font-semibold text-on-surface-variant">
-                    Resultados da busca ({filteredSongs.length})
-                  </h2>
-                  <button
-                    onClick={handleSearchClose}
-                    className="text-label-sm font-bold text-primary hover:underline cursor-pointer"
-                  >
-                    Limpar busca
-                  </button>
+              {/* Error Banner */}
+              {error && !isLoading && (
+                <div className="flex flex-col items-center gap-3 py-8 text-center opacity-80">
+                  <span className="material-symbols-outlined text-[40px] text-error/60">wifi_off</span>
+                  <p className="text-body-md text-on-surface-variant">{error}</p>
+                  <Button onClick={() => fetchSongs()} variant="outline" size="sm">
+                    Tentar novamente
+                  </Button>
                 </div>
               )}
 
-              {filteredSongs.length > 0 ? (
-                filteredSongs.map((song) => (
-                  <SongCard
-                    key={song.id}
-                    song={song}
-                    isPlaying={playingSongId === song.id}
-                    onPlayToggle={() => togglePlaySong(song.id)}
-                    onHeardToggle={() => toggleHeardStatus(song.id)}
-                    onClick={() => setSelectedSongForDrawer(song)}
-                    showCategoryBadge={!!searchQuery}
-                  />
-                ))
-              ) : (
-                <div
-                  className="flex flex-col items-center justify-center text-center opacity-60 py-12 gap-2"
-                >
-                  <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
-                  <p className="text-body-lg font-medium">Nenhuma música encontrada</p>
-                  <p className="text-label-sm">Tente buscar por outro termo ou limpe os filtros.</p>
-                </div>
+              {/* Music List Section */}
+              <section className="flex flex-col gap-4">
+                {searchQuery && (
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-label-lg font-semibold text-on-surface-variant">
+                      Resultados da busca ({filteredSongs.length})
+                    </h2>
+                    <button
+                      onClick={handleSearchClose}
+                      className="text-label-sm font-bold text-primary hover:underline cursor-pointer"
+                    >
+                      Limpar busca
+                    </button>
+                  </div>
+                )}
+
+                {isLoading ? (
+                  [1, 2, 3].map((key) => <SongCardSkeleton key={key} />)
+                ) : filteredSongs.length > 0 ? (
+                  filteredSongs.map((song) => (
+                    <SongCard
+                      key={song.id}
+                      song={song}
+                      isPlaying={playingSongId === song.id}
+                      onPlayToggle={() => togglePlaySong(song.id)}
+                      onHeardToggle={() => handleHeardToggle(song)}
+                      onClick={() => setSelectedSongForDrawer(song)}
+                      showCategoryBadge={!!searchQuery}
+                    />
+                  ))
+                ) : (
+                  !error && <EmptyState searchQuery={searchQuery} />
+                )}
+              </section>
+            </main>
+
+            {/* Team Engagement Drawer */}
+            <EngagementDrawer
+              isOpen={!!selectedSongForDrawer}
+              song={selectedSongForDrawer}
+              onClose={() => setSelectedSongForDrawer(null)}
+              onViewCifra={handleViewCifra}
+            />
+
+            {/* Floating Action Button */}
+            <AnimatePresence>
+              {!searchQuery && activeCategoryTab === 'sugestao' && (
+                <FloatingActionButton
+                  onClick={() => setShowSearchView(true)}
+                  icon={<span className="material-symbols-outlined text-[20px]">add</span>}
+                  label="Sugerir música"
+                />
               )}
-            </section>
-          </main>
-
-          {/* Team Engagement Drawer */}
-          <EngagementDrawer
-            isOpen={!!selectedSongForDrawer}
-            song={selectedSongForDrawer}
-            onClose={() => setSelectedSongForDrawer(null)}
-            onViewCifra={handleViewCifra}
-          />
-
-          {/* Floating Action Button (FAB) */}
-          <AnimatePresence>
-            {!searchQuery && activeCategoryTab === 'sugestao' && (
-              <FloatingActionButton
-                onClick={() => setShowSearchView(true)}
-                icon={<span className="material-symbols-outlined text-[20px]">add</span>}
-                label="Sugerir música"
-              />
-            )}
-          </AnimatePresence>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
