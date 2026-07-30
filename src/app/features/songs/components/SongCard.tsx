@@ -7,10 +7,14 @@ import { formatDuration } from '../domain/entities/Song';
 export interface SongCardProps {
   song: Song;
   isPlaying: boolean;
+  isCurrentSong?: boolean;
   onPlayToggle: () => void;
   onHeardToggle: () => void;
   onClick?: () => void;
   showCategoryBadge?: boolean;
+  progressPct?: number;
+  currentTimeFormatted?: string;
+  onSeekPct?: (pct: number) => void;
 }
 
 function getCategoryLabel(category: string): string {
@@ -34,10 +38,14 @@ function getCategoryColorClass(category: string): string {
 export const SongCard = ({
   song,
   isPlaying,
+  isCurrentSong = false,
   onPlayToggle,
   onHeardToggle,
   onClick,
   showCategoryBadge = false,
+  progressPct = 0,
+  currentTimeFormatted = '0:00',
+  onSeekPct,
 }: SongCardProps) => {
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
 
@@ -47,6 +55,15 @@ export const SongCard = ({
       triggerCelebration();
     }
     onHeardToggle();
+  };
+
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (!onSeekPct || !isCurrentSong) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+    onSeekPct(pct);
   };
 
   return (
@@ -97,13 +114,16 @@ export const SongCard = ({
         </Button>
       </div>
 
-      {/* Duration */}
-      <div className="space-y-1">
-        <div className="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
-          <div className="h-full rounded-full vivid-gradient" style={{ width: '0%' }} />
+      {/* Audio Progress Bar */}
+      <div className="space-y-1" onClick={handleProgressBarClick}>
+        <div className="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden relative cursor-pointer">
+          <div
+            className="h-full rounded-full vivid-gradient transition-all duration-100"
+            style={{ width: `${isCurrentSong ? progressPct : 0}%` }}
+          />
         </div>
         <div className="flex justify-between text-[10px] text-outline font-semibold mt-[2px]">
-          <span>0:00</span>
+          <span>{isCurrentSong ? currentTimeFormatted : '0:00'}</span>
           <span>{formatDuration(song.durationSeconds)}</span>
         </div>
       </div>

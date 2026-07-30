@@ -8,6 +8,7 @@ import EngagementDrawer from '../components/EngagementDrawer';
 import SongCifraReader from '../components/SongCifraReader';
 import { PageHeader, Button, FloatingActionButton, Header } from '@shared/components';
 import { useSongsStore } from '../hooks/useSongsStore';
+import { useAudioPlayer } from '@shared/hooks';
 import type { Song, SongCategory } from '../domain/entities/Song';
 
 // ── Skeleton ───────────────────────────────────────────────────────────────────
@@ -48,12 +49,12 @@ const EmptyState = ({ searchQuery }: { searchQuery: string }) => (
 export const SongsView = () => {
   const { songId } = useParams<{ songId: string }>();
   const { suggestions, evaluating, repertoire, isLoading, error, fetchSongs, markAsListened, getSongsByCategory } = useSongsStore();
+  const { currentSongId, isPlaying, currentTimeFormatted, progressPct, togglePlay, seekPct } = useAudioPlayer();
 
   const [activeCategoryTab, setActiveCategoryTab] = useState<SongCategory>('sugestao');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [showSearchView, setShowSearchView] = useState(false);
-  const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
   const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
 
@@ -64,9 +65,11 @@ export const SongsView = () => {
     const target = allSongs.find((song) => song.id === songId);
     if (target) {
       setSelectedSongForDrawer(target);
-      setPlayingSongId(target.id);
+      if (target.audioUrl) {
+        togglePlay(target);
+      }
     }
-  }, [songId, suggestions, evaluating, repertoire]);
+  }, [songId, suggestions, evaluating, repertoire, togglePlay]);
 
   // Keep selectedSongForDrawer in sync with latest store data
   useEffect(() => {
@@ -86,10 +89,6 @@ export const SongsView = () => {
   const handleSearchClose = () => {
     setIsSearchExpanded(false);
     setSearchQuery('');
-  };
-
-  const togglePlaySong = (songId: string) => {
-    setPlayingSongId((prev) => (prev === songId ? null : songId));
   };
 
   const handleHeardToggle = (song: Song) => {
@@ -252,17 +251,25 @@ export const SongsView = () => {
                 {isLoading ? (
                   [1, 2, 3].map((key) => <SongCardSkeleton key={key} />)
                 ) : filteredSongs.length > 0 ? (
-                  filteredSongs.map((song) => (
-                    <SongCard
-                      key={song.id}
-                      song={song}
-                      isPlaying={playingSongId === song.id}
-                      onPlayToggle={() => togglePlaySong(song.id)}
-                      onHeardToggle={() => handleHeardToggle(song)}
-                      onClick={() => setSelectedSongForDrawer(song)}
-                      showCategoryBadge={!!searchQuery}
-                    />
-                  ))
+                  filteredSongs.map((song) => {
+                    const isThisSongCurrent = currentSongId === song.id;
+                    const isThisSongPlaying = isPlaying && isThisSongCurrent;
+                    return (
+                      <SongCard
+                        key={song.id}
+                        song={song}
+                        isPlaying={isThisSongPlaying}
+                        isCurrentSong={isThisSongCurrent}
+                        onPlayToggle={() => togglePlay(song)}
+                        onHeardToggle={() => handleHeardToggle(song)}
+                        onClick={() => setSelectedSongForDrawer(song)}
+                        showCategoryBadge={!!searchQuery}
+                        progressPct={isThisSongCurrent ? progressPct : 0}
+                        currentTimeFormatted={isThisSongCurrent ? currentTimeFormatted : '0:00'}
+                        onSeekPct={seekPct}
+                      />
+                    );
+                  })
                 ) : (
                   !error && <EmptyState searchQuery={searchQuery} />
                 )}

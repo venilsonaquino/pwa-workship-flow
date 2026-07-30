@@ -61,7 +61,7 @@ export const EngagementDrawer = ({
 
   const searchTerms = encodeURIComponent(`${song.title} ${song.artist}`);
   const cifraclubUrl = `https://www.cifraclub.com.br/?q=${searchTerms}`;
-  const youtubeUrl = `https://www.youtube.com/results?search_query=${searchTerms}`;
+  const youtubeUrl = `https://www.youtube.com/watch?v=${song.videoId}`;
   const letrasUrl = `https://www.letras.mus.br/?q=${searchTerms}`;
 
   const hasListens = song.listens && song.listens.length > 0;

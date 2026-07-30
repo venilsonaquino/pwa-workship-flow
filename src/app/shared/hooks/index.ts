@@ -10,6 +10,7 @@ export { useNotificationsStore } from './useNotificationsStore';
 export type { NotificationItem } from './useNotificationsStore';
 export { useWebPush } from './useWebPush';
 export type { WebPushPermissionState } from './useWebPush';
+export { useAudioPlayer } from './useAudioPlayer';
 
 
 

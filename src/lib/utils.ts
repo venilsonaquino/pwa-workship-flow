@@ -38,6 +38,33 @@ export function getAbsoluteAvatarUrl(url?: string | null): string {
 }
 
 /**
+ * Resolves a relative media/audio URL from the API to a complete absolute URL.
+ */
+export function getAbsoluteMediaUrl(url?: string | null): string {
+  if (!url) {
+    return '';
+  }
+
+  const isAbsolute = url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:');
+  if (isAbsolute) {
+    return url;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!apiBaseUrl) {
+    return url;
+  }
+
+  try {
+    const origin = new URL(apiBaseUrl).origin;
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return `${origin}${cleanPath}`;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Converts a URL-safe base64 string (like a VAPID public key) to a Uint8Array.
  * Required for PushManager.subscribe({ applicationServerKey }).
  */
