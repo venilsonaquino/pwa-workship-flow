@@ -12,7 +12,7 @@ export interface LayoutProps {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-const ROUTES_WITHOUT_NAV = ['/notifications'];
+const ROUTES_WITHOUT_NAV = ['/notifications', '/503', '/maintenance'];
 
 function shouldShowNavigation(pathname: string): boolean {
   return !ROUTES_WITHOUT_NAV.includes(pathname);

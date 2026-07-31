@@ -7,6 +7,7 @@ import { ScalesPreviewView } from '@features/scales';
 import { SongsView } from '@features/songs';
 import { RankingView } from '@features/ranking';
 import { NotificationsView } from '@features/notifications';
+import { ServiceUnavailableView } from '@features/error';
 
 // ── Animation ──────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,8 @@ export const AppRoutes: React.FC = () => {
           <Route path="/profile" element={<ProfileView />} />
           <Route path="/notifications" element={<NotificationsView />} />
           <Route path="/users" element={<UserListView />} />
+          <Route path="/503" element={<ServiceUnavailableView />} />
+          <Route path="/maintenance" element={<ServiceUnavailableView />} />
           <Route path="*" element={<Navigate to="/scales" replace />} />
         </Routes>
       </motion.div>
