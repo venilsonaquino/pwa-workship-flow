@@ -18,7 +18,7 @@ export const PWAInstallPrompt: React.FC = () => {
         <div className="flex flex-col gap-0.5 text-left">
           <h3 className="m-0 text-lg font-bold text-on-background">Instalar Aplicativo</h3>
           <p className="m-0 text-sm text-placeholder leading-[1.45]">
-            Instale o <strong>PWA Workshop Flow</strong> na sua tela inicial para uma experiência rápida, offline e nativa.
+            Instale o <strong>Worship Flow</strong> na sua tela inicial para uma experiência rápida, offline e nativa.
           </p>
         </div>
       </div>
