@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['favicon.svg', 'icons/icon-72x72.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png', 'screenshots/splash-screen.png'],
         devOptions: {
           enabled: true,
-          type: 'classic',
+          type: 'module',
           suppressWarnings: true,
         },
         injectManifest: {

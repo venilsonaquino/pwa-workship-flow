@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { Song } from '../types';
+import type { Song } from '../domain/entities/Song';
 
 export interface EngagementDrawerProps {
   isOpen: boolean;
@@ -8,57 +8,23 @@ export interface EngagementDrawerProps {
   onViewCifra?: (song: Song) => void;
 }
 
-interface Member {
-  name: string;
-  role: string;
-  initials: string;
-  status: 'heard' | 'pending' | 'dynamic';
-  avatarBgClass: string;
-  avatarTextClass: string;
+function getInitials(name: string): string {
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
 }
 
-const BAND_MEMBERS: Member[] = [
-  {
-    name: 'João Silva',
-    role: 'Vocal',
-    initials: 'JS',
-    status: 'heard',
-    avatarBgClass: 'bg-primary-fixed',
-    avatarTextClass: 'text-on-primary-fixed font-bold'
-  },
-  {
-    name: 'Maria Costa',
-    role: 'Guitarra',
-    initials: 'MC',
-    status: 'heard',
-    avatarBgClass: 'bg-secondary-fixed',
-    avatarTextClass: 'text-on-secondary-fixed font-bold'
-  },
-  {
-    name: 'Manu Silveira (Você)',
-    role: 'Líder de Louvor',
-    initials: 'MS',
-    status: 'dynamic',
-    avatarBgClass: 'bg-primary/20',
-    avatarTextClass: 'text-primary font-bold'
-  },
-  {
-    name: 'Ricardo Pereira',
-    role: 'Bateria',
-    initials: 'RP',
-    status: 'pending',
-    avatarBgClass: 'bg-surface-container-highest',
-    avatarTextClass: 'text-on-surface-variant font-bold'
-  },
-  {
-    name: 'Ana Lima',
-    role: 'Teclado',
-    initials: 'AL',
-    status: 'heard',
-    avatarBgClass: 'bg-tertiary-fixed',
-    avatarTextClass: 'text-on-tertiary-fixed font-bold'
+function formatListenedAt(dateStr: string): string {
+  if (!dateStr) return 'Já ouviu';
+  try {
+    const d = new Date(dateStr);
+    return `Ouviu em ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  } catch {
+    return 'Já ouviu';
   }
-];
+}
 
 export const EngagementDrawer = ({
   isOpen,
@@ -66,7 +32,6 @@ export const EngagementDrawer = ({
   onClose,
   onViewCifra,
 }: EngagementDrawerProps) => {
-
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -96,8 +61,10 @@ export const EngagementDrawer = ({
 
   const searchTerms = encodeURIComponent(`${song.title} ${song.artist}`);
   const cifraclubUrl = `https://www.cifraclub.com.br/?q=${searchTerms}`;
-  const youtubeUrl = `https://www.youtube.com/results?search_query=${searchTerms}`;
+  const youtubeUrl = `https://www.youtube.com/watch?v=${song.videoId}`;
   const letrasUrl = `https://www.letras.mus.br/?q=${searchTerms}`;
+
+  const hasListens = song.listens && song.listens.length > 0;
 
   return (
     <>
@@ -108,9 +75,7 @@ export const EngagementDrawer = ({
       />
 
       {/* Drawer Container */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-[999] bg-surface rounded-t-[32px] shadow-lg flex flex-col max-h-[85vh] overflow-hidden animate-slide-up-mobile"
-      >
+      <div className="fixed bottom-0 left-0 right-0 z-[999] bg-surface rounded-t-[32px] shadow-lg flex flex-col max-h-[85vh] overflow-hidden animate-slide-up-mobile">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2 cursor-pointer" onClick={onClose}>
           <div className="w-10 h-1 bg-outline-variant/50 rounded-full" />
@@ -134,45 +99,46 @@ export const EngagementDrawer = ({
         {/* Member List & External Links */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 pb-24">
           <div className="space-y-4">
-            {BAND_MEMBERS.map((member) => {
-              const hasHeard =
-                member.status === 'heard' ||
-                (member.status === 'dynamic' && song.isHeard);
-
-              return (
-                <div key={member.name} className="flex items-center justify-between">
+            {hasListens ? (
+              song.listens.map((listen) => (
+                <div key={listen.userId} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-body-lg ${member.avatarBgClass} ${member.avatarTextClass}`}
-                    >
-                      {member.initials}
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center text-primary font-bold text-body-lg shrink-0 border border-primary/20">
+                      {listen.userAvatarUrl ? (
+                        <img
+                          src={listen.userAvatarUrl}
+                          alt={listen.userName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        getInitials(listen.userName)
+                      )}
                     </div>
                     <div>
-                      <p className="font-label-lg text-on-surface">{member.name}</p>
-                      <p className="text-label-sm text-on-surface-variant">{member.role}</p>
+                      <p className="font-label-lg text-on-surface">{listen.userName}</p>
+                      <p className="text-[11px] text-on-surface-variant/80">{formatListenedAt(listen.listenedAt)}</p>
                     </div>
                   </div>
 
-                  {hasHeard ? (
-                    <div className="flex items-center gap-1 text-primary">
-                      <span
-                        className="material-symbols-outlined text-[20px] icon-fill"
-                      >
-                        check_circle
-                      </span>
-                      <span className="text-label-sm">Já ouvi</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-outline">
-                      <span className="material-symbols-outlined text-[20px]">
-                        schedule
-                      </span>
-                      <span className="text-label-sm">Pendente</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1 text-primary font-medium">
+                    <span className="material-symbols-outlined text-[20px] icon-fill">
+                      check_circle
+                    </span>
+                    <span className="text-label-sm">Já ouviu</span>
+                  </div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant/70 gap-2">
+                <span className="material-symbols-outlined text-[36px] text-outline">group_off</span>
+                <p className="text-body-md font-medium text-on-surface/80">
+                  Nenhum integrante ouviu essa música ainda.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Cifra Reader Section */}
@@ -182,7 +148,10 @@ export const EngagementDrawer = ({
                 Cifra
               </h3>
               <button
-                onClick={() => { onViewCifra?.(song); onClose(); }}
+                onClick={() => {
+                  onViewCifra?.(song);
+                  onClose();
+                }}
                 className="w-full flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm hover:bg-primary/10 transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
@@ -191,7 +160,7 @@ export const EngagementDrawer = ({
                   </div>
                   <div className="text-left">
                     <p className="font-label-lg text-on-surface">Visualizar Cifra</p>
-                    <p className="text-[10px] text-outline">Tom: {song.tom ?? '—'} · Acordes e letra</p>
+                    <p className="text-[10px] text-outline">Acordes e letra</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-primary text-[20px]">chevron_right</span>
@@ -206,7 +175,7 @@ export const EngagementDrawer = ({
             </h3>
             <div className="space-y-3">
               <a
-                href={cifraclubUrl}
+                href={song.cifraClubUrl ?? cifraclubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]"
@@ -242,7 +211,7 @@ export const EngagementDrawer = ({
               </a>
 
               <a
-                href={letrasUrl}
+                href={song.letrasUrl ?? letrasUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]"
@@ -262,7 +231,6 @@ export const EngagementDrawer = ({
           </div>
         </div>
       </div>
-
     </>
   );
 };

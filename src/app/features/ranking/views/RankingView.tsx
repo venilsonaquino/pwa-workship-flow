@@ -67,11 +67,7 @@ const PERIODS = [
   { id: '1y', label: '1 ano', multiplier: 12.0 }
 ];
 
-interface RankingViewProps {
-  onNotificationClick?: () => void;
-}
-
-export const RankingView: React.FC<RankingViewProps> = ({ onNotificationClick }) => {
+export const RankingView: React.FC = () => {
   const [activeDay, setActiveDay] = useState('Todas');
   const [activePeriod, setActivePeriod] = useState('30d');
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
@@ -125,7 +121,6 @@ export const RankingView: React.FC<RankingViewProps> = ({ onNotificationClick })
       <Header
         title="Ranking"
         showNotification={true}
-        onNotificationClick={onNotificationClick}
       />
 
       <main className="space-y-6 max-w-lg mx-auto w-full">

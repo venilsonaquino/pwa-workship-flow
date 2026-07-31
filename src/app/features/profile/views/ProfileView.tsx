@@ -8,13 +8,6 @@ import { useProfile } from '../hooks/useProfile';
 import { MinistryView } from '@features/ministry';
 import { Header } from '@shared/components';
 
-interface ProfileViewProps {
-  userName?: string;
-  userEmail?: string;
-  userRole?: string;
-  avatarUrl?: string;
-  onNotificationClick?: () => void;
-}
 
 const DEFAULT_AVATAR = '';
 
@@ -54,13 +47,7 @@ const ProfileError: React.FC<ProfileErrorProps> = ({ message, onRetry }) => (
   </div>
 );
 
-export const ProfileView: React.FC<ProfileViewProps> = ({
-  userName = '',
-  userEmail = '',
-  userRole = '',
-  avatarUrl = DEFAULT_AVATAR,
-  onNotificationClick,
-}) => {
+export const ProfileView: React.FC = () => {
   const [showMinistryView, setShowMinistryView] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showSecurityView, setShowSecurityView] = useState(false);
@@ -79,10 +66,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     return (
       <>
         <ProfileHeader
-          userName={profile?.name || userName}
-          userEmail={profile?.email || userEmail}
-          userRole={profile?.role || userRole}
-          avatarUrl={profile?.avatarUrl || avatarUrl}
+          userName={profile?.name ?? ''}
+          userEmail={profile?.email ?? ''}
+          userRole={profile?.role ?? ''}
+          avatarUrl={profile?.avatarUrl ?? DEFAULT_AVATAR}
         />
         <ProfileSettings
           onNavigateToTeam={() => setShowMinistryView(true)}
@@ -147,7 +134,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <Header
             title="Perfil"
             showNotification={true}
-            onNotificationClick={onNotificationClick}
           />
           {renderContent()}
         </motion.div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PageHeader, Button, Card } from '@shared/components';
 import { useNotificationsStore, useWebPush } from '@shared/hooks';
@@ -6,11 +7,6 @@ import { useAuth } from '@shared/hooks/useAuth';
 import type { Notification, NotificationType } from '../types';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
-
-interface NotificationsViewProps {
-  onBack: () => void;
-  onSongNavigate?: (songId: string) => void;
-}
 
 type FilterTab = 'Todas' | 'Músicas' | 'Cifras' | 'Status';
 
@@ -87,7 +83,8 @@ const itemVariants = {
 
 // ── Main View ──────────────────────────────────────────────────────────────────
 
-export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, onSongNavigate }) => {
+export const NotificationsView: React.FC = () => {
+  const navigate = useNavigate();
   const { token } = useAuth();
   const { notifications, totalUnread, isLoading, error, fetchNotifications, markAsRead, markAllAsRead } =
     useNotificationsStore();
@@ -119,7 +116,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, on
       markAsRead(token, notification.id);
     }
     if (notification.referenceId) {
-      onSongNavigate?.(notification.referenceId);
+      navigate(`/songs/${notification.referenceId}`);
     }
   };
 
@@ -147,7 +144,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, on
     <div className="flex flex-col w-full bg-background text-on-background pb-32">
       <PageHeader
         title="Notificações"
-        onBack={onBack}
+        onBack={() => navigate(-1)}
         rightAction={
           totalUnread > 0 ? (
             <Button

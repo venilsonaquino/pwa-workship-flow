@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '@shared/components/ui/button';
 import { useAuth } from '@shared/hooks/useAuth';
 import { useNotificationsStore } from '@shared/hooks';
@@ -6,7 +7,6 @@ import { useNotificationsStore } from '@shared/hooks';
 export interface HeaderProps {
   userName?: string;
   avatarUrl?: string;
-  onNotificationClick?: () => void;
   title?: React.ReactNode;
   rightAction?: React.ReactNode;
   showNotification?: boolean;
@@ -17,11 +17,11 @@ const DEFAULT_AVATAR = '';
 export const Header = ({
   userName,
   avatarUrl,
-  onNotificationClick,
   title,
   rightAction,
   showNotification = !title,
 }: HeaderProps) => {
+  const navigate = useNavigate();
   const { userName: authUserName, avatarUrl: authAvatarUrl } = useAuth();
   const { unreadCount } = useNotificationsStore();
   const resolvedUserName = userName ?? authUserName ?? 'Admin';
@@ -112,7 +112,7 @@ export const Header = ({
         {rightAction}
         {showNotification && (
           <Button
-            onClick={onNotificationClick}
+            onClick={() => navigate('/notifications')}
             variant="ghost"
             size="sm"
             iconOnly
