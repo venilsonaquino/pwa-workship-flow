@@ -11,7 +11,7 @@ export class HttpHealthRepository implements IHealthRepository {
   }
 
   public async checkHealth(): Promise<HealthStatus> {
-    const liveEndpointUrl = `${this.baseUrl}/live`;
+    const liveEndpointUrl = `${this.baseUrl}/health/live`;
     try {
       const response = await fetch(liveEndpointUrl, {
         method: 'GET',

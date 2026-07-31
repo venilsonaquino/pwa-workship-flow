@@ -37,7 +37,6 @@ export const SongCard = ({
   onCategoryChange,
   onDelete,
   onClick,
-  showCategoryBadge: _showCategoryBadge = false,
   progressPct = 0,
   currentTimeFormatted = '0:00',
   onSeekPct,

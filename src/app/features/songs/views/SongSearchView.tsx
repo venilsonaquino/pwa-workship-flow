@@ -103,10 +103,12 @@ const SongSearchView = ({ onBack, onSuggest, existingSongs }: SongSearchViewProp
   useEffect(() => {
     const trimmed = searchQuery.trim();
     if (!trimmed) {
-      setResults([]);
-      setHasSearched(false);
-      setSearchError(null);
-      return;
+      const resetTimer = setTimeout(() => {
+        setResults([]);
+        setHasSearched(false);
+        setSearchError(null);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
 
     const timer = setTimeout(() => {

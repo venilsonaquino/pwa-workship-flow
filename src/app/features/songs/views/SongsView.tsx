@@ -78,20 +78,21 @@ export const SongsView = () => {
     const allSongs = [...suggestions, ...evaluating, ...repertoire];
     const targetSong = allSongs.find((song) => song.id === songId);
     if (targetSong) {
-      if (targetSong.category) {
-        setActiveCategoryTab(targetSong.category);
-      }
-      setAutoPlayedSongId(songId);
-      if (targetSong.audioUrl && currentSongId !== targetSong.id) {
-        togglePlay(targetSong);
-      }
+      const timer = setTimeout(() => {
+        if (targetSong.category) {
+          setActiveCategoryTab(targetSong.category);
+        }
+        setAutoPlayedSongId(songId);
+        if (targetSong.audioUrl && currentSongId !== targetSong.id) {
+          togglePlay(targetSong);
+        }
 
-      setTimeout(() => {
         const cardElement = document.getElementById(`song-card-${songId}`);
         if (cardElement) {
           cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-      }, 100);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [songId, suggestions, evaluating, repertoire, togglePlay, currentSongId, autoPlayedSongId]);
 
@@ -101,7 +102,10 @@ export const SongsView = () => {
     const allSongs = [...suggestions, ...evaluating, ...repertoire];
     const updated = allSongs.find((song) => song.id === selectedSongForDrawer.id);
     if (updated && (updated.hasListened !== selectedSongForDrawer.hasListened || updated.bandEngagementPercentage !== selectedSongForDrawer.bandEngagementPercentage)) {
-      setSelectedSongForDrawer(updated);
+      const timer = setTimeout(() => {
+        setSelectedSongForDrawer(updated);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [suggestions, evaluating, repertoire, selectedSongForDrawer]);
 
