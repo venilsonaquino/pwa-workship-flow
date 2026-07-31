@@ -62,6 +62,10 @@ function getAudioInstance(): HTMLAudioElement {
       setPlayerState({ isPlaying: true });
     });
 
+    _audioInstance.addEventListener('playing', () => {
+      setPlayerState({ isPlaying: true });
+    });
+
     _audioInstance.addEventListener('pause', () => {
       setPlayerState({ isPlaying: false });
     });
@@ -111,11 +115,13 @@ export function useAudioPlayer() {
         return;
       }
 
+      setPlayerState({ isPlaying: true });
       void audio.play().catch((error: unknown) => {
         if (error instanceof Error && error.name === 'AbortError') {
           return;
         }
         console.error('[AudioPlayer] Falha ao dar play:', error);
+        setPlayerState({ isPlaying: false });
       });
       return;
     }
@@ -128,7 +134,7 @@ export function useAudioPlayer() {
       currentTime: 0,
       duration: fallbackDuration,
       progressPct: 0,
-      isPlaying: false,
+      isPlaying: true,
     });
 
     void audio.play().catch((error: unknown) => {
@@ -136,6 +142,7 @@ export function useAudioPlayer() {
         return;
       }
       console.error('[AudioPlayer] Falha ao dar play na nova faixa:', error);
+      setPlayerState({ isPlaying: false });
     });
   }, []);
 

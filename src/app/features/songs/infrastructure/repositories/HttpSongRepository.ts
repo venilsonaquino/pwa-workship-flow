@@ -73,7 +73,12 @@ export class HttpSongRepository implements ISongRepository {
     });
 
     if (!response.ok) {
-      throw new Error(`Erro ao alterar categoria da música (HTTP ${response.status})`);
+      const errorData = await response.json().catch(() => null);
+      const message =
+        errorData?.message ||
+        errorData?.error ||
+        `Transição de categoria não permitida (HTTP ${response.status})`;
+      throw new Error(message);
     }
   }
 

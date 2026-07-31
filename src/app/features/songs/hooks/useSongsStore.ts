@@ -179,13 +179,14 @@ export function useSongsStore() {
 
       try {
         await updateSongCategoryUseCase.execute(activeToken, songId, newCategory);
-      } catch {
+      } catch (err) {
         // Rollback on failure
         setSharedState({
           suggestions: previousSuggestions,
           evaluating: previousEvaluating,
           repertoire: previousRepertoire,
         });
+        throw err;
       }
     },
     [token]

@@ -119,18 +119,27 @@ export const SongsView = () => {
     markAsListened(song.id);
   };
 
-  const handleCategoryChange = (song: Song, newCategory: SongCategory) => {
+  const handleCategoryChange = async (song: Song, newCategory: SongCategory) => {
     const previousCategory = song.category;
-    changeCategory(song.id, newCategory);
-
-    toast.success(`Música movida para ${getCategoryLabel(newCategory)}`, {
-      action: {
-        label: 'Desfazer',
-        onClick: () => {
-          changeCategory(song.id, previousCategory);
+    try {
+      await changeCategory(song.id, newCategory);
+      toast.success(`Música movida para ${getCategoryLabel(newCategory)}`, {
+        action: {
+          label: 'Desfazer',
+          onClick: async () => {
+            try {
+              await changeCategory(song.id, previousCategory);
+            } catch {
+              toast.error('Não foi possível desfazer a alteração.');
+            }
+          },
         },
-      },
-    });
+      });
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Transição de coluna não permitida.';
+      toast.error(errorMessage);
+    }
   };
 
   const handleDeleteSong = async (song: Song) => {

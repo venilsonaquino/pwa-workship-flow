@@ -100,11 +100,12 @@ export const SongCard = ({
           {/* Vinyl Disc Body */}
           <div
             className={cn(
-              "w-20 h-20 rounded-full p-1 bg-neutral-950 border-2 border-neutral-800/80 shadow-lg relative flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105",
+              "w-20 h-20 rounded-full p-1 bg-neutral-950 border-2 border-neutral-800/80 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-primary/50",
               isPlaying && "animate-[spin_4s_linear_infinite]"
             )}
             style={{
-              backgroundImage: `radial-gradient(circle at center, transparent 35%, rgba(255,255,255,0.06) 36%, transparent 40%, rgba(255,255,255,0.04) 45%, transparent 60%)`
+              backgroundImage: `radial-gradient(circle at center, transparent 35%, rgba(255,255,255,0.06) 36%, transparent 40%, rgba(255,255,255,0.04) 45%, transparent 60%)`,
+              animation: isPlaying ? 'spin 4s linear infinite' : 'none',
             }}
           >
             {/* Inner Album Cover */}
@@ -116,20 +117,21 @@ export const SongCard = ({
 
             {/* Vinyl Spindle Center Hole */}
             <div className="absolute inset-auto w-3.5 h-3.5 rounded-full bg-neutral-950 border border-neutral-700 pointer-events-none z-10" />
+
+            {/* Subtle Hover Overlay */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-15" />
           </div>
 
-          {/* Play/Pause Center Action Overlay */}
+          {/* Floating Play/Pause Action Badge */}
           <div
             className={cn(
-              "absolute inset-0 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all duration-200 opacity-0 group-hover:opacity-100 z-20",
-              isPlaying && "opacity-100 bg-black/25"
+              "absolute -bottom-1 -right-1 z-30 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface-container-lowest transition-all duration-200 group-hover:scale-110 active:scale-95",
+              isPlaying ? "shadow-primary/40 ring-2 ring-primary/30 animate-pulse" : "shadow-black/40"
             )}
           >
-            <div className="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-110 active:scale-95">
-              <span className="material-symbols-outlined icon-fill text-[22px] leading-none select-none">
-                {isPlaying ? 'pause' : 'play_arrow'}
-              </span>
-            </div>
+            <span className={cn("material-symbols-outlined icon-fill text-[16px] leading-none select-none", !isPlaying && "ml-0.5")}>
+              {isPlaying ? 'pause' : 'play_arrow'}
+            </span>
           </div>
         </div>
 
