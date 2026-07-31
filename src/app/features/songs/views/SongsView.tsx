@@ -57,19 +57,30 @@ export const SongsView = () => {
   const [showSearchView, setShowSearchView] = useState(false);
   const [selectedSongForDrawer, setSelectedSongForDrawer] = useState<Song | null>(null);
   const [selectedSongForCifra, setSelectedSongForCifra] = useState<Song | null>(null);
+  const [autoPlayedSongId, setAutoPlayedSongId] = useState<string | null>(null);
 
-  // Auto-open player when arriving via deeplink /songs/:songId
+  // Auto-open player and focus card when arriving via deeplink /songs/:songId
   useEffect(() => {
-    if (!songId) return;
+    if (!songId || autoPlayedSongId === songId) return;
     const allSongs = [...suggestions, ...evaluating, ...repertoire];
-    const target = allSongs.find((song) => song.id === songId);
-    if (target) {
-      setSelectedSongForDrawer(target);
-      if (target.audioUrl) {
-        togglePlay(target);
+    const targetSong = allSongs.find((song) => song.id === songId);
+    if (targetSong) {
+      if (targetSong.category) {
+        setActiveCategoryTab(targetSong.category);
       }
+      setAutoPlayedSongId(songId);
+      if (targetSong.audioUrl && currentSongId !== targetSong.id) {
+        togglePlay(targetSong);
+      }
+
+      setTimeout(() => {
+        const cardElement = document.getElementById(`song-card-${songId}`);
+        if (cardElement) {
+          cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     }
-  }, [songId, suggestions, evaluating, repertoire, togglePlay]);
+  }, [songId, suggestions, evaluating, repertoire, togglePlay, currentSongId, autoPlayedSongId]);
 
   // Keep selectedSongForDrawer in sync with latest store data
   useEffect(() => {

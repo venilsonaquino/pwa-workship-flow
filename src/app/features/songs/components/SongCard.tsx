@@ -68,6 +68,7 @@ export const SongCard = ({
 
   return (
     <div
+      id={`song-card-${song.id}`}
       onClick={onClick}
       className="bg-surface-container-lowest text-on-surface rounded-[32px] border border-outline-variant/30 custom-shadow flex flex-col gap-4 relative overflow-visible p-5 cursor-pointer hover:bg-surface-container-low/20 transition-all duration-200 active:scale-[0.995]"
     >

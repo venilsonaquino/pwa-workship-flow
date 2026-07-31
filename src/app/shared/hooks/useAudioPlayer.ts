@@ -44,14 +44,17 @@ function getAudioInstance(): HTMLAudioElement {
 
     _audioInstance.addEventListener('timeupdate', () => {
       if (!_audioInstance) return;
-      const cur = _audioInstance.currentTime || 0;
-      const dur = _audioInstance.duration && isFinite(_audioInstance.duration) ? _audioInstance.duration : _duration;
-      const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
+      const current = _audioInstance.currentTime || 0;
+      const duration =
+        _audioInstance.duration && isFinite(_audioInstance.duration)
+          ? _audioInstance.duration
+          : _duration;
+      const progressPercentage = duration > 0 ? Math.min(100, (current / duration) * 100) : 0;
 
       setPlayerState({
-        currentTime: cur,
-        duration: dur,
-        progressPct: pct,
+        currentTime: current,
+        duration: duration,
+        progressPct: progressPercentage,
       });
     });
 
@@ -71,8 +74,8 @@ function getAudioInstance(): HTMLAudioElement {
       });
     });
 
-    _audioInstance.addEventListener('error', (e) => {
-      console.error('[AudioPlayer] Erro na reprodução do áudio:', e);
+    _audioInstance.addEventListener('error', (event) => {
+      console.error('[AudioPlayer] Erro na reprodução do áudio:', event);
       setPlayerState({ isPlaying: false });
     });
   }
@@ -91,51 +94,59 @@ export function useAudioPlayer() {
   const [, forceRender] = useState(0);
 
   useEffect(() => {
-    const rerender = () => forceRender((c) => c + 1);
+    const rerender = () => forceRender((currentCount) => currentCount + 1);
     _subscribers.add(rerender);
     return () => {
       _subscribers.delete(rerender);
     };
   }, []);
 
-  const togglePlay = useCallback((target: AudioTarget) => {
+  const togglePlay = useCallback((targetSong: AudioTarget) => {
     const audio = getAudioInstance();
-    const resolvedUrl = getAbsoluteMediaUrl(target.audioUrl);
+    const resolvedUrl = getAbsoluteMediaUrl(targetSong.audioUrl);
 
-    if (_currentSongId === target.id) {
+    if (_currentSongId === targetSong.id) {
       if (_isPlaying) {
         audio.pause();
-      } else {
-        void audio.play().catch((err) => {
-          console.error('[AudioPlayer] Falha ao dar play:', err);
-        });
+        return;
       }
-    } else {
-      audio.pause();
-      audio.src = resolvedUrl;
-      const fallbackDur = target.durationSeconds || 0;
-      setPlayerState({
-        currentSongId: target.id,
-        currentTime: 0,
-        duration: fallbackDur,
-        progressPct: 0,
-        isPlaying: false,
-      });
 
-      void audio.play().catch((err) => {
-        console.error('[AudioPlayer] Falha ao dar play na nova faixa:', err);
+      void audio.play().catch((error: unknown) => {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+        console.error('[AudioPlayer] Falha ao dar play:', error);
       });
+      return;
     }
+
+    audio.pause();
+    audio.src = resolvedUrl;
+    const fallbackDuration = targetSong.durationSeconds || 0;
+    setPlayerState({
+      currentSongId: targetSong.id,
+      currentTime: 0,
+      duration: fallbackDuration,
+      progressPct: 0,
+      isPlaying: false,
+    });
+
+    void audio.play().catch((error: unknown) => {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      console.error('[AudioPlayer] Falha ao dar play na nova faixa:', error);
+    });
   }, []);
 
-  const seekPct = useCallback((pct: number) => {
+  const seekPct = useCallback((percentage: number) => {
     const audio = getAudioInstance();
     if (!audio || !_duration) return;
-    const targetTime = (pct / 100) * _duration;
+    const targetTime = (percentage / 100) * _duration;
     audio.currentTime = targetTime;
     setPlayerState({
       currentTime: targetTime,
-      progressPct: pct,
+      progressPct: percentage,
     });
   }, []);
 
@@ -158,3 +169,4 @@ export function useAudioPlayer() {
     pause,
   };
 }
+
