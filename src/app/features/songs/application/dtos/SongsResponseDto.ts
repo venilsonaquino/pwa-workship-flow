@@ -26,6 +26,7 @@ export interface SongApiDto {
   createdAt: string;
   bandEngagementPercentage: number;
   hasListened: boolean;
+  category?: string;
   status: SongStatus;
   listens?: SongListenApiDto[];
 }
@@ -41,7 +42,7 @@ export interface SongsApiResponse {
 }
 
 // ── Mapper ────────────────────────────────────────────────────────────────────
-// Converte SongApiDto → Song (entidade de domínio), injetando a categoria
+// Converte SongApiDto → Song (entidade de domínio)
 
 export function mapSongListenDtoToEntity(dto: SongListenApiDto): SongListen {
   return {
@@ -52,7 +53,16 @@ export function mapSongListenDtoToEntity(dto: SongListenApiDto): SongListen {
   };
 }
 
-export function mapSongDtoToEntity(dto: SongApiDto, category: SongCategory): Song {
+export function mapBackendCategoryToFrontend(backendCategory?: string, fallbackCategory?: SongCategory): SongCategory {
+  if (!backendCategory) return fallbackCategory || 'sugestao';
+  const lower = backendCategory.toLowerCase();
+  if (lower === 'pending' || lower === 'sugestao' || lower === 'sugeridas') return 'sugestao';
+  if (lower === 'evaluating' || lower === 'ensaiando' || lower === 'em avaliação') return 'ensaiando';
+  if (lower === 'repertoire' || lower === 'repertorio') return 'repertorio';
+  return fallbackCategory || 'sugestao';
+}
+
+export function mapSongDtoToEntity(dto: SongApiDto, fallbackCategory: SongCategory): Song {
   return {
     id: dto.id,
     videoId: dto.videoId,
@@ -70,7 +80,7 @@ export function mapSongDtoToEntity(dto: SongApiDto, category: SongCategory): Son
     bandEngagementPercentage: dto.bandEngagementPercentage,
     hasListened: dto.hasListened,
     status: dto.status,
-    category,
+    category: mapBackendCategoryToFrontend(dto.category, fallbackCategory),
     listens: (dto.listens || []).map(mapSongListenDtoToEntity),
   };
 }

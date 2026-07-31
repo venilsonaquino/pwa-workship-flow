@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'sonner';
 import SongsFilterTabs from '../components/SongsFilterTabs';
 import SongCard from '../components/SongCard';
 import SongSearchView from './SongSearchView';
@@ -10,6 +11,7 @@ import { PageHeader, Button, FloatingActionButton, Header } from '@shared/compon
 import { useSongsStore } from '../hooks/useSongsStore';
 import { useAudioPlayer } from '@shared/hooks';
 import type { Song, SongCategory } from '../domain/entities/Song';
+import { getCategoryLabel } from '../domain/entities/Song';
 
 // ── Skeleton ───────────────────────────────────────────────────────────────────
 
@@ -48,7 +50,18 @@ const EmptyState = ({ searchQuery }: { searchQuery: string }) => (
 
 export const SongsView = () => {
   const { songId } = useParams<{ songId: string }>();
-  const { suggestions, evaluating, repertoire, isLoading, error, fetchSongs, markAsListened, getSongsByCategory } = useSongsStore();
+  const {
+    suggestions,
+    evaluating,
+    repertoire,
+    isLoading,
+    error,
+    fetchSongs,
+    markAsListened,
+    changeCategory,
+    deleteSong,
+    getSongsByCategory,
+  } = useSongsStore();
   const { currentSongId, isPlaying, currentTimeFormatted, progressPct, togglePlay, seekPct } = useAudioPlayer();
 
   const [activeCategoryTab, setActiveCategoryTab] = useState<SongCategory>('sugestao');
@@ -104,6 +117,29 @@ export const SongsView = () => {
 
   const handleHeardToggle = (song: Song) => {
     markAsListened(song.id);
+  };
+
+  const handleCategoryChange = (song: Song, newCategory: SongCategory) => {
+    const previousCategory = song.category;
+    changeCategory(song.id, newCategory);
+
+    toast.success(`Música movida para ${getCategoryLabel(newCategory)}`, {
+      action: {
+        label: 'Desfazer',
+        onClick: () => {
+          changeCategory(song.id, previousCategory);
+        },
+      },
+    });
+  };
+
+  const handleDeleteSong = async (song: Song) => {
+    try {
+      await deleteSong(song.id);
+      toast.success(`Música "${song.title}" removida com sucesso.`);
+    } catch {
+      toast.error(`Falha ao remover a música "${song.title}".`);
+    }
   };
 
   // Filter songs: search across all categories, or show active tab
@@ -273,8 +309,10 @@ export const SongsView = () => {
                         isCurrentSong={isThisSongCurrent}
                         onPlayToggle={() => togglePlay(song)}
                         onHeardToggle={() => handleHeardToggle(song)}
+                        onCategoryChange={(_songId, newCat) => handleCategoryChange(song, newCat)}
+                        onDelete={() => handleDeleteSong(song)}
                         onClick={() => setSelectedSongForDrawer(song)}
-                        showCategoryBadge={!!searchQuery}
+                        showCategoryBadge={true}
                         progressPct={isThisSongCurrent ? progressPct : 0}
                         currentTimeFormatted={isThisSongCurrent ? currentTimeFormatted : '0:00'}
                         onSeekPct={seekPct}
@@ -286,6 +324,7 @@ export const SongsView = () => {
                 )}
               </section>
             </main>
+
 
             {/* Team Engagement Drawer */}
             <EngagementDrawer

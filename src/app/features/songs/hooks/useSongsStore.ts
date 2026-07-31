@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@shared/hooks/useAuth';
 import { FetchSongs } from '../application/use-cases/FetchSongs';
+import { UpdateSongCategory } from '../application/use-cases/UpdateSongCategory';
 import { httpSongRepository } from '../infrastructure/repositories/HttpSongRepository';
 import type { Song, SongCategory } from '../domain/entities/Song';
 
 // ── Singleton state (shared across all hook instances) ────────────────────────
 
 const fetchSongsUseCase = new FetchSongs(httpSongRepository);
+const updateSongCategoryUseCase = new UpdateSongCategory(httpSongRepository);
 
 let _suggestions: Song[] = [];
 let _evaluating: Song[] = [];
@@ -141,6 +143,85 @@ export function useSongsStore() {
     [token, fetchSongs]
   );
 
+  const changeCategory = useCallback(
+    async (songId: string, newCategory: SongCategory) => {
+      const activeToken = token || localStorage.getItem('worshipflow_token') || '';
+      if (!activeToken) return;
+
+      const currentSong =
+        _suggestions.find((s) => s.id === songId) ||
+        _evaluating.find((s) => s.id === songId) ||
+        _repertoire.find((s) => s.id === songId);
+
+      if (!currentSong || currentSong.category === newCategory) return;
+
+      const previousSuggestions = [..._suggestions];
+      const previousEvaluating = [..._evaluating];
+      const previousRepertoire = [..._repertoire];
+
+      const updatedSong: Song = { ...currentSong, category: newCategory };
+
+      const filterOut = (list: Song[]) => list.filter((s) => s.id !== songId);
+
+      let nextSuggestions = filterOut(_suggestions);
+      let nextEvaluating = filterOut(_evaluating);
+      let nextRepertoire = filterOut(_repertoire);
+
+      if (newCategory === 'sugestao') nextSuggestions = [updatedSong, ...nextSuggestions];
+      if (newCategory === 'ensaiando') nextEvaluating = [updatedSong, ...nextEvaluating];
+      if (newCategory === 'repertorio') nextRepertoire = [updatedSong, ...nextRepertoire];
+
+      setSharedState({
+        suggestions: nextSuggestions,
+        evaluating: nextEvaluating,
+        repertoire: nextRepertoire,
+      });
+
+      try {
+        await updateSongCategoryUseCase.execute(activeToken, songId, newCategory);
+      } catch {
+        // Rollback on failure
+        setSharedState({
+          suggestions: previousSuggestions,
+          evaluating: previousEvaluating,
+          repertoire: previousRepertoire,
+        });
+      }
+    },
+    [token]
+  );
+
+  const deleteSong = useCallback(
+    async (songId: string) => {
+      const activeToken = token || localStorage.getItem('worshipflow_token') || '';
+      if (!activeToken) return;
+
+      const previousSuggestions = [..._suggestions];
+      const previousEvaluating = [..._evaluating];
+      const previousRepertoire = [..._repertoire];
+
+      const filterOut = (list: Song[]) => list.filter((s) => s.id !== songId);
+
+      setSharedState({
+        suggestions: filterOut(_suggestions),
+        evaluating: filterOut(_evaluating),
+        repertoire: filterOut(_repertoire),
+      });
+
+      try {
+        await httpSongRepository.deleteSong(activeToken, songId);
+      } catch (err) {
+        setSharedState({
+          suggestions: previousSuggestions,
+          evaluating: previousEvaluating,
+          repertoire: previousRepertoire,
+        });
+        throw err;
+      }
+    },
+    [token]
+  );
+
   function getSongsByCategory(category: SongCategory): Song[] {
     if (category === 'sugestao') return _suggestions;
     if (category === 'ensaiando') return _evaluating;
@@ -155,6 +236,9 @@ export function useSongsStore() {
     error: _error,
     fetchSongs,
     markAsListened,
+    changeCategory,
+    deleteSong,
     getSongsByCategory,
   };
 }
+

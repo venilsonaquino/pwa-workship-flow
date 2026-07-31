@@ -2,6 +2,8 @@ import type { ISongRepository, SongsResult } from '../../domain/repositories/ISo
 import { mapSongDtoToEntity } from '../../application/dtos/SongsResponseDto';
 import type { SongsApiResponse } from '../../application/dtos/SongsResponseDto';
 import type { SongSearchResult, SuggestSongPayload } from '../../domain/entities/SongSearch';
+import type { SongCategory } from '../../domain/entities/Song';
+
 
 // ── HTTP Song Repository ───────────────────────────────────────────────────────
 // Implementação concreta do ISongRepository via fetch.
@@ -20,6 +22,15 @@ interface SearchApiResponse {
   success: boolean;
   data: SongSearchResult[];
   error: string | null;
+}
+
+function mapCategoryToBackend(category: SongCategory): string {
+  switch (category) {
+    case 'sugestao': return 'pending';
+    case 'ensaiando': return 'evaluating';
+    case 'repertorio': return 'repertoire';
+    default: return category;
+  }
 }
 
 export class HttpSongRepository implements ISongRepository {
@@ -52,6 +63,31 @@ export class HttpSongRepository implements ISongRepository {
       throw new Error(`Erro ao marcar como ouvida (HTTP ${response.status})`);
     }
   }
+
+  async updateCategory(token: string, songId: string, category: SongCategory): Promise<void> {
+    const backendCategory = mapCategoryToBackend(category);
+    const response = await fetch(`${BASE_URL}/songs/${songId}/category`, {
+      method: 'PATCH',
+      headers: buildAuthHeaders(token),
+      body: JSON.stringify({ category: backendCategory, status: backendCategory }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao alterar categoria da música (HTTP ${response.status})`);
+    }
+  }
+
+  async deleteSong(token: string, songId: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/songs/${songId}`, {
+      method: 'DELETE',
+      headers: buildAuthHeaders(token),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao excluir música (HTTP ${response.status})`);
+    }
+  }
+
 
   async search(token: string, query: string): Promise<SongSearchResult[]> {
     const url = `${BASE_URL}/songs/search?query=${encodeURIComponent(query)}`;
