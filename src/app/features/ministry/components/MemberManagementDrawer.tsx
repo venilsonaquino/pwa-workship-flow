@@ -28,9 +28,14 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
   const [selectedInstruments, setSelectedInstruments] = useState<string[]>([]);
   const [permissions, setPermissions] = useState({
     accountStatus: true,
-    editScales: false,
-    manageRepertoire: false,
     adminAccess: false,
+    scaleView: false,
+    editScales: false,
+    rankingView: false,
+    manageRepertoire: false,
+    songEditColumns: false,
+    songViewEngagement: false,
+    songViewListeners: false,
   });
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
 
@@ -44,9 +49,14 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
       setSelectedInstruments(member.instruments || []);
       setPermissions({
         accountStatus: member.isActive,
-        editScales: member.permissions?.editScales ?? false,
-        manageRepertoire: member.permissions?.manageRepertoire ?? false,
         adminAccess: member.permissions?.adminAccess ?? (member.role === 'admin'),
+        scaleView: member.permissions?.scaleView ?? false,
+        editScales: member.permissions?.editScales ?? false,
+        rankingView: member.permissions?.rankingView ?? false,
+        manageRepertoire: member.permissions?.manageRepertoire ?? false,
+        songEditColumns: member.permissions?.songEditColumns ?? false,
+        songViewEngagement: member.permissions?.songViewEngagement ?? false,
+        songViewListeners: member.permissions?.songViewListeners ?? false,
       });
     }
   }
@@ -61,7 +71,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
 
   const togglePermission = (key: keyof typeof permissions) => {
     const isAdmin = permissions.adminAccess || member?.role === 'admin';
-    if (isAdmin && (key === 'accountStatus' || key === 'editScales' || key === 'manageRepertoire')) {
+    if (isAdmin && key !== 'adminAccess') {
       return;
     }
 
@@ -71,9 +81,14 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
 
       // Se conceder acesso de admin, auto-concede as outras permissões e ativa a conta
       if (key === 'adminAccess' && nextVal) {
-        updated.editScales = true;
-        updated.manageRepertoire = true;
         updated.accountStatus = true;
+        updated.scaleView = true;
+        updated.editScales = true;
+        updated.rankingView = true;
+        updated.manageRepertoire = true;
+        updated.songEditColumns = true;
+        updated.songViewEngagement = true;
+        updated.songViewListeners = true;
       }
       return updated;
     });
@@ -89,9 +104,14 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
       role: permissions.adminAccess ? 'admin' : 'member',
       permissions: {
         accountStatus: permissions.accountStatus,
-        editScales: permissions.editScales,
-        manageRepertoire: permissions.manageRepertoire,
         adminAccess: permissions.adminAccess,
+        scaleView: permissions.scaleView,
+        editScales: permissions.editScales,
+        rankingView: permissions.rankingView,
+        manageRepertoire: permissions.manageRepertoire,
+        songEditColumns: permissions.songEditColumns,
+        songViewEngagement: permissions.songViewEngagement,
+        songViewListeners: permissions.songViewListeners,
       },
     };
     onSave(updated);
@@ -248,6 +268,21 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     )}
                   </div>
 
+                  {/* Scale View */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Visualizar escalas</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Acesso à tela e listagem de escalas
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.scaleView,
+                      () => togglePermission('scaleView'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
+                  </div>
+
                   {/* Edit Scales */}
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
@@ -263,6 +298,21 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     )}
                   </div>
 
+                  {/* Ranking View */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Visualizar ranking</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Acesso à tela de ranking da banda
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.rankingView,
+                      () => togglePermission('rankingView'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
+                  </div>
+
                   {/* Manage Repertoire */}
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
@@ -274,6 +324,51 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.manageRepertoire,
                       () => togglePermission('manageRepertoire'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
+                  </div>
+
+                  {/* Song Edit Columns */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Mover músicas de coluna</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Alterar status das músicas entre colunas
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.songEditColumns,
+                      () => togglePermission('songEditColumns'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
+                  </div>
+
+                  {/* Song View Engagement */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Ver engajamento das músicas</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Visualizar porcentagem de engajamento da banda
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.songViewEngagement,
+                      () => togglePermission('songViewEngagement'),
+                      permissions.adminAccess || member?.role === 'admin'
+                    )}
+                  </div>
+
+                  {/* Song View Listeners */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-on-surface text-[16px]">Ver ouvintes das músicas</span>
+                      <span className="text-on-surface-variant text-[12px]">
+                        Visualizar lista de integrantes que já ouviram a música
+                      </span>
+                    </div>
+                    {renderSwitch(
+                      permissions.songViewListeners,
+                      () => togglePermission('songViewListeners'),
                       permissions.adminAccess || member?.role === 'admin'
                     )}
                   </div>

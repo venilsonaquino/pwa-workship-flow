@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useAuth, Permission } from '@shared/hooks/useAuth';
 import type { Song } from '../domain/entities/Song';
 
 export interface EngagementDrawerProps {
@@ -32,6 +33,9 @@ export const EngagementDrawer = ({
   onClose,
   onViewCifra,
 }: EngagementDrawerProps) => {
+  const { hasPermission } = useAuth();
+  const canViewListeners = hasPermission(Permission.SongViewListeners);
+
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -99,7 +103,14 @@ export const EngagementDrawer = ({
         {/* Member List & External Links */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 pb-24">
           <div className="space-y-4">
-            {hasListens ? (
+            {!canViewListeners ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant/70 gap-2">
+                <span className="material-symbols-outlined text-[36px] text-outline">lock</span>
+                <p className="text-body-md font-medium text-on-surface/80">
+                  Você não possui permissão para visualizar a lista de ouvintes.
+                </p>
+              </div>
+            ) : hasListens ? (
               song.listens.map((listen) => (
                 <div key={listen.userId} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

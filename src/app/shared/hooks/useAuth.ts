@@ -5,9 +5,13 @@ export type UserRole = 'Admin' | 'Member';
 
 export const Permission = {
   AdminAccess: 'AdminAccess',
-  EditScales: 'EditScales',
-  ManageMinistry: 'ManageMinistry',
-  ManageRepertoire: 'ManageRepertoire',
+  ScaleView: 'ScaleView',
+  SongView: 'SongView',
+  SongViewEngagement: 'SongViewEngagement',
+  SongViewListeners: 'SongViewListeners',
+  SongEditColumns: 'SongEditColumns',
+  RankingView: 'RankingView',
+  MinistryManage: 'MinistryManage',
 } as const;
 
 export type Permission = typeof Permission[keyof typeof Permission];
@@ -73,6 +77,23 @@ export function useAuth() {
     };
   }, []);
 
+  const hasPermission = useCallback((requiredPermission: Permission): boolean => {
+    if (!_authStore.isAuthenticated) {
+      return false;
+    }
+    if (_authStore.userRole === 'Admin') {
+      return true;
+    }
+    const userPermissions = _authStore.permissions;
+    if (!userPermissions) {
+      return false;
+    }
+    if (userPermissions.includes(Permission.AdminAccess)) {
+      return true;
+    }
+    return userPermissions.includes(requiredPermission);
+  }, []);
+
   const login = useCallback((
     roleName: UserRole,
     customName?: string,
@@ -125,6 +146,7 @@ export function useAuth() {
 
   return {
     ..._authStore,
+    hasPermission,
     login,
     logout,
     updateAuthProfile,
