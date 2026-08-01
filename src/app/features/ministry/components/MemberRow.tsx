@@ -12,8 +12,6 @@ export interface Member {
   instruments: string[];
   permissions: {
     accountStatus: boolean;
-    editScales: boolean;
-    manageRepertoire: boolean;
     adminAccess: boolean;
     scaleView?: boolean;
     rankingView?: boolean;

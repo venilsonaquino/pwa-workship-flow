@@ -42,10 +42,11 @@ export const SongCard = ({
   currentTimeFormatted = '0:00',
   onSeekPct,
 }: SongCardProps) => {
-  const { hasPermission } = useAuth();
+  const { hasPermission, userName } = useAuth();
   const showEngagement = hasPermission(Permission.SongViewEngagement);
   const canEditColumns = hasPermission(Permission.SongEditColumns);
   const showCategoryOptions = Boolean(onCategoryChange && canEditColumns);
+  const isSuggester = userName?.trim().toLowerCase() === song.suggestedByName?.trim().toLowerCase();
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showNoAudioToast, setShowNoAudioToast] = useState(false);
@@ -193,7 +194,7 @@ export const SongCard = ({
 
 
           {/* Action Menu (Move / Delete) */}
-          {(showCategoryOptions || onDelete) && (
+          {(showCategoryOptions || (onDelete && isSuggester)) && (
             <DropdownMenu>
               <DropdownMenuTrigger className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors focus:outline-none shrink-0">
                 <span className="material-symbols-outlined text-[20px] leading-none select-none">more_vert</span>
@@ -222,7 +223,7 @@ export const SongCard = ({
                   </>
                 )}
 
-                {onDelete && (
+                {onDelete && isSuggester && (
                   <>
                     {showCategoryOptions && <div className="my-1 border-t border-outline-variant/20" />}
                     <DropdownMenuItem
@@ -298,7 +299,7 @@ export const SongCard = ({
       </div>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
+      {showDeleteConfirm && onDelete && isSuggester && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
           onClick={(e) => {

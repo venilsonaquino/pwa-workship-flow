@@ -21,14 +21,6 @@ export const MaintenanceActions: React.FC<MaintenanceActionsProps> = ({
         </span>
         Tentar Novamente
       </button>
-
-      <button
-        type="button"
-        onClick={onGoHome}
-        className="w-full py-3.5 px-6 bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface font-semibold rounded-2xl border border-border/60 hover:border-border transition-all duration-200 active:scale-95 flex items-center justify-center cursor-pointer"
-      >
-        Voltar ao Início
-      </button>
     </div>
   );
 };

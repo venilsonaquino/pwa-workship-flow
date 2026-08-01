@@ -86,14 +86,8 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
 
       // Mapeia as permissões booleanas para o array de strings esperado pelo backend
       const apiPermissions: string[] = [];
-      if (updatedMember.permissions.editScales) {
-        apiPermissions.push('EditScales');
-      }
       if (updatedMember.permissions.adminAccess) {
         apiPermissions.push('AdminAccess');
-      }
-      if (updatedMember.permissions.manageRepertoire) {
-        apiPermissions.push('ManageRepertoire');
       }
       if (updatedMember.permissions.scaleView) {
         apiPermissions.push('ScaleView');

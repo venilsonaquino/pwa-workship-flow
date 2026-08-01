@@ -30,9 +30,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
     accountStatus: true,
     adminAccess: false,
     scaleView: false,
-    editScales: false,
     rankingView: false,
-    manageRepertoire: false,
     songEditColumns: false,
     songViewEngagement: false,
     songViewListeners: false,
@@ -51,9 +49,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
         accountStatus: member.isActive,
         adminAccess: member.permissions?.adminAccess ?? (member.role === 'admin'),
         scaleView: member.permissions?.scaleView ?? false,
-        editScales: member.permissions?.editScales ?? false,
         rankingView: member.permissions?.rankingView ?? false,
-        manageRepertoire: member.permissions?.manageRepertoire ?? false,
         songEditColumns: member.permissions?.songEditColumns ?? false,
         songViewEngagement: member.permissions?.songViewEngagement ?? false,
         songViewListeners: member.permissions?.songViewListeners ?? false,
@@ -70,7 +66,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
   };
 
   const togglePermission = (key: keyof typeof permissions) => {
-    const isAdmin = permissions.adminAccess || member?.role === 'admin';
+    const isAdmin = permissions.adminAccess;
     if (isAdmin && key !== 'adminAccess') {
       return;
     }
@@ -79,17 +75,19 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
       const nextVal = !prev[key];
       const updated = { ...prev, [key]: nextVal };
 
-      // Se conceder acesso de admin, auto-concede as outras permissões e ativa a conta
-      if (key === 'adminAccess' && nextVal) {
-        updated.accountStatus = true;
-        updated.scaleView = true;
-        updated.editScales = true;
-        updated.rankingView = true;
-        updated.manageRepertoire = true;
-        updated.songEditColumns = true;
-        updated.songViewEngagement = true;
-        updated.songViewListeners = true;
+      if (key === 'adminAccess') {
+        // Ao habilitar admin: ativa conta e concede todas as permissões
+        if (nextVal) {
+          updated.accountStatus = true;
+          updated.scaleView = true;
+          updated.rankingView = true;
+          updated.songEditColumns = true;
+          updated.songViewEngagement = true;
+          updated.songViewListeners = true;
+        }
+        // Ao desabilitar admin: não altera as demais — apenas destravam para edição
       }
+
       return updated;
     });
   };
@@ -106,9 +104,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
         accountStatus: permissions.accountStatus,
         adminAccess: permissions.adminAccess,
         scaleView: permissions.scaleView,
-        editScales: permissions.editScales,
         rankingView: permissions.rankingView,
-        manageRepertoire: permissions.manageRepertoire,
         songEditColumns: permissions.songEditColumns,
         songViewEngagement: permissions.songViewEngagement,
         songViewListeners: permissions.songViewListeners,
@@ -264,7 +260,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.accountStatus,
                       () => togglePermission('accountStatus'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
 
@@ -279,22 +275,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.scaleView,
                       () => togglePermission('scaleView'),
-                      permissions.adminAccess || member?.role === 'admin'
-                    )}
-                  </div>
-
-                  {/* Edit Scales */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-on-surface text-[16px]">Gerenciar escalas</span>
-                      <span className="text-on-surface-variant text-[12px]">
-                        Criar e editar escalas de eventos
-                      </span>
-                    </div>
-                    {renderSwitch(
-                      permissions.editScales,
-                      () => togglePermission('editScales'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
 
@@ -309,22 +290,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.rankingView,
                       () => togglePermission('rankingView'),
-                      permissions.adminAccess || member?.role === 'admin'
-                    )}
-                  </div>
-
-                  {/* Manage Repertoire */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-on-surface text-[16px]">Gerenciar repertório</span>
-                      <span className="text-on-surface-variant text-[12px]">
-                        Acesso e edição do catálogo de músicas
-                      </span>
-                    </div>
-                    {renderSwitch(
-                      permissions.manageRepertoire,
-                      () => togglePermission('manageRepertoire'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
 
@@ -339,7 +305,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.songEditColumns,
                       () => togglePermission('songEditColumns'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
 
@@ -354,7 +320,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.songViewEngagement,
                       () => togglePermission('songViewEngagement'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
 
@@ -369,7 +335,7 @@ export const MemberManagementDrawer: React.FC<MemberManagementDrawerProps> = ({
                     {renderSwitch(
                       permissions.songViewListeners,
                       () => togglePermission('songViewListeners'),
-                      permissions.adminAccess || member?.role === 'admin'
+                      permissions.adminAccess
                     )}
                   </div>
                 </div>
