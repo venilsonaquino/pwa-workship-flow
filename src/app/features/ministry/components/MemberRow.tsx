@@ -15,6 +15,11 @@ export interface Member {
     editScales: boolean;
     manageRepertoire: boolean;
     adminAccess: boolean;
+    scaleView?: boolean;
+    rankingView?: boolean;
+    songViewEngagement?: boolean;
+    songViewListeners?: boolean;
+    songEditColumns?: boolean;
   };
 }
 

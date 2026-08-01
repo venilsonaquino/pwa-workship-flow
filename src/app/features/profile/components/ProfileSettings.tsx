@@ -19,7 +19,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   const { isSupported: isPushSupported, isSubscribed: isPushSubscribed, permission: pushPermission, isLoading: isPushLoading, subscribe: subscribePush, unsubscribe: unsubscribePush } = useWebPush();
   const isDarkMode = theme === 'dark';
 
-  const hasManageMinistry = permissions?.includes(Permission.ManageMinistry) ?? false;
+  const hasManageMinistry = permissions?.includes(Permission.MinistryManage) ?? false;
 
   return (
     <div className="w-full" style={{ marginTop: 24 }}>

@@ -95,6 +95,21 @@ export const MinistryView: React.FC<MinistryViewProps> = ({ onBack }) => {
       if (updatedMember.permissions.manageRepertoire) {
         apiPermissions.push('ManageRepertoire');
       }
+      if (updatedMember.permissions.scaleView) {
+        apiPermissions.push('ScaleView');
+      }
+      if (updatedMember.permissions.rankingView) {
+        apiPermissions.push('RankingView');
+      }
+      if (updatedMember.permissions.songViewEngagement) {
+        apiPermissions.push('SongViewEngagement');
+      }
+      if (updatedMember.permissions.songViewListeners) {
+        apiPermissions.push('SongViewListeners');
+      }
+      if (updatedMember.permissions.songEditColumns) {
+        apiPermissions.push('SongEditColumns');
+      }
 
       const updatedBand = await ministryService.updateMember(updatedMember.id, {
         isActive: updatedMember.isActive,

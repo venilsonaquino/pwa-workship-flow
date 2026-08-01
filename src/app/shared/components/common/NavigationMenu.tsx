@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@src/lib/utils';
+import { useAuth, Permission } from '@shared/hooks/useAuth';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -28,17 +29,33 @@ function isTabActive(tabPath: string, currentPath: string): boolean {
   return currentPath === tabPath;
 }
 
+function isTabAllowed(tabPath: string, hasPermission: (permission: Permission) => boolean): boolean {
+  if (tabPath === '/scales') {
+    return hasPermission(Permission.ScaleView);
+  }
+  if (tabPath === '/ranking') {
+    return hasPermission(Permission.RankingView);
+  }
+  if (tabPath === '/songs') {
+    return hasPermission(Permission.SongView);
+  }
+  return true;
+}
+
 // ── NavigationMenu ─────────────────────────────────────────────────────────────
 
 export const NavigationMenu: React.FC = () => {
   const { pathname } = useLocation();
+  const { hasPermission } = useAuth();
+
+  const visibleTabs = TABS.filter((tab) => isTabAllowed(tab.path, hasPermission));
 
   return (
     <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md h-[72px] z-50 transition-all duration-300">
       <div className="absolute inset-0 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg -z-10 pointer-events-none" />
 
       <div className="flex justify-around items-center px-4 h-full relative">
-        {TABS.map((tab) => {
+        {visibleTabs.map((tab) => {
           const active = isTabActive(tab.path, pathname);
           return (
             <Link
