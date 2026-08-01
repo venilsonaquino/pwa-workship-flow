@@ -88,8 +88,8 @@ export const EngagementDrawer = ({
         {/* Header */}
         <div className="px-5 pb-4 flex items-center justify-between border-b border-outline-variant/20">
           <div>
-            <h2 className="font-headline-md text-headline-md text-on-surface">Engajamento da Equipe</h2>
-            <p className="text-label-sm text-primary">{song.title}</p>
+            <h2 className="font-headline-md text-headline-md text-on-surface">Detalhes</h2>
+            <p className="text-label-sm text-primary"></p>
           </div>
           <button
             onClick={onClose}
@@ -103,14 +103,7 @@ export const EngagementDrawer = ({
         {/* Member List & External Links */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 pb-24">
           <div className="space-y-4">
-            {!canViewListeners ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center text-on-surface-variant/70 gap-2">
-                <span className="material-symbols-outlined text-[36px] text-outline">lock</span>
-                <p className="text-body-md font-medium text-on-surface/80">
-                  Você não possui permissão para visualizar a lista de ouvintes.
-                </p>
-              </div>
-            ) : hasListens ? (
+            {canViewListeners && (hasListens ? (
               song.listens.map((listen) => (
                 <div key={listen.userId} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -149,7 +142,7 @@ export const EngagementDrawer = ({
                   Nenhum integrante ouviu essa música ainda.
                 </p>
               </div>
-            )}
+            ))}
           </div>
 
           {/* Cifra Reader Section */}

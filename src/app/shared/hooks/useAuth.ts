@@ -18,6 +18,7 @@ export type Permission = typeof Permission[keyof typeof Permission];
 
 export interface UserProfile {
   isAuthenticated: boolean;
+  userId?: string;
   userName: string;
   userEmail: string;
   userRole: UserRole | null;
@@ -30,11 +31,27 @@ export interface UserProfile {
 const AUTH_KEY = 'worshipflow_auth_profile';
 const DEFAULT_AVATAR = '';
 
+function getUserIdFromToken(token?: string): string | undefined {
+  if (!token) return undefined;
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return undefined;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload.nameid || payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+  } catch {
+    return undefined;
+  }
+}
+
 const getInitialState = (): UserProfile => {
   const stored = localStorage.getItem(AUTH_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored) as UserProfile;
+      const parsed = JSON.parse(stored) as UserProfile;
+      if (!parsed.userId && parsed.token) {
+        parsed.userId = getUserIdFromToken(parsed.token);
+      }
+      return parsed;
     } catch {
       // Ignore parse issues
     }
@@ -101,10 +118,13 @@ export function useAuth() {
     token?: string,
     ministryName?: string,
     avatarUrl?: string,
-    permissions?: Permission[]
+    permissions?: Permission[],
+    userId?: string
   ) => {
+    const resolvedUserId = userId || getUserIdFromToken(token);
     const userProfile: UserProfile = {
       isAuthenticated: true,
+      userId: resolvedUserId,
       userName: customName || '',
       userEmail: customEmail || '',
       userRole: roleName,
@@ -114,8 +134,6 @@ export function useAuth() {
       permissions: permissions || [],
     };
 
-    // Nota: Armazenando apenas preferências fictícias não sensíveis localmente.
-    // TODO(security): Implementar cookies HttpOnly e SameSite para gerenciar sessões reais no servidor.
     localStorage.setItem(AUTH_KEY, JSON.stringify(userProfile));
     _authStore = userProfile;
     notifySubscribers();
@@ -138,7 +156,6 @@ export function useAuth() {
 
   const updateAuthProfile = useCallback((updates: Partial<UserProfile>) => {
     const updated = { ..._authStore, ...updates };
-    // TODO(security): Implement safe session token cookies on the server-side instead of localStorage in prod.
     localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
     _authStore = updated;
     notifySubscribers();
@@ -152,4 +169,3 @@ export function useAuth() {
     updateAuthProfile,
   };
 }
-

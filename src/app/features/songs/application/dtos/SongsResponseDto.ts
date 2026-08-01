@@ -23,6 +23,7 @@ export interface SongApiDto {
   cifraClubUrl: string | null;
   letrasUrl: string | null;
   suggestedByName: string;
+  suggestedById?: string;
   createdAt: string;
   bandEngagementPercentage: number;
   hasListened: boolean;
@@ -76,6 +77,7 @@ export function mapSongDtoToEntity(dto: SongApiDto, fallbackCategory: SongCatego
     cifraClubUrl: dto.cifraClubUrl,
     letrasUrl: dto.letrasUrl,
     suggestedByName: dto.suggestedByName,
+    suggestedById: dto.suggestedById,
     createdAt: dto.createdAt,
     bandEngagementPercentage: dto.bandEngagementPercentage,
     hasListened: dto.hasListened,
