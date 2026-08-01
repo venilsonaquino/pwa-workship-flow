@@ -88,9 +88,12 @@ const mapApiMemberToMember = (apiMember: ApiBandMember): Member => {
     role: apiMember.roleName as 'admin' | 'member',
     permissions: {
       accountStatus: apiMember.isActive,
-      editScales: apiMember.permissions?.includes('EditScales') ?? false,
       adminAccess: apiMember.permissions?.includes('AdminAccess') ?? false,
-      manageRepertoire: apiMember.permissions?.includes('ManageRepertoire') ?? false,
+      scaleView: apiMember.permissions?.includes('ScaleView') ?? false,
+      rankingView: apiMember.permissions?.includes('RankingView') ?? false,
+      songViewEngagement: apiMember.permissions?.includes('SongViewEngagement') ?? false,
+      songViewListeners: apiMember.permissions?.includes('SongViewListeners') ?? false,
+      songEditColumns: apiMember.permissions?.includes('SongEditColumns') ?? false,
     },
   };
 };
