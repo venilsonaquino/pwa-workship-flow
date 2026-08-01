@@ -7,7 +7,6 @@ interface MaintenanceActionsProps {
 
 export const MaintenanceActions: React.FC<MaintenanceActionsProps> = ({
   onRetry,
-  onGoHome,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-sm mb-6">
