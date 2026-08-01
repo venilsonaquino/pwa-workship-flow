@@ -53,6 +53,7 @@ export interface LoginResponse {
 
   /** Dados resumidos do usuário autenticado */
   user?: {
+    id?: string;
     name: string;
     email: string;
     roleName?: string;
@@ -88,5 +89,4 @@ export interface MemberSignupResponse {
   message: string;
   status: number;
 }
-
 

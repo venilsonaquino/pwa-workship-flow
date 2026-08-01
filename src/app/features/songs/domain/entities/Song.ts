@@ -25,6 +25,7 @@ export interface Song {
   readonly cifraClubUrl: string | null;
   readonly letrasUrl: string | null;
   readonly suggestedByName: string;
+  readonly suggestedById?: string;
   readonly createdAt: string;
   readonly bandEngagementPercentage: number;
   readonly hasListened: boolean;

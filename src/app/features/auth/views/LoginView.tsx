@@ -47,7 +47,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onSignup }) => {
           response.token,
           ministryName,
           avatarUrl,
-          permissions
+          permissions,
+          response.user?.id
         );
         console.log('[LoginView] Contexto de login atualizado!');
         return;

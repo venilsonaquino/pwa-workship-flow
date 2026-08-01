@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@src/lib/utils';
 import { useAuth, Permission } from '@shared/hooks/useAuth';
 import { MarqueeText, useCelebration } from '@shared/components/effects';
@@ -21,7 +22,7 @@ export interface SongCardProps {
   onPlayToggle: () => void;
   onHeardToggle: () => void;
   onCategoryChange?: (songId: string, newCategory: SongCategory) => void;
-  onDelete?: () => void;
+  onDelete?: () => Promise<void> | void;
   onClick?: () => void;
   showCategoryBadge?: boolean;
   progressPct?: number;
@@ -42,13 +43,14 @@ export const SongCard = ({
   currentTimeFormatted = '0:00',
   onSeekPct,
 }: SongCardProps) => {
-  const { hasPermission, userName } = useAuth();
+  const { hasPermission, userName, userId } = useAuth();
   const showEngagement = hasPermission(Permission.SongViewEngagement);
   const canEditColumns = hasPermission(Permission.SongEditColumns);
   const showCategoryOptions = Boolean(onCategoryChange && canEditColumns);
-  const isSuggester = userName?.trim().toLowerCase() === song.suggestedByName?.trim().toLowerCase();
+  const isSuggester = (Boolean(userId) && Boolean(song.suggestedById) && userId === song.suggestedById) || (Boolean(userName) && userName?.trim().toLowerCase() === song.suggestedByName?.trim().toLowerCase());
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showNoAudioToast, setShowNoAudioToast] = useState(false);
 
   const hasAudioError = song.status === 'error';
@@ -92,11 +94,16 @@ export const SongCard = ({
     }
   };
 
-  const handleDeleteConfirm = (e: React.MouseEvent) => {
+  const handleDeleteConfirm = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setShowDeleteConfirm(false);
-    if (onDelete) {
-      onDelete();
+    if (!onDelete || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      await onDelete();
+      setShowDeleteConfirm(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -299,23 +306,28 @@ export const SongCard = ({
       </div>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && onDelete && isSuggester && (
+      {showDeleteConfirm && onDelete && isSuggester && createPortal(
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
           onClick={(e) => {
             e.stopPropagation();
+            if (isDeleting) return;
             setShowDeleteConfirm(false);
           }}
+          role="presentation"
         >
           <div
             className="bg-surface-container-lowest text-on-surface border border-outline-variant/30 rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`delete-song-title-${song.id}`}
           >
             <div className="flex items-center gap-3 text-error">
               <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-[22px]">delete_forever</span>
               </div>
-              <h3 className="text-title-md font-bold">Excluir música?</h3>
+              <h3 id={`delete-song-title-${song.id}`} className="text-title-md font-bold">Excluir música?</h3>
             </div>
             <p className="text-body-md text-on-surface-variant">
               Tem certeza que deseja remover <strong>"{song.title}"</strong>? Esta ação não poderá ser desfeita.
@@ -325,8 +337,10 @@ export const SongCard = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (isDeleting) return;
                   setShowDeleteConfirm(false);
                 }}
+                disabled={isDeleting}
                 className="px-4 py-2 rounded-xl text-label-lg font-semibold hover:bg-surface-container-high transition-colors"
               >
                 Cancelar
@@ -334,13 +348,17 @@ export const SongCard = ({
               <button
                 type="button"
                 onClick={handleDeleteConfirm}
-                className="px-4 py-2 rounded-xl bg-error text-on-error text-label-lg font-bold shadow-md hover:opacity-90 active:scale-95 transition-all"
+                disabled={isDeleting}
+                className="min-w-[88px] px-4 py-2 rounded-xl bg-error text-on-error text-label-lg font-bold shadow-md hover:opacity-90 active:scale-95 transition-all disabled:opacity-70 disabled:cursor-wait"
               >
-                Excluir
+                {isDeleting ? (
+                  <span className="material-symbols-outlined text-[20px] leading-none animate-spin">progress_activity</span>
+                ) : 'Excluir'}
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* No Audio Toast */}
@@ -360,4 +378,3 @@ export const SongCard = ({
 };
 
 export default SongCard;
-
