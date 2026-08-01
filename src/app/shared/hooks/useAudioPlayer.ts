@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import { getAbsoluteMediaUrl } from '@src/lib/utils';
 
 // ── Singleton State ────────────────────────────────────────────────────────────
@@ -9,11 +9,21 @@ let _isPlaying = false;
 let _currentTime = 0;
 let _duration = 0;
 let _progressPct = 0;
+let _stateVersion = 0;
 
 const _subscribers = new Set<() => void>();
 
 function notifySubscribers(): void {
   _subscribers.forEach((callback) => callback());
+}
+
+function subscribe(callback: () => void): () => void {
+  _subscribers.add(callback);
+  return () => _subscribers.delete(callback);
+}
+
+function getStateVersion(): number {
+  return _stateVersion;
 }
 
 function setPlayerState(patch: {
@@ -28,6 +38,7 @@ function setPlayerState(patch: {
   if (patch.currentTime !== undefined) _currentTime = patch.currentTime;
   if (patch.duration !== undefined) _duration = patch.duration;
   if (patch.progressPct !== undefined) _progressPct = patch.progressPct;
+  _stateVersion += 1;
   notifySubscribers();
 }
 
@@ -95,15 +106,10 @@ export interface AudioTarget {
 }
 
 export function useAudioPlayer() {
-  const [, forceRender] = useState(0);
-
-  useEffect(() => {
-    const rerender = () => forceRender((currentCount) => currentCount + 1);
-    _subscribers.add(rerender);
-    return () => {
-      _subscribers.delete(rerender);
-    };
-  }, []);
+  // The audio player lives outside React, so subscribe to it as an external
+  // store. This guarantees that play/pause changes are reflected immediately,
+  // including updates that happen between render and effect execution.
+  useSyncExternalStore(subscribe, getStateVersion, getStateVersion);
 
   const togglePlay = useCallback((targetSong: AudioTarget) => {
     const audio = getAudioInstance();
@@ -176,4 +182,3 @@ export function useAudioPlayer() {
     pause,
   };
 }
-

@@ -130,14 +130,14 @@ export const SongCard = ({
           {/* Vinyl Disc Body */}
           <div
             className={cn(
-              "w-20 h-20 rounded-full p-1 border-2 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300",
+              "vinyl-disc w-20 h-20 rounded-full p-1 border-2 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300",
               hasAudioError
                 ? "bg-neutral-900 border-neutral-700/50 opacity-50 grayscale"
                 : "bg-neutral-950 border-neutral-800/80 group-hover:scale-105 group-hover:border-primary/50"
             )}
+            data-playing={!hasAudioError && isPlaying}
             style={{
               backgroundImage: `radial-gradient(circle at center, transparent 35%, rgba(255,255,255,0.06) 36%, transparent 40%, rgba(255,255,255,0.04) 45%, transparent 60%)`,
-              animation: (!hasAudioError && isPlaying) ? 'spin 4s linear infinite' : 'none',
             }}
           >
             {/* Inner Album Cover */}
