@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@src/lib/utils';
+import { useAuth, Permission } from '@shared/hooks/useAuth';
 import { MarqueeText, useCelebration } from '@shared/components/effects';
 import {
   DropdownMenu,
@@ -41,8 +42,30 @@ export const SongCard = ({
   currentTimeFormatted = '0:00',
   onSeekPct,
 }: SongCardProps) => {
+  const { hasPermission } = useAuth();
+  const showEngagement = hasPermission(Permission.SongViewEngagement);
+  const canEditColumns = hasPermission(Permission.SongEditColumns);
+  const showCategoryOptions = Boolean(onCategoryChange && canEditColumns);
   const { trigger: triggerCelebration, renderParticles } = useCelebration();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showNoAudioToast, setShowNoAudioToast] = useState(false);
+
+  const hasAudioError = song.status === 'error';
+
+  useEffect(() => {
+    if (!showNoAudioToast) return;
+    const timer = setTimeout(() => setShowNoAudioToast(false), 3000);
+    return () => clearTimeout(timer);
+  }, [showNoAudioToast]);
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasAudioError) {
+      setShowNoAudioToast(true);
+      return;
+    }
+    onPlayToggle();
+  };
 
   const handleHeardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -89,22 +112,24 @@ export const SongCard = ({
       <div className="flex items-center gap-4">
         {/* Vinyl Disc Player */}
         <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onPlayToggle();
-          }}
-          className="relative shrink-0 w-20 h-20 group cursor-pointer"
-          title={isPlaying ? 'Pausar' : 'Tocar'}
+          onClick={handlePlayClick}
+          className={cn(
+            "relative shrink-0 w-20 h-20 group",
+            hasAudioError ? "cursor-default" : "cursor-pointer"
+          )}
+          title={hasAudioError ? 'Áudio indisponível' : isPlaying ? 'Pausar' : 'Tocar'}
         >
           {/* Vinyl Disc Body */}
           <div
             className={cn(
-              "w-20 h-20 rounded-full p-1 bg-neutral-950 border-2 border-neutral-800/80 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:border-primary/50",
-              isPlaying && "animate-[spin_4s_linear_infinite]"
+              "w-20 h-20 rounded-full p-1 border-2 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300",
+              hasAudioError
+                ? "bg-neutral-900 border-neutral-700/50 opacity-50 grayscale"
+                : "bg-neutral-950 border-neutral-800/80 group-hover:scale-105 group-hover:border-primary/50"
             )}
             style={{
               backgroundImage: `radial-gradient(circle at center, transparent 35%, rgba(255,255,255,0.06) 36%, transparent 40%, rgba(255,255,255,0.04) 45%, transparent 60%)`,
-              animation: isPlaying ? 'spin 4s linear infinite' : 'none',
+              animation: (!hasAudioError && isPlaying) ? 'spin 4s linear infinite' : 'none',
             }}
           >
             {/* Inner Album Cover */}
@@ -117,21 +142,32 @@ export const SongCard = ({
             {/* Vinyl Spindle Center Hole */}
             <div className="absolute inset-auto w-3.5 h-3.5 rounded-full bg-neutral-950 border border-neutral-700 pointer-events-none z-10" />
 
-            {/* Subtle Hover Overlay */}
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-15" />
+            {/* Subtle Hover Overlay (only when audio available) */}
+            {!hasAudioError && (
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-15" />
+            )}
+
+            {/* Error overlay — show music_off icon */}
+            {hasAudioError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-20 pointer-events-none">
+                <span className="material-symbols-outlined text-neutral-400 text-[22px] select-none">music_off</span>
+              </div>
+            )}
           </div>
 
-          {/* Floating Play/Pause Action Badge */}
-          <div
-            className={cn(
-              "absolute -bottom-1 -right-1 z-30 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface-container-lowest transition-all duration-200 group-hover:scale-110 active:scale-95",
-              isPlaying ? "shadow-primary/40 ring-2 ring-primary/30 animate-pulse" : "shadow-black/40"
-            )}
-          >
-            <span className={cn("material-symbols-outlined icon-fill text-[16px] leading-none select-none", !isPlaying && "ml-0.5")}>
-              {isPlaying ? 'pause' : 'play_arrow'}
-            </span>
-          </div>
+          {/* Floating Play/Pause Action Badge — only when audio is available */}
+          {!hasAudioError && (
+            <div
+              className={cn(
+                "absolute -bottom-1 -right-1 z-30 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface-container-lowest transition-all duration-200 group-hover:scale-110 active:scale-95",
+                isPlaying ? "shadow-primary/40 ring-2 ring-primary/30 animate-pulse" : "shadow-black/40"
+              )}
+            >
+              <span className={cn("material-symbols-outlined icon-fill text-[16px] leading-none select-none", !isPlaying && "ml-0.5")}>
+                {isPlaying ? 'pause' : 'play_arrow'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Song Info (Title & Artist) */}
@@ -154,20 +190,16 @@ export const SongCard = ({
               <span className="material-symbols-outlined text-[12px] leading-none animate-spin select-none">sync</span>
             </span>
           )}
-          {song.status === 'error' && (
-            <span className="flex items-center gap-1 text-[10px] font-bold text-error bg-error/10 border border-error/20 px-2 py-0.5 rounded-full" title="Erro no áudio">
-              <span className="material-symbols-outlined text-[12px] leading-none select-none">error</span>
-            </span>
-          )}
+
 
           {/* Action Menu (Move / Delete) */}
-          {(onCategoryChange || onDelete) && (
+          {(showCategoryOptions || onDelete) && (
             <DropdownMenu>
               <DropdownMenuTrigger className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors focus:outline-none shrink-0">
                 <span className="material-symbols-outlined text-[20px] leading-none select-none">more_vert</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-2xl p-1.5 w-52 z-50">
-                {onCategoryChange && (
+                {showCategoryOptions && (
                   <>
                     <div className="px-3 py-1.5 text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-wider">
                       Mover para coluna...
@@ -192,7 +224,7 @@ export const SongCard = ({
 
                 {onDelete && (
                   <>
-                    {onCategoryChange && <div className="my-1 border-t border-outline-variant/20" />}
+                    {showCategoryOptions && <div className="my-1 border-t border-outline-variant/20" />}
                     <DropdownMenuItem
                       onClick={(e) => {
                         e.stopPropagation();
@@ -225,23 +257,25 @@ export const SongCard = ({
       </div>
 
       {/* Band Engagement */}
-      <div className="border-t border-outline-variant/30 pt-2 mt-1 px-2 -mx-2">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-label-sm text-on-surface-variant flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px] leading-none shrink-0 select-none">groups</span>
-            <span>Engajamento da banda</span>
-          </span>
-          <span className="text-label-sm font-bold text-primary">
-            {song.bandEngagementPercentage}%
-          </span>
+      {showEngagement && (
+        <div className="border-t border-outline-variant/30 pt-2 mt-1 px-2 -mx-2">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-label-sm text-on-surface-variant flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] leading-none shrink-0 select-none">groups</span>
+              <span>Engajamento da banda</span>
+            </span>
+            <span className="text-label-sm font-bold text-primary">
+              {song.bandEngagementPercentage}%
+            </span>
+          </div>
+          <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(124,58,237,0.4)]"
+              style={{ width: `${song.bandEngagementPercentage}%` }}
+            />
+          </div>
         </div>
-        <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-          <div
-            className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(124,58,237,0.4)]"
-            style={{ width: `${song.bandEngagementPercentage}%` }}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Bottom Footer Action */}
       <div className="flex items-center justify-between border-t border-outline-variant/20 pt-3 mt-1.5">
@@ -304,6 +338,19 @@ export const SongCard = ({
                 Excluir
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* No Audio Toast */}
+      {showNoAudioToast && (
+        <div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-fadeIn"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2 bg-surface-container-high border border-outline-variant/40 text-on-surface text-[12px] font-semibold px-4 py-2.5 rounded-2xl shadow-xl whitespace-nowrap">
+            <span className="material-symbols-outlined text-[16px] leading-none text-on-surface-variant select-none">music_off</span>
+            <span>Áudio indisponível para esta música</span>
           </div>
         </div>
       )}
