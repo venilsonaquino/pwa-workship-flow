@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import NavigationMenu from './NavigationMenu';
 import PWAInstallPrompt from './PWAInstallPrompt';
@@ -35,14 +35,17 @@ function resolveContentClassName(pathname: string, showNavigation: boolean): str
 
 export const Layout: React.FC<LayoutProps> = ({ children, showInstallPrompt = true }) => {
   const { pathname } = useLocation();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const showNavigation = shouldShowNavigation(pathname);
   const contentClassName = resolveContentClassName(pathname, showNavigation);
 
   return (
     <main className="flex flex-col h-screen bg-background overflow-hidden px-2.5">
-      <div className={`relative ${contentClassName}`}>{children}</div>
+      <div ref={scrollContainerRef} className={`relative ${contentClassName}`}>
+        {children}
+      </div>
 
-      {showNavigation && <NavigationMenu />}
+      {showNavigation && <NavigationMenu scrollContainerRef={scrollContainerRef} />}
       {showInstallPrompt && <PWAInstallPrompt />}
     </main>
   );

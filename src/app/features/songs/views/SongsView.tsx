@@ -259,7 +259,7 @@ export const SongsView = () => {
             exit={{ x: '-30%' }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', minHeight: '100%' }}
-            className="flex flex-col w-full bg-background text-on-background pb-32"
+            className="flex flex-col w-full bg-background text-on-background pb-8"
           >
             {/* Top AppBar */}
             {isSearchExpanded ? (

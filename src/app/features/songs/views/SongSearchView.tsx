@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { PageHeader, Button } from '@shared/components';
 import { useAuth } from '@shared/hooks';
 import { httpSongRepository } from '../infrastructure/repositories/HttpSongRepository';
@@ -124,6 +125,10 @@ const SongSearchView = ({ onBack, onSuggest, existingSongs }: SongSearchViewProp
     if (!token) return;
 
     setSuggestionStatus((prev) => ({ ...prev, [result.videoId]: { state: 'loading' } }));
+    const feedbackToastId = toast.success(
+      'Música adicionada! Estamos preparando o áudio e a cifra. Enquanto isso, você pode ouvir no YouTube tocando no card.',
+      { duration: 8000 }
+    );
 
     try {
       await httpSongRepository.suggest(token, {
@@ -141,6 +146,10 @@ const SongSearchView = ({ onBack, onSuggest, existingSongs }: SongSearchViewProp
       onSuggest();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao sugerir.';
+      toast.error(`Não foi possível adicionar a música. ${message}`, {
+        id: feedbackToastId,
+        duration: 5000,
+      });
       setSuggestionStatus((prev) => ({
         ...prev,
         [result.videoId]: { state: 'error', errorMessage: message },

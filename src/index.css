@@ -283,6 +283,26 @@ ul, ol {
   overscroll-behavior-y: contain;
 }
 
+@keyframes processing-youtube-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.processing-youtube-link {
+  animation: processing-youtube-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processing-youtube-link {
+    animation: none;
+  }
+}
+
 /* ─── Stitch MCP Design System Compatibility ─────────────────────────────────── */
 
 .text-headline-md {
@@ -475,4 +495,3 @@ ul, ol {
 .dropdown-item-custom.active:hover {
   background-color: rgba(99, 14, 212, 0.15) !important;
 }
-
