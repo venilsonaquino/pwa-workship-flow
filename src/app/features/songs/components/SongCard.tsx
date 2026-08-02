@@ -53,6 +53,7 @@ export const SongCard = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showNoAudioToast, setShowNoAudioToast] = useState(false);
 
+  const isProcessing = song.status === 'pending' || song.status === 'processing';
   const hasAudioError = song.status === 'error';
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export const SongCard = ({
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isProcessing) return;
     if (hasAudioError) {
       setShowNoAudioToast(true);
       return;
@@ -119,23 +121,26 @@ export const SongCard = ({
       {/* Main Card Header */}
       <div className="flex items-center gap-4">
         {/* Vinyl Disc Player */}
-        <div
+        <button
+          type="button"
           onClick={handlePlayClick}
+          disabled={isProcessing}
           className={cn(
-            "relative shrink-0 w-20 h-20 group",
-            hasAudioError ? "cursor-default" : "cursor-pointer"
+            "relative shrink-0 w-20 h-20 group text-left",
+            hasAudioError || isProcessing ? "cursor-not-allowed" : "cursor-pointer"
           )}
-          title={hasAudioError ? 'Áudio indisponível' : isPlaying ? 'Pausar' : 'Tocar'}
+          title={isProcessing ? 'Áudio em preparação' : hasAudioError ? 'Áudio indisponível' : isPlaying ? 'Pausar' : 'Tocar'}
+          aria-label={isProcessing ? 'Áudio em preparação' : hasAudioError ? 'Áudio indisponível' : isPlaying ? 'Pausar' : 'Tocar'}
         >
           {/* Vinyl Disc Body */}
           <div
             className={cn(
               "vinyl-disc w-20 h-20 rounded-full p-1 border-2 shadow-lg relative flex items-center justify-center overflow-hidden transition-all duration-300",
-              hasAudioError
+              hasAudioError || isProcessing
                 ? "bg-neutral-900 border-neutral-700/50 opacity-50 grayscale"
                 : "bg-neutral-950 border-neutral-800/80 group-hover:scale-105 group-hover:border-primary/50"
             )}
-            data-playing={!hasAudioError && isPlaying}
+            data-playing={!hasAudioError && !isProcessing && isPlaying}
             style={{
               backgroundImage: `radial-gradient(circle at center, transparent 35%, rgba(255,255,255,0.06) 36%, transparent 40%, rgba(255,255,255,0.04) 45%, transparent 60%)`,
             }}
@@ -151,7 +156,7 @@ export const SongCard = ({
             <div className="absolute inset-auto w-3.5 h-3.5 rounded-full bg-neutral-950 border border-neutral-700 pointer-events-none z-10" />
 
             {/* Subtle Hover Overlay (only when audio available) */}
-            {!hasAudioError && (
+            {!hasAudioError && !isProcessing && (
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-15" />
             )}
 
@@ -161,22 +166,31 @@ export const SongCard = ({
                 <span className="material-symbols-outlined text-neutral-400 text-[22px] select-none">music_off</span>
               </div>
             )}
+
+            {isProcessing && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/35 z-20 pointer-events-none">
+                <span className="material-symbols-outlined text-neutral-400 text-[22px] animate-spin select-none">progress_activity</span>
+              </div>
+            )}
           </div>
 
           {/* Floating Play/Pause Action Badge — only when audio is available */}
           {!hasAudioError && (
             <div
               className={cn(
-                "absolute -bottom-1 -right-1 z-30 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface-container-lowest transition-all duration-200 group-hover:scale-110 active:scale-95",
-                isPlaying ? "shadow-primary/40 ring-2 ring-primary/30 animate-pulse" : "shadow-black/40"
+                "absolute -bottom-1 -right-1 z-30 w-7 h-7 rounded-full flex items-center justify-center shadow-lg border-2 border-surface-container-lowest transition-all duration-200",
+                isProcessing
+                  ? "bg-surface-container-high text-outline shadow-black/20"
+                  : "bg-primary text-on-primary group-hover:scale-110 active:scale-95",
+                !isProcessing && (isPlaying ? "shadow-primary/40 ring-2 ring-primary/30 animate-pulse" : "shadow-black/40")
               )}
             >
               <span className={cn("material-symbols-outlined icon-fill text-[16px] leading-none select-none", !isPlaying && "ml-0.5")}>
-                {isPlaying ? 'pause' : 'play_arrow'}
+                {isProcessing ? 'play_arrow' : isPlaying ? 'pause' : 'play_arrow'}
               </span>
             </div>
           )}
-        </div>
+        </button>
 
         {/* Song Info (Title & Artist) */}
         <div className="flex-1 flex flex-col justify-center min-w-0 overflow-hidden">
@@ -192,14 +206,6 @@ export const SongCard = ({
 
         {/* Header Right Actions (Status & 3-Dots Menu) */}
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {/* Processing Audio Badge */}
-          {(song.status === 'pending' || song.status === 'processing') && (
-            <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full" title="Baixando áudio em segundo plano">
-              <span className="material-symbols-outlined text-[12px] leading-none animate-spin select-none">sync</span>
-            </span>
-          )}
-
-
           {/* Action Menu (Move / Delete) */}
           {(showCategoryOptions || (onDelete && isSuggester)) && (
             <DropdownMenu>
@@ -250,9 +256,38 @@ export const SongCard = ({
         </div>
       </div>
 
+      {isProcessing && (
+        <div className="overflow-hidden rounded-xl border border-amber-500/20 bg-amber-500/10">
+          <div
+            className="flex items-center gap-2.5 px-3 py-2 text-amber-500"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="material-symbols-outlined text-[18px] leading-none animate-spin select-none">
+              progress_activity
+            </span>
+            <span className="text-[12px] font-semibold">Preparando áudio e cifra...</span>
+          </div>
+
+          <a
+            href={`https://www.youtube.com/watch?v=${song.videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => event.stopPropagation()}
+            className="processing-youtube-link flex w-full items-center justify-center gap-2 border-t border-amber-500/15 px-3 py-2 text-[11px] font-medium text-on-surface-variant/70 transition-colors hover:bg-amber-500/5 hover:text-on-surface-variant focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-outline/40"
+            aria-label={`Ouvir ${song.title} no YouTube enquanto o áudio é preparado`}
+          >
+            <span className="flex h-3.5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-error text-white shadow-sm select-none">
+              <span className="ml-px h-0 w-0 border-y-[4px] border-y-transparent border-l-[6px] border-l-white" />
+            </span>
+            <span>Ouvir no YouTube enquanto isso</span>
+          </a>
+        </div>
+      )}
+
       {/* Audio Progress Bar */}
-      <div className="space-y-1" onClick={handleProgressBarClick}>
-        <div className="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden relative cursor-pointer">
+      <div className={cn("space-y-1", isProcessing && "opacity-45")} onClick={handleProgressBarClick}>
+        <div className={cn("w-full bg-surface-variant h-1.5 rounded-full overflow-hidden relative", isProcessing ? "cursor-not-allowed" : "cursor-pointer")}>
           <div
             className="h-full rounded-full vivid-gradient transition-all duration-100"
             style={{ width: `${isCurrentSong ? progressPct : 0}%` }}

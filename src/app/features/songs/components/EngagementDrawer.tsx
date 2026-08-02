@@ -69,6 +69,7 @@ export const EngagementDrawer = ({
   const letrasUrl = `https://www.letras.mus.br/?q=${searchTerms}`;
 
   const hasListens = song.listens && song.listens.length > 0;
+  const isProcessing = song.status === 'pending' || song.status === 'processing';
 
   return (
     <>
@@ -146,28 +147,42 @@ export const EngagementDrawer = ({
           </div>
 
           {/* Cifra Reader Section */}
-          {song.cifra && (
+          {(song.cifra || isProcessing) && (
             <div className="pt-6 border-t border-outline-variant/30">
               <h3 className="text-label-sm font-bold text-outline mb-4 tracking-wider uppercase">
                 Cifra
               </h3>
               <button
+                type="button"
+                disabled={isProcessing}
                 onClick={() => {
+                  if (isProcessing) return;
                   onViewCifra?.(song);
                   onClose();
                 }}
-                className="w-full flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm hover:bg-primary/10 transition-all duration-200 active:scale-[0.98]"
+                className={isProcessing
+                  ? "w-full flex items-center justify-between p-3 bg-surface-container-high/50 border border-outline-variant/20 rounded-xl text-outline cursor-not-allowed opacity-65"
+                  : "w-full flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm hover:bg-primary/10 transition-all duration-200 active:scale-[0.98]"
+                }
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[20px]">piano</span>
+                  <div className={isProcessing ? "w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-outline" : "w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center text-primary"}>
+                    <span className={`material-symbols-outlined text-[20px] ${isProcessing ? 'animate-spin' : ''}`}>
+                      {isProcessing ? 'progress_activity' : 'piano'}
+                    </span>
                   </div>
                   <div className="text-left">
-                    <p className="font-label-lg text-on-surface">Visualizar Cifra</p>
-                    <p className="text-[10px] text-outline">Acordes e letra</p>
+                    <p className={isProcessing ? "font-label-lg text-outline" : "font-label-lg text-on-surface"}>
+                      {isProcessing ? 'Preparando cifra...' : 'Visualizar Cifra'}
+                    </p>
+                    <p className="text-[10px] text-outline">
+                      {isProcessing ? 'Disponível quando o processamento terminar' : 'Acordes e letra'}
+                    </p>
                   </div>
                 </div>
-                <span className="material-symbols-outlined text-primary text-[20px]">chevron_right</span>
+                <span className={`material-symbols-outlined text-[20px] ${isProcessing ? 'text-outline' : 'text-primary'}`}>
+                  {isProcessing ? 'hourglass_empty' : 'chevron_right'}
+                </span>
               </button>
             </div>
           )}
