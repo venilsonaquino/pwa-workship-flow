@@ -42,10 +42,29 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container: docker.io/catthehacker/ubuntu:act-latest
+    outputs:
+      version_tag: ${{ steps.version.outputs.VERSION_TAG }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Calculate Version Tags
+        id: version
+        run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          BUILD_NUMBER="${{ github.run_number }}"
+          VERSION_TAG="${APP_VERSION}-build.${BUILD_NUMBER}"
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${BUILD_NUMBER}" >> $GITHUB_ENV
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+          echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_OUTPUT
+          echo "Versão gerada para este build: ${VERSION_TAG}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -73,11 +92,16 @@ jobs:
           target: final
           push: true
           tags: |
+            ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:${{ env.VERSION_TAG }}
+            ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:${{ env.APP_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:prod
+            ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:latest
             ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:${{ github.sha }}
           build-args: |
             VITE_API_BASE_URL=${{ steps.format-api.outputs.API_URL }}
             VITE_APP_NAME=${{ vars.VITE_APP_NAME }}
+            VITE_APP_VERSION=${{ env.APP_VERSION }}
+            VITE_BUILD_NUMBER=${{ env.BUILD_NUMBER }}
 
   deploy:
     name: Deploy to Production
@@ -94,6 +118,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
+            export IMAGE_TAG="${{ needs.docker.outputs.version_tag }}"
+
             echo "Criando diretório da stack..."
             mkdir -p ~/worshipflow-pwa
             cd ~/worshipflow-pwa
@@ -104,7 +130,7 @@ jobs:
 
             services:
               worshipflow-pwa:
-                image: ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:prod
+                image: ${{ secrets.DOCKER_USERNAME }}/worshipflow-pwa:${IMAGE_TAG}
                 container_name: worshipflow-pwa
                 ports:
                   - "80:80"
@@ -130,4 +156,4 @@ jobs:
             echo "Limpeza de imagens órfãs..."
             docker image prune -f
 
-            echo "Deploy concluído com sucesso!"
+            echo "Deploy concluído com sucesso para a tag ${IMAGE_TAG}!"

@@ -199,7 +199,9 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
       {/* ── Version Info ── */}
       <div className="text-center" style={{ paddingTop: 16, paddingBottom: 16 }}>
-        <p className="text-label-sm text-outline">Versão 2.4.0 (Build 120)</p>
+        <p className="text-label-sm text-outline">
+          Versão {import.meta.env.VITE_APP_VERSION} (Build {import.meta.env.VITE_BUILD_NUMBER})
+        </p>
       </div>
     </div>
   );
